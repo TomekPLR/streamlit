@@ -16,7 +16,7 @@ def display_correlation_matrix(df):
     sns.set(style="white")
     corr = df.corr()
     mask = np.triu(np.ones_like(corr, dtype=bool))
-    f, ax = plt.subplots(figsize=(11, 9))
+    f, ax = plt.subplots(figsize=(15, 12))
     cmap = sns.diverging_palette(230, 20, as_cmap=True)
     sns.heatmap(corr, mask=mask, cmap=cmap, vmax=1, vmin=-1, center=0,
                 square=True, linewidths=.5, cbar_kws={"shrink": .5}, annot=True, fmt=".2f")
