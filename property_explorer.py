@@ -51,7 +51,7 @@ def plot_compare_columns(df, col1, col2):
     st.pyplot(fig)
 
 def main():
-    st.title('CSV Analysis Tool')
+    st.title('GSC property explorer')
 
     uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
     if uploaded_file is not None:
