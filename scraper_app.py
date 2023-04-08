@@ -4,7 +4,9 @@ import numpy as np
 from datetime import datetime
 
 def read_csv(uploaded_file):
-    return pd.read_csv(uploaded_file, parse_dates=['scrap_date'])
+    df = pd.read_csv(uploaded_file)
+    df['scrap_date'] = pd.to_datetime(df['scrap_date']).dt.date
+    return df
 
 def filter_data(df, start_date, end_date):
     return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
