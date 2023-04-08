@@ -1,72 +1,53 @@
 import streamlit as st
 import pandas as pd
-from pandas.api.types import CategoricalDtype
+import numpy as np
+from datetime import datetime
 
-# Define a custom sorting order for the "property" column
-property_order = ['Property A', 'Property B', 'Property C', 'Property D', 'Property E']
+def read_csv(uploaded_file):
+    return pd.read_csv(uploaded_file, parse_dates=['scrap_date'])
 
-# Define the columns that can be selected for analysis
-analysis_columns = ['download_size', 'requests', 'avg_response_time', 'response_ok', 'response_301', 'response_302', 'response_404', 'response_server_error', 'clicks', 'impressions', 'avg_ctr', 'avg_position', 'purpose_discovery', 'purpose_refresh', 'mobile_good', 'mobile_improve', 'mobile_poor', 'desktop_good', 'desktop_improve', 'desktop_poor']
+def filter_data(df, start_date, end_date):
+    return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
 
-# Define the column names to use for the output table
-if not property_data.empty:
-    output_columns = list(property_data.columns) + ['Absolute Change', 'Relative Change']
-else:
-    output_columns = []
+def calculate_changes(df, column):
+    initial_values = df.groupby('property')[column].first()
+    final_values = df.groupby('property')[column].last()
+    abs_changes = final_values - initial_values
+    rel_changes = (final_values - initial_values) / initial_values * 100
     
-# Define a function to calculate the relative change
-def calculate_relative_change(initial_value, final_value):
-    if initial_value == 0:
-        return 0
-    else:
-        return (final_value - initial_value) / initial_value
+    results = pd.concat([initial_values, final_values, abs_changes, rel_changes], axis=1)
+    results.columns = ['initial_value', 'final_value', 'abs_change', 'rel_change']
+    results = results.reset_index()
+    return results
 
-# Define the Streamlit app
-st.title("Property Analysis")
+def main():
+    st.title('CSV Analysis Tool')
 
-# File upload
-file = st.file_uploader("Upload a CSV file", type=["csv"])
-if file is None:
-    st.stop()
+    uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
+    if uploaded_file is not None:
+        df = read_csv(uploaded_file)
 
-# Load the CSV file
-data = pd.read_csv(file)
+        st.sidebar.header('Filter data')
+        min_date, max_date = df['scrap_date'].min(), df['scrap_date'].max()
+        start_date = st.sidebar.date_input('Initial date', min_date, min_value=min_date, max_value=max_date)
+        end_date = st.sidebar.date_input('Final date', max_date, min_value=min_date, max_value=max_date)
+        if start_date > end_date:
+            st.sidebar.error('Error: Final date must be after initial date.')
+            return
 
-# Convert the "scrap_date" column to a categorical data type and sort it in ascending order
-date_order = sorted(data["scrap_date"].unique())
-date_dtype = CategoricalDtype(categories=date_order, ordered=True)
-data["scrap_date"] = data["scrap_date"].astype(date_dtype)
+        filtered_df = filter_data(df, start_date, end_date)
+        
+        st.sidebar.header('Select a column')
+        column = st.sidebar.selectbox('Choose a column', df.columns)
 
-# Sidebar controls
-initial_date = st.sidebar.selectbox("Select initial date", date_order)
-final_date = st.sidebar.selectbox("Select final date", date_order)
-analysis_column = st.sidebar.selectbox("Select column to analyze", analysis_columns)
+        st.header(f'Top 10 properties with increased {column} values')
+        results = calculate_changes(filtered_df, column)
+        top_10_winners = results.nlargest(10, 'abs_change')
+        st.dataframe(top_10_winners)
 
-# Filter the data based on the selected dates
-filtered_data = data[(data["scrap_date"] == initial_date) | (data["scrap_date"] == final_date)]
+        st.header(f'Top 10 properties with decreased {column} values')
+        top_10_losers = results.nsmallest(10, 'abs_change')
+        st.dataframe(top_10_losers)
 
-# Calculate the initial and final values for each property
-property_data = filtered_data.pivot_table(values=analysis_column, index="property", columns="scrap_date")
-property_data["Absolute Change"] = property_data[final_date] - property_data[initial_date]
-property_data["Relative Change"] = property_data.apply(lambda row: calculate_relative_change(row[initial_date], row[final_date]), axis=1)
-
-# Sort the properties by their relative change
-sorted_data = property_data.sort_values("Relative Change", ascending=False)
-
-# Display the top 10 winning properties
-st.subheader("Top 10 winning properties")
-winning_properties = sorted_data.head(10)[output_columns]
-winning_properties.index.name = None
-st.dataframe(winning_properties.style.format({'Relative Change': "{:.2%}"}))
-
-# Display the top 10 losing properties
-st.subheader("Top 10 losing properties")
-losing_properties = sorted_data.tail(10)[output_columns]
-losing_properties.index.name = None
-st.dataframe(losing_properties.style.format({'Relative Change': "{:.2%}"}))
-
-# Display the full table
-st.subheader("Full table")
-full_table = property_data[output_columns].reindex(property_order)
-full_table.index.name = None
-st.dataframe(full_table.style.format({'Relative Change': "{:.2%}"}))
+if __name__ == '__main__':
+    main()
