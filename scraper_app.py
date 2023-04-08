@@ -5,14 +5,6 @@ from pandas.api.types import CategoricalDtype
 # Define a custom sorting order for the "property" column
 property_order = ['Property A', 'Property B', 'Property C', 'Property D', 'Property E']
 
-# Load the CSV file
-data = pd.read_csv("data.csv")
-
-# Convert the "scrap_date" column to a categorical data type and sort it in ascending order
-date_order = sorted(data["scrap_date"].unique())
-date_dtype = CategoricalDtype(categories=date_order, ordered=True)
-data["scrap_date"] = data["scrap_date"].astype(date_dtype)
-
 # Define the columns that can be selected for analysis
 analysis_columns = ['download_size', 'requests', 'avg_response_time', 'response_ok', 'response_301', 'response_302', 'response_404', 'response_server_error', 'clicks', 'impressions', 'avg_ctr', 'avg_position', 'purpose_discovery', 'purpose_refresh', 'mobile_good', 'mobile_improve', 'mobile_poor', 'desktop_good', 'desktop_improve', 'desktop_poor']
 
@@ -28,6 +20,19 @@ def calculate_relative_change(initial_value, final_value):
 
 # Define the Streamlit app
 st.title("Property Analysis")
+
+# File upload
+file = st.file_uploader("Upload a CSV file", type=["csv"])
+if file is None:
+    st.stop()
+
+# Load the CSV file
+data = pd.read_csv(file)
+
+# Convert the "scrap_date" column to a categorical data type and sort it in ascending order
+date_order = sorted(data["scrap_date"].unique())
+date_dtype = CategoricalDtype(categories=date_order, ordered=True)
+data["scrap_date"] = data["scrap_date"].astype(date_dtype)
 
 # Sidebar controls
 initial_date = st.sidebar.selectbox("Select initial date", date_order)
