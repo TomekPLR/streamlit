@@ -25,6 +25,13 @@ def calculate_changes(df, column):
     results = results.reset_index()
     return results
 
+def filter_properties(df, property_filter, selected_property):
+    if property_filter:
+        df = df[df['property'].str.contains(property_filter)]
+    if selected_property:
+        df = df[df['property'] == selected_property]
+    return df
+
 def main():
     st.title('CSV Analysis Tool')
 
@@ -51,13 +58,21 @@ def main():
             st.sidebar.error(str(e))
             return
 
-        st.header(f'Top 10 properties with increased {column} values')
-        top_10_winners = results.nlargest(10, 'abs_change')
-        st.dataframe(top_10_winners)
+        st.sidebar.header('Property filter')
+        property_filter = st.sidebar.text_input('Property contains', '')
+        selected_property = st.sidebar.selectbox('Select a property', [''] + list(df['property'].unique()))
+        results = filter_properties(results, property_filter, selected_property)
 
-        st.header(f'Top 10 properties with decreased {column} values')
-        top_10_losers = results.nsmallest(10, 'abs_change')
-        st.dataframe(top_10_losers)
+        st.sidebar.header('Report settings')
+        num_properties = st.sidebar.number_input('Number of reported properties', min_value=1, value=10, step=1)
+
+        st.header(f'Top {num_properties} properties with increased {column} values')
+        top_winners = results.nlargest(num_properties, 'abs_change')
+        st.dataframe(top_winners)
+
+        st.header(f'Top {num_properties} properties with decreased {column} values')
+        top_losers = results.nsmallest(num_properties, 'abs_change')
+        st.dataframe(top_losers)
 
 if __name__ == '__main__':
     main()
