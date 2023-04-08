@@ -22,10 +22,10 @@ def display_correlation_matrix(df):
     st.pyplot(f)
 
 def plot_column(df, column):
-    plt.figure(figsize=(12, 6))
-    sns.lineplot(data=df, x='scrap_date', y=column)
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.lineplot(data=df, x='scrap_date', y=column, ax=ax)
     plt.title(f'Trend of {column} over time')
-    st.pyplot()
+    st.pyplot(fig)
 
 def main():
     st.title('CSV Analysis Tool')
@@ -42,8 +42,14 @@ def main():
         display_correlation_matrix(property_df)
 
         st.header(f'Trends for {selected_property}')
-        for col in property_df.columns:
-            if np.issubdtype(property_df[col].dtype, np.number) and col != 'scrap_date':
+
+        numerical_columns = [col for col in property_df.columns if np.issubdtype(property_df[col].dtype, np.number) and col != 'scrap_date']
+        chart_selection = st.sidebar.selectbox('Select a chart', [''] + numerical_columns)
+
+        if chart_selection:
+            plot_column(property_df, chart_selection)
+        else:
+            for col in numerical_columns:
                 plot_column(property_df, col)
 
 if __name__ == '__main__':
