@@ -13,33 +13,41 @@ def filter_by_property(df, selected_property):
     return df[df['property'] == selected_property]
 
 def display_correlation_matrix(df):
+    sns.set(style="white")
     corr = df.corr()
     mask = np.triu(np.ones_like(corr, dtype=bool))
     f, ax = plt.subplots(figsize=(11, 9))
     cmap = sns.diverging_palette(230, 20, as_cmap=True)
     sns.heatmap(corr, mask=mask, cmap=cmap, vmax=1, vmin=-1, center=0,
                 square=True, linewidths=.5, cbar_kws={"shrink": .5}, annot=True, fmt=".2f")
+    ax.set_title('Correlation Matrix', fontsize=16, fontweight='bold')
     st.pyplot(f)
 
 def plot_column(df, column):
+    sns.set(style="darkgrid")
     fig, ax = plt.subplots(figsize=(12, 6))
-    sns.lineplot(data=df, x='scrap_date', y=column, ax=ax)
-    plt.title(f'Trend of {column} over time')
+    sns.lineplot(data=df, x='scrap_date', y=column, ax=ax, palette='husl')
+    ax.set_title(f'Trend of {column} over time', fontsize=16, fontweight='bold')
+    plt.xticks(rotation=45)
     st.pyplot(fig)
 
 def plot_compare_columns(df, col1, col2):
+    sns.set(style="darkgrid")
     fig, ax1 = plt.subplots(figsize=(12, 6))
     ax1.plot(df['scrap_date'], df[col1], label=col1, color='blue')
-    ax1.set_ylabel(col1, color='blue')
+    ax1.set_ylabel(col1, color='blue', fontsize=14)
     ax1.tick_params(axis='y', labelcolor='blue')
+    ax1.legend(loc='upper left')
 
     ax2 = ax1.twinx()
     ax2.plot(df['scrap_date'], df[col2], label=col2, color='red')
-    ax2.set_ylabel(col2, color='red')
+    ax2.set_ylabel(col2, color='red', fontsize=14)
     ax2.tick_params(axis='y', labelcolor='red')
+    ax2.legend(loc='upper right')
 
     fig.tight_layout()
-    plt.title(f'Comparison of {col1} and {col2} over time')
+    plt.title(f'Comparison of {col1} and {col2} over time', fontsize=16, fontweight='bold')
+    plt.xticks(rotation=45)
     st.pyplot(fig)
 
 def main():
@@ -62,7 +70,7 @@ def main():
         chart_selection = st.sidebar.selectbox('Select a chart', [''] + numerical_columns)
 
         st.sidebar.header('Compare two variables')
-        col1 = st.sidebar.selectbox('Select first variable', [''] + numerical_columns)
+                col1 = st.sidebar.selectbox('Select first variable', [''] + numerical_columns)
         col2 = st.sidebar.selectbox('Select second variable', [''] + numerical_columns)
 
         if chart_selection:
@@ -77,3 +85,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
