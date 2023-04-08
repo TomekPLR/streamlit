@@ -9,8 +9,11 @@ property_order = ['Property A', 'Property B', 'Property C', 'Property D', 'Prope
 analysis_columns = ['download_size', 'requests', 'avg_response_time', 'response_ok', 'response_301', 'response_302', 'response_404', 'response_server_error', 'clicks', 'impressions', 'avg_ctr', 'avg_position', 'purpose_discovery', 'purpose_refresh', 'mobile_good', 'mobile_improve', 'mobile_poor', 'desktop_good', 'desktop_improve', 'desktop_poor']
 
 # Define the column names to use for the output table
-output_columns = list(property_data.columns) + ['Absolute Change', 'Relative Change']
-
+if not property_data.empty:
+    output_columns = list(property_data.columns) + ['Absolute Change', 'Relative Change']
+else:
+    output_columns = []
+    
 # Define a function to calculate the relative change
 def calculate_relative_change(initial_value, final_value):
     if initial_value == 0:
