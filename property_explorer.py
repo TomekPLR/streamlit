@@ -70,7 +70,7 @@ def main():
         chart_selection = st.sidebar.selectbox('Select a chart', [''] + numerical_columns)
 
         st.sidebar.header('Compare two variables')
-                col1 = st.sidebar.selectbox('Select first variable', [''] + numerical_columns)
+        col1 = st.sidebar.selectbox('Select first variable', [''] + numerical_columns)
         col2 = st.sidebar.selectbox('Select second variable', [''] + numerical_columns)
 
         if chart_selection:
