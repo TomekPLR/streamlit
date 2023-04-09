@@ -14,11 +14,13 @@ def get_weekly_data(df, column):
     df['week'] = df['scrap_date'].dt.isocalendar().week
     return df.groupby(['property', 'week'])[column].sum().reset_index()
 
-def find_biggest_movers(weekly_data, num_properties, ascending=True):
-    weekly_data['week_diff'] = weekly_data.groupby('property')[column].diff()
-    weekly_data['relative_diff'] = weekly_data.groupby('property')[column].pct_change() * 100
-    last_week_data = weekly_data.dropna().sort_values(by='week_diff', ascending=ascending).head(num_properties)
-    return last_week_data[['property', 'week', column, 'week_diff', 'relative_diff']]
+def find_biggest_movers(df, num_properties, ascending=True):
+    df['week'] = df['scrap_date'].dt.to_period('W')
+    weekly_data = df.groupby(['property', 'week']).last().reset_index()
+    weekly_data['week_diff'] = weekly_data.groupby('property')[column].diff().fillna(0)
+    weekly_data = weekly_data.sort_values(by='week_diff', ascending=ascending)
+    return weekly_data.head(num_properties)
+
 
 def main():
     st.title('Biggest Movers in Selected Metric')
