@@ -10,18 +10,19 @@ def read_csv(uploaded_file):
 def filter_by_date(df, start_date, end_date):
     return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
 
-def get_weekly_clicks(df):
+def get_weekly_data(df, column):
     df['week'] = pd.to_datetime(df['scrap_date']).dt.isocalendar().week
-    weekly_clicks = df.groupby(['property', 'week'])['clicks'].sum().reset_index()
-    return weekly_clicks
+    weekly_data = df.groupby(['property', 'week'])[column].sum().reset_index()
+    return weekly_data
 
-def find_biggest_losers(weekly_clicks):
-    weekly_clicks['week_diff'] = weekly_clicks.groupby('property')['clicks'].diff()
-    losers = weekly_clicks.sort_values('week_diff').head(10)
-    return losers
+def find_biggest_movers(weekly_data, num_properties, ascending):
+    weekly_data['week_diff'] = weekly_data.groupby('property')[column].diff()
+    weekly_data['rel_diff'] = (weekly_data['week_diff'] / (weekly_data[column] - weekly_data['week_diff'])) * 100
+    movers = weekly_data.sort_values('week_diff', ascending=ascending).head(num_properties)
+    return movers
 
 def main():
-    st.title('Biggest Losers in Clicks')
+    st.title('Biggest Movers in Selected Metric')
 
     uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
     if uploaded_file is not None:
@@ -47,12 +48,25 @@ def main():
             start_date = st.sidebar.date_input("Start date", value=today - datetime.timedelta(weeks=1))
             end_date = st.sidebar.date_input("End date", value=today)
 
-        filtered_df = filter_by_date(df, start_date, end_date)
-        weekly_clicks = get_weekly_clicks(filtered_df)
-        biggest_losers = find_biggest_losers(weekly_clicks)
+        num_properties = st.sidebar.slider('Number of properties to show', min_value=1, max_value=100, value=10, step=1)
 
-        st.header('Biggest Losers in Clicks per Week')
+        column = st.sidebar.selectbox('Select a column to analyze', df.columns)
+
+        if df[column].dtype not in ('int64', 'float64'):
+            st.error(f"Selected column '{column}' is not numeric. Please choose a numeric column.")
+            return
+
+        filtered_df = filter_by_date(df, start_date, end_date)
+        weekly_data = get_weekly_data(filtered_df, column)
+
+        biggest_losers = find_biggest_movers(weekly_data, num_properties, ascending=True)
+        biggest_winners = find_biggest_movers(weekly_data, num_properties, ascending=False)
+
+        st.header(f'Biggest Losers in {column} per Week (Top {num_properties})')
         st.write(biggest_losers)
+
+        st.header(f'Biggest Winners in {column} per Week (Top {num_properties})')
+        st.write(biggest_winners)
 
 if __name__ == '__main__':
     main()
