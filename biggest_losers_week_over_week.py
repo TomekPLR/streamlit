@@ -1,25 +1,22 @@
-import streamlit as st
-import pandas as pd
 import datetime
+import pandas as pd
+import streamlit as st
 
 def read_csv(uploaded_file):
-    df = pd.read_csv(uploaded_file)
-    df['scrap_date'] = pd.to_datetime(df['scrap_date']).dt.date
-    return df
+    return pd.read_csv(uploaded_file, parse_dates=['scrap_date'])
 
 def filter_by_date(df, start_date, end_date):
     return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
 
 def get_weekly_data(df, column):
-    df['week'] = pd.to_datetime(df['scrap_date']).dt.isocalendar().week
-    weekly_data = df.groupby(['property', 'week'])[column].sum().reset_index()
-    return weekly_data
+    df['week'] = df['scrap_date'].dt.isocalendar().week
+    return df.groupby(['property', 'week'])[column].sum().reset_index()
 
-def find_biggest_movers(weekly_data, num_properties, ascending):
+def find_biggest_movers(weekly_data, num_properties, ascending=True):
     weekly_data['week_diff'] = weekly_data.groupby('property')[column].diff()
-    weekly_data['rel_diff'] = (weekly_data['week_diff'] / (weekly_data[column] - weekly_data['week_diff'])) * 100
-    movers = weekly_data.sort_values('week_diff', ascending=ascending).head(num_properties)
-    return movers
+    weekly_data['relative_diff'] = weekly_data.groupby('property')[column].pct_change() * 100
+    last_week_data = weekly_data.dropna().sort_values(by='week_diff', ascending=ascending).head(num_properties)
+    return last_week_data[['property', 'week', column, 'week_diff', 'relative_diff']]
 
 def main():
     st.title('Biggest Movers in Selected Metric')
@@ -58,6 +55,10 @@ def main():
 
         filtered_df = filter_by_date(df, start_date, end_date)
         weekly_data = get_weekly_data(filtered_df, column)
+
+        if weekly_data.empty:
+            st.error("No data available for the selected date range and column. Please choose a different date range or column.")
+            return
 
         biggest_losers = find_biggest_movers(weekly_data, num_properties, ascending=True)
         biggest_winners = find_biggest_movers(weekly_data, num_properties, ascending=False)
