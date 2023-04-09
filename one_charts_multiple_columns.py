@@ -1,12 +1,13 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-from sklearn.preprocessing import MinMaxScaler
 
 def normalize_columns(df, columns):
-    scaler = MinMaxScaler()
     normalized_df = df.copy()
-    normalized_df[columns] = scaler.fit_transform(df[columns])
+    for column in columns:
+        min_value = df[column].min()
+        max_value = df[column].max()
+        normalized_df[column] = (df[column] - min_value) / (max_value - min_value)
     return normalized_df
 
 def main():
