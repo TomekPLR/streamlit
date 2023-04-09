@@ -28,9 +28,15 @@ def main():
         st.subheader("Select columns to visualize")
         column_options = st.multiselect("Choose columns", df.columns, default=['clicks', 'impressions'])
 
+        st.subheader("Select date range")
+        min_date = df['scrap_date'].min()
+        max_date = df['scrap_date'].max()
+        start_date = st.date_input("Start date", min_date, min_value=min_date, max_value=max_date)
+        end_date = st.date_input("End date", max_date, min_value=min_date, max_value=max_date)
+
         if len(column_options) > 0:
             st.subheader("Chart")
-            filtered_df = df[df['property'] == selected_property]
+            filtered_df = df[(df['property'] == selected_property) & (df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
             normalized_df = normalize_columns(filtered_df, column_options)
             chart_data = normalized_df[['scrap_date'] + column_options].melt('scrap_date', var_name='variable', value_name='value')
             chart = alt.Chart(chart_data).mark_line().encode(
