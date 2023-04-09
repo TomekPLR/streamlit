@@ -6,6 +6,8 @@ def read_csv(uploaded_file):
     return pd.read_csv(uploaded_file, parse_dates=['scrap_date'])
 
 def filter_by_date(df, start_date, end_date):
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
     return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
 
 def get_weekly_data(df, column):
