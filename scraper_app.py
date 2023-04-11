@@ -6,30 +6,49 @@ from datetime import datetime
 
 def read_csv(uploaded_files):
     dfs = []
-    for uploaded_file in uploaded_files:
-        df = pd.read_csv(uploaded_file)
+    for file in uploaded_files:
+        df = pd.read_csv(file)
         df['scrap_date'] = pd.to_datetime(df['scrap_date']).dt.date
         dfs.append(df)
-    return pd.concat(dfs, ignore_index=True)
+    combined_df = pd.concat(dfs, axis=0)
+    combined_df.reset_index(drop=True, inplace=True)
+    return combined_df
 
 def filter_data(df, start_date, end_date):
     return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
 
-def normalize_0_to_1(series):
-    min_value = series.min()
-    max_value = series.max()
-    return (series - min_value) / (max_value - min_value)
+def calculate_changes(df, column):
+    if not np.issubdtype(df[column].dtype, np.number):
+        raise ValueError("Selected column must be of numeric data type")
 
-# ... [the rest of the functions from previous response] ...
+    initial_values = df.groupby('property')[column].first()
+    final_values = df.groupby('property')[column].last()
+    abs_changes = final_values - initial_values
+    rel_changes = (final_values - initial_values) / initial_values * 100
+
+    results = pd.concat([initial_values, final_values, abs_changes, rel_changes], axis=1)
+    results.columns = ['initial_value', 'final_value', 'abs_change', 'rel_change']
+    results = results.reset_index()
+    return results
+
+def filter_properties(df, property_filter, selected_property):
+    if property_filter:
+        df = df[df['property'].str.contains(property_filter)]
+    if selected_property:
+        df = df[df['property'] == selected_property]
+    return df
+
+def normalize_0_to_1(series):
+    return (series - series.min()) / (series.max() - series.min())
 
 def main():
     st.title('CSV Analysis Tool')
 
-    uploaded_files = st.file_uploader("Upload CSV files", type="csv", accept_multiple_files=True)
+    uploaded_files = st.file_uploader("Upload CSV file(s)", type="csv", accept_multiple_files=True)
     if uploaded_files:
         df = read_csv(uploaded_files)
 
-        # Filter data
+        st.sidebar.header('Filter data')
         min_date, max_date = df['scrap_date'].min(), df['scrap_date'].max()
         start_date = st.sidebar.date_input('Initial date', min_date, min_value=min_date, max_value=max_date)
         end_date = st.sidebar.date_input('Final date', max_date, min_value=min_date, max_value=max_date)
@@ -39,58 +58,59 @@ def main():
 
         filtered_df = filter_data(df, start_date, end_date)
 
-        # Select a column
+        st.sidebar.header('Select a column')
         column = st.sidebar.selectbox('Choose a column', df.columns)
 
-        # Calculate changes
-        results = calculate_changes(filtered_df, column)
+        try:
+            results = calculate_changes(filtered_df, column)
+        except ValueError as e:
+            st.sidebar.error(str(e))
+            return
 
-        # Property filter
+        st.sidebar.header('Property filter')
         property_filter = st.sidebar.text_input('Property contains', '')
         selected_property = st.sidebar.selectbox('Select a property', [''] + list(df['property'].unique()))
         results = filter_properties(results, property_filter, selected_property)
 
-        # Report settings
+        st.sidebar.header('Report settings')
         num_properties = st.sidebar.number_input('Number of reported properties', min_value=1, value=10, step=1)
 
-        # Display top winners and losers
+        st.header(f'Top {num_properties} properties with increased {column} values')
         top_winners = results.nlargest(num_properties, 'abs_change')
-        top_losers = results.nsmallest(num_properties, 'abs_change')
         st.dataframe(top_winners)
+
+        st.header(f'Top {num_properties} properties with decreased {column} values')
+        top_losers = results.nsmallest(num_properties, 'abs_change')
         st.dataframe(top_losers)
 
-        # Property-specific chart
-        property_to_analyze = st.selectbox("Select property to analyze", df['property'].unique())
-        if property_to_analyze:
-            other_column = st.selectbox("Select another column to compare", list(df.columns[df.columns != 'clicks']))
-            normalize = st.checkbox("Normalize data")
-            property_df = df[df['property'] == property_to_analyze].sort_values(by='scrap_date')
+        st.header("Property-specific chart")
+        specific_property = st.selectbox("Select a property", [""] + list(df["property"].unique()))
+        if specific_property:
+            property_data = df[df["property"] == specific_property]
 
-            fig, ax = plt.subplots()
-            if 'clicks' in property_df.columns:
-                if normalize:
-                    property_df['clicks_normalized'] = normalize_0_to_1(property_df['clicks'])
-                    property_df[other_column + '_normalized'] = normalize_0_to_1(property_df[other_column])
+            if "clicks" in property_data.columns:
+                st.subheader("Clicks vs. another column")
+                col1, col2 = st.beta_columns(2)
+                selected_column = col1.selectbox("Select a column", property_data.columns)
+                normalize = col2.checkbox("Normalize data")
 
-                    ax.plot(property_df['scrap_date'], property_df['clicks_normalized'], label='Clicks (normalized)')
-                    ax.plot(property_df['scrap_date'], property_df[other_column + '_normalized'], label=other_column + ' (normalized)')
+                if selected_column != "clicks" and selected_column != "property" and selected_column != "scrap_date":
+                    fig, ax = plt.subplots()
 
-                else:
-                                        ax.plot(property_df['scrap_date'], property_df['clicks'], label='Clicks')
-                    ax.plot(property_df['scrap_date'], property_df[other_column], label=other_column)
+                    if normalize:
+                        ax.plot(property_data["scrap_date"], normalize_0_to_1(property_data["clicks"]), label="clicks")
+                        ax.plot(property_data["scrap_date"], normalize_0_to_1(property_data[selected_column]), label=selected_column)
+                    else:
+                        ax.plot(property_data["scrap_date"], property_data["clicks"], label="clicks")
+                        ax.plot(property_data["scrap_date"], property_data[selected_column], label=selected_column)
 
-            else:
-                if normalize:
-                    property_df[other_column + '_normalized'] = normalize_0_to_1(property_df[other_column])
-                    ax.plot(property_df['scrap_date'], property_df[other_column + '_normalized'], label=other_column + ' (normalized)')
-
-                else:
-                    ax.plot(property_df['scrap_date'], property_df[other_column], label=other_column)
-
-            ax.set(xlabel='Date', ylabel='Values', title=f'{property_to_analyze} - Clicks and {other_column}')
-            ax.legend()
-            st.pyplot(fig)
+                    ax.set_xlabel("Date")
+                    ax.set_ylabel("Value")
+                    ax.legend()
+                    ax.set_title(f"Clicks vs. {selected_column} for {specific_property}")
+                    st.pyplot(fig)
 
 if __name__ == '__main__':
     main()
 
+        
