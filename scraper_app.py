@@ -11,7 +11,7 @@ def read_csv(uploaded_file):
 def filter_data(df, start_date, end_date):
     return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
 
-def calculate_changes(df, column):
+def calculate_changes(df, column, clicks_column='clicks'):
     if not np.issubdtype(df[column].dtype, np.number):
         raise ValueError("Selected column must be of numeric data type")
 
@@ -20,10 +20,15 @@ def calculate_changes(df, column):
     abs_changes = final_values - initial_values
     rel_changes = (final_values - initial_values) / initial_values * 100
 
-    results = pd.concat([initial_values, final_values, abs_changes, rel_changes], axis=1)
-    results.columns = ['initial_value', 'final_value', 'abs_change', 'rel_change']
+    initial_clicks = df.groupby('property')[clicks_column].first()
+    final_clicks = df.groupby('property')[clicks_column].last()
+    click_changes = (final_clicks - initial_clicks) / initial_clicks * 100
+
+    results = pd.concat([initial_values, final_values, abs_changes, rel_changes, click_changes], axis=1)
+    results.columns = ['initial_value', 'final_value', 'abs_change', 'rel_change', 'clicks_change']
     results = results.reset_index()
     return results
+
 
 def filter_properties(df, property_filter, selected_property):
     if property_filter:
