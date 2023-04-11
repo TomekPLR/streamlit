@@ -3,10 +3,16 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-def read_csv(uploaded_file):
-    df = pd.read_csv(uploaded_file)
-    df['scrap_date'] = pd.to_datetime(df['scrap_date']).dt.date
-    return df
+def read_csv(uploaded_files):
+    dfs = []
+
+    for uploaded_file in uploaded_files:
+        df = pd.read_csv(uploaded_file)
+        df['scrap_date'] = pd.to_datetime(df['scrap_date']).dt.date
+        dfs.append(df)
+
+    combined_df = pd.concat(dfs, axis=0, ignore_index=True)
+    return combined_df
 
 def filter_data(df, start_date, end_date):
     return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
@@ -47,8 +53,8 @@ def filter_properties(df, property_filter, selected_property):
 def main():
     st.title('CSV Analysis Tool')
 
-    uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
-    if uploaded_file is not None:
+    uploaded_files = st.file_uploader("Upload CSV files", type="csv", accept_multiple_files=True)
+    if uploaded_files is not None:
         df = read_csv(uploaded_file)
 
         st.sidebar.header('Filter data')
