@@ -20,14 +20,21 @@ def calculate_changes(df, column, clicks_column='clicks'):
     abs_changes = final_values - initial_values
     rel_changes = (final_values - initial_values) / initial_values * 100
 
-    initial_clicks = df.groupby('property')[clicks_column].first()
-    final_clicks = df.groupby('property')[clicks_column].last()
-    click_changes = (final_clicks - initial_clicks) / initial_clicks * 100
+    results = pd.concat([initial_values, final_values, abs_changes, rel_changes], axis=1)
+    results.columns = ['initial_value', 'final_value', 'abs_change', 'rel_change']
 
-    results = pd.concat([initial_values, final_values, abs_changes, rel_changes, click_changes], axis=1)
-    results.columns = ['initial_value', 'final_value', 'abs_change', 'rel_change', 'clicks_change']
+    if clicks_column in df.columns:
+        initial_clicks = df.groupby('property')[clicks_column].first()
+        final_clicks = df.groupby('property')[clicks_column].last()
+        click_changes = final_clicks - initial_clicks
+        rel_click_changes = (final_clicks - initial_clicks) / initial_clicks * 100
+
+        results = pd.concat([results, click_changes, rel_click_changes], axis=1)
+        results.columns = ['initial_value', 'final_value', 'abs_change', 'rel_change', 'clicks_change', 'rel_clicks_change']
+
     results = results.reset_index()
     return results
+
 
 
 def filter_properties(df, property_filter, selected_property):
