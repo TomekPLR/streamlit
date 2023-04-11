@@ -54,9 +54,8 @@ def main():
     st.title('CSV Analysis Tool')
 
     uploaded_files = st.file_uploader("Upload CSV files", type="csv", accept_multiple_files=True)
-    if uploaded_files is not None:
-        df = read_csv(uploaded_file)
-
+    if uploaded_files:
+        df = read_csv(uploaded_files)
         st.sidebar.header('Filter data')
         min_date, max_date = df['scrap_date'].min(), df['scrap_date'].max()
         start_date = st.sidebar.date_input('Initial date', min_date, min_value=min_date, max_value=max_date)
