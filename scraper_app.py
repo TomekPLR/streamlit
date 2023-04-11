@@ -79,7 +79,7 @@ def main():
         st.dataframe(top_losers)
 
         st.header("Property Details")
-        specific_property = st.selectbox("Select a property", [""] + list(df["property"].unique()))
+        specific_property = st.selectbox("Select a property", [""] + list(df["property"].unique()), key="property_selectbox")
 
         if specific_property:
             property_df = df[df["property"] == specific_property]
