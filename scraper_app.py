@@ -80,7 +80,7 @@ def main():
             chart_columns = st.multiselect("Select columns to plot", options=df.columns, default=["clicks"])
 
             min_chart_date, max_chart_date = get_unique_dates(property_data)
-                        chart_start_date = st.date_input('Chart start date', min_chart_date, min_value=min_chart_date, max_value=max_chart_date)
+            chart_start_date = st.date_input('Chart start date', min_chart_date, min_value=min_chart_date, max_value=max_chart_date)
             chart_end_date = st.date_input('Chart end date', max_chart_date, min_value=min_chart_date, max_value=max_chart_date)
             if chart_start_date > chart_end_date:
                 st.error('Error: Chart end date must be after chart start date.')
