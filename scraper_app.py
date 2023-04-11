@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from datetime import datetime
+import altair as alt
 
 def read_csv(uploaded_files):
     dfs = []
@@ -10,9 +10,7 @@ def read_csv(uploaded_files):
         df = pd.read_csv(file)
         df['scrap_date'] = pd.to_datetime(df['scrap_date']).dt.date
         dfs.append(df)
-    combined_df = pd.concat(dfs, axis=0)
-    combined_df.reset_index(drop=True, inplace=True)
-    return combined_df
+    return pd.concat(dfs, axis=0)
 
 def filter_data(df, start_date, end_date):
     return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
@@ -38,13 +36,10 @@ def filter_properties(df, property_filter, selected_property):
         df = df[df['property'] == selected_property]
     return df
 
-def normalize_0_to_1(series):
-    return (series - series.min()) / (series.max() - series.min())
-
 def main():
     st.title('CSV Analysis Tool')
 
-    uploaded_files = st.file_uploader("Upload CSV file(s)", type="csv", accept_multiple_files=True)
+    uploaded_files = st.file_uploader("Upload CSV files", type="csv", accept_multiple_files=True)
     if uploaded_files:
         df = read_csv(uploaded_files)
 
@@ -83,34 +78,46 @@ def main():
         top_losers = results.nsmallest(num_properties, 'abs_change')
         st.dataframe(top_losers)
 
-        st.header("Property-specific chart")
+        st.header("Property Details")
         specific_property = st.selectbox("Select a property", [""] + list(df["property"].unique()))
+
         if specific_property:
-            property_data = df[df["property"] == specific_property]
+            property_df = df[df["property"] == specific_property]
 
-            if "clicks" in property_data.columns:
-                st.subheader("Clicks vs. another column")
-                col1, col2 = st.beta_columns(2)
-                selected_column = col1.selectbox("Select a column", property_data.columns)
-                normalize = col2.checkbox("Normalize data")
+            st.sidebar.header("Property chart settings")
+            normalize = st.sidebar.checkbox("Normalize data (0-1)")
 
-                if selected_column != "clicks" and selected_column != "property" and selected_column != "scrap_date":
-                    fig, ax = plt.subplots()
+            chart_start_date = st.sidebar.date_input("Chart initial date", property_df["scrap_date"].min(),
+                                                     min_value=property_df["scrap_date"].min(),
+                                                     max_value=property_df["scrap_date"].max())
+            chart_end_date = st.sidebar.date_input("Chart final date", property_df["scrap_date"].max(),
+                                                   min_value=property_df["scrap_date"].min(),
+                                                   max_value=property_df["scrap_date"].max())
 
-                    if normalize:
-                        ax.plot(property_data["scrap_date"], normalize_0_to_1(property_data["clicks"]), label="clicks")
-                        ax.plot(property_data["scrap_date"], normalize_0_to_1(property_data[selected_column]), label=selected_column)
-                    else:
-                        ax.plot(property_data["scrap_date"], property_data["clicks"], label="clicks")
-                        ax.plot(property_data["scrap_date"], property_data[selected_column], label=selected_column)
+            if chart_start_date > chart_end_date:
+                st.sidebar.error("Error: Chart final date must be after initial date.")
+                return
 
-                    ax.set_xlabel("Date")
-                    ax.set_ylabel("Value")
-                    ax.legend()
-                    ax.set_title(f"Clicks vs. {selected_column} for {specific_property}")
-                    st.pyplot(fig)
+            property_df = filter_data(property_df, chart_start_date, chart_end_date)
+
+            if normalize:
+                property_df["clicks"] = (property_df["clicks"] - property_df["clicks"].min()) / (
+                            property_df["clicks"].max() - property_df["clicks"].min())
+                property_df["response_ok"] = (property_df["response_ok"] - property_df["response_ok"].min()) / (
+                            property_df["response_ok"].max() - property_df["response_ok"].min())
+
+            line_chart = alt.Chart(property_df).mark_line().encode(
+                x="scrap_date:T",
+                y=alt.Y("clicks:Q", title="Clicks (Normalized)" if normalize else "Clicks"),
+                color=alt.value("blue"),
+            ) + alt.Chart(property_df).mark_line().encode(
+                x="scrap_date:T",
+                y=alt.Y("response_ok:Q", title="Response OK (Normalized)" if normalize else "Response OK"),
+                color=alt.value("red"),
+            )
+
+            st.altair_chart(line_chart, use_container_width=True)
 
 if __name__ == '__main__':
     main()
 
-        
