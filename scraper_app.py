@@ -79,7 +79,7 @@ def main():
 
         # Chart section
         st.header("Property-specific chart")
-                specific_property = st.selectbox("Select a property", [""] + list(df["property"].unique()))
+        specific_property = st.selectbox("Select a property", [""] + list(df["property"].unique()))
         if specific_property:
             property_data = df[df["property"] == specific_property]
 
