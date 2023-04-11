@@ -78,7 +78,7 @@ def main():
         st.header('Property-specific chart')
         property_to_plot = st.selectbox('Select a property to plot', [''] + list(df['property'].unique()))
         normalize = st.checkbox('Normalize data')
-         start_date_chart = st.date_input('Initial date for chart', min_date, min_value=min_date, max_value=max_date)
+        start_date_chart = st.date_input('Initial date for chart', min_date, min_value=min_date, max_value=max_date)
         end_date_chart = st.date_input('Final date for chart', max_date, min_value=min_date, max_value=max_date)
 
         if property_to_plot:
