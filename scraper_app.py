@@ -2,15 +2,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime
-import altair as alt
 
-def read_csv(uploaded_files):
-    dfs = []
-    for file in uploaded_files:
-        df = pd.read_csv(file)
-        df['scrap_date'] = pd.to_datetime(df['scrap_date']).dt.date
-        dfs.append(df)
-    return pd.concat(dfs, axis=0)
+def read_csv(uploaded_file):
+    df = pd.read_csv(uploaded_file)
+    df['scrap_date'] = pd.to_datetime(df['scrap_date']).dt.date
+    return df
 
 def filter_data(df, start_date, end_date):
     return df[(df['scrap_date'] >= start_date) & (df['scrap_date'] <= end_date)]
@@ -29,22 +25,25 @@ def calculate_changes(df, column):
     results = results.reset_index()
     return results
 
-def filter_properties(df, property_filter, selected_property):
-    if property_filter:
-        df = df[df['property'].str.contains(property_filter)]
-    if selected_property:
-        df = df[df['property'] == selected_property]
+def join_dataframes(df_list):
+    df = pd.concat(df_list, axis=0).reset_index(drop=True)
     return df
+
+@st.cache
+def get_unique_dates(df):
+    return df['scrap_date'].min(), df['scrap_date'].max()
 
 def main():
     st.title('CSV Analysis Tool')
 
     uploaded_files = st.file_uploader("Upload CSV files", type="csv", accept_multiple_files=True)
     if uploaded_files:
-        df = read_csv(uploaded_files)
+        dfs = [read_csv(f) for f in uploaded_files]
+        df = join_dataframes(dfs)
+
+        min_date, max_date = get_unique_dates(df)
 
         st.sidebar.header('Filter data')
-        min_date, max_date = df['scrap_date'].min(), df['scrap_date'].max()
         start_date = st.sidebar.date_input('Initial date', min_date, min_value=min_date, max_value=max_date)
         end_date = st.sidebar.date_input('Final date', max_date, min_value=min_date, max_value=max_date)
         if start_date > end_date:
@@ -78,46 +77,43 @@ def main():
         top_losers = results.nsmallest(num_properties, 'abs_change')
         st.dataframe(top_losers)
 
-        st.header("Property Details")
-        specific_property = st.selectbox("Select a property", [""] + list(df["property"].unique()), key="property_selectbox")
-
+        # Chart section
+        st.header("Property-specific chart")
+                specific_property = st.selectbox("Select a property", [""] + list(df["property"].unique()))
         if specific_property:
-            property_df = df[df["property"] == specific_property]
+            property_data = df[df["property"] == specific_property]
 
-            st.sidebar.header("Property chart settings")
-            normalize = st.sidebar.checkbox("Normalize data (0-1)")
+            st.subheader(f"Chart for property: {specific_property}")
 
-            chart_start_date = st.sidebar.date_input("Chart initial date", property_df["scrap_date"].min(),
-                                                     min_value=property_df["scrap_date"].min(),
-                                                     max_value=property_df["scrap_date"].max())
-            chart_end_date = st.sidebar.date_input("Chart final date", property_df["scrap_date"].max(),
-                                                   min_value=property_df["scrap_date"].min(),
-                                                   max_value=property_df["scrap_date"].max())
+            chart_columns = st.multiselect("Select columns to plot", options=df.columns, default=["clicks"])
+
+            min_chart_date, max_chart_date = get_unique_dates(property_data)
+            chart_start_date = st.date_input("Chart start date", min_chart_date, min_value=min_chart_date, max_value=max_chart_date)
+            chart_end_date = st.date_input("Chart end date", max_chart_date, min_value=min_chart_date, max_value=max_chart_date)
 
             if chart_start_date > chart_end_date:
-                st.sidebar.error("Error: Chart final date must be after initial date.")
-                return
+                st.error("Error: Chart end date must be after chart start date.")
+            else:
+                property_chart_data = filter_data(property_data, chart_start_date, chart_end_date)
 
-            property_df = filter_data(property_df, chart_start_date, chart_end_date)
+                normalize = st.checkbox("Normalize values")
 
-            if normalize:
-                property_df["clicks"] = (property_df["clicks"] - property_df["clicks"].min()) / (
-                            property_df["clicks"].max() - property_df["clicks"].min())
-                property_df["response_ok"] = (property_df["response_ok"] - property_df["response_ok"].min()) / (
-                            property_df["response_ok"].max() - property_df["response_ok"].min())
+                if normalize:
+                    property_chart_data[chart_columns] = (property_chart_data[chart_columns] - property_chart_data[chart_columns].min()) / (property_chart_data[chart_columns].max() - property_chart_data[chart_columns].min())
 
-            line_chart = alt.Chart(property_df).mark_line().encode(
-                x="scrap_date:T",
-                y=alt.Y("clicks:Q", title="Clicks (Normalized)" if normalize else "Clicks"),
-                color=alt.value("blue"),
-            ) + alt.Chart(property_df).mark_line().encode(
-                x="scrap_date:T",
-                y=alt.Y("response_ok:Q", title="Response OK (Normalized)" if normalize else "Response OK"),
-                color=alt.value("red"),
-            )
+                chart = alt.Chart(property_chart_data).mark_line().encode(
+                    x="scrap_date:T",
+                    y=alt.Y(alt.repeat("row"), type="quantitative"),
+                    color="property:N"
+                ).properties(
+                    width=600,
+                    height=200
+                ).repeat(
+                    row=chart_columns
+                ).interactive()
 
-            st.altair_chart(line_chart, use_container_width=True)
+                st.altair_chart(chart)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 
