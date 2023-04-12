@@ -45,7 +45,7 @@ def calculate_changes(df, column, clicks_column='clicks'):
     return results
 
 def main():
-    st.title('CSV Analysis Tool')
+    st.title('GSC Scraper Analysis Tool')
 
     uploaded_files = st.file_uploader("Upload CSV file(s)", type="csv", accept_multiple_files=True)
     if uploaded_files:
