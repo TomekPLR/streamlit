@@ -4,6 +4,9 @@ import numpy as np
 import altair as alt
 from datetime import datetime
 
+st.set_page_config(page_title="GSC scraper analysis tool", page_icon=":guardsman:")
+
+
 def read_csv(uploaded_files):
     df_list = []
     for uploaded_file in uploaded_files:
