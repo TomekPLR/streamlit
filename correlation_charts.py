@@ -70,4 +70,18 @@ if uploaded_file is not None:
 
             if normalize:
                 ax.plot(property_data['scrap_date'], (property_data[variable1] - property_data[variable1].min()) / (property_data[variable1].max() - property_data[variable1].min()), label=variable1)
-                ax.plot(property_data['scrap_date'], (property_data[variable2] - property_data[variable2].min()) / (property_data[
+                ax.plot(property_data['scrap_date'], (property_data[variable2] - property_data[variable2].min()) / (property_data[variable2].max() - property_data[variable2].min()), label=variable2)
+            else:
+                ax.plot(property_data['scrap_date'], property_data[variable1], label=variable1)
+                ax.plot(property_data['scrap_date'], property_data[variable2], label=variable2)
+
+            # Set x-axis date format
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+            # Rotate date labels
+            plt.xticks(rotation=45)
+
+            ax.legend()
+            st.pyplot(fig)
+
+else:
+    st.sidebar.warning("Please upload a CSV file.")
