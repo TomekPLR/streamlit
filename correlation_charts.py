@@ -1,71 +1,72 @@
-import streamlit as st
 import pandas as pd
+import streamlit as st
 import numpy as np
-import datetime
-import seaborn as sns
 import matplotlib.pyplot as plt
+from scipy.stats import pearsonr
+from datetime import datetime, timedelta
 
-# Sidebar selectors
-st.sidebar.header("Settings")
-uploaded_file = st.sidebar.file_uploader("Upload your CSV file", type=["csv"])
+st.set_page_config(layout='wide')
+
+@st.cache
+def load_data(file):
+    return pd.read_csv(file)
+
+uploaded_file = st.sidebar.file_uploader("Choose a CSV file", type="csv")
 
 if uploaded_file is not None:
-    # Load the CSV
-    data = pd.read_csv(uploaded_file)
-
-    # Convert scrap_date column to pandas datetime format
+    data = load_data(uploaded_file)
     data['scrap_date'] = pd.to_datetime(data['scrap_date'])
 
-    now = datetime.date.today()
-    initial_date = pd.Timestamp(st.sidebar.date_input('Initial date', now - datetime.timedelta(weeks=2)))
-    final_date = pd.Timestamp(st.sidebar.date_input('Final date', now))
-    property_filter = st.sidebar.multiselect("Select properties", data['property'].unique())
+    st.sidebar.write('Date range:')
+    initial_date = st.sidebar.date_input("Initial date", datetime.now() - timedelta(weeks=2))
+    final_date = st.sidebar.date_input("Final date", datetime.now())
 
-    # Filter the data based on the selected dates
     filtered_data = data[(data['scrap_date'] >= initial_date) & (data['scrap_date'] <= final_date)]
 
-    # Filter the data based on the selected properties
-    if property_filter:
-        filtered_data = filtered_data[filtered_data['property'].isin(property_filter)]
+    variable1 = st.sidebar.selectbox('Select first variable', filtered_data.columns)
+    variable2 = st.sidebar.selectbox('Select second variable', filtered_data.columns)
 
-    # Select columns
-    variable1 = st.sidebar.selectbox("Select variable 1", filtered_data.columns)
-    variable2 = st.sidebar.selectbox("Select variable 2", filtered_data.columns)
+    unique_properties = filtered_data['property'].unique()
+    selected_properties = st.sidebar.multiselect('Select properties (optional)', unique_properties)
 
-    # Select sorting order
-    sort_order = st.sidebar.selectbox("Sort by correlation", ["Highest", "Lowest"])
+    max_results = st.sidebar.number_input('Number of results', min_value=1, max_value=len(unique_properties), value=100)
 
-    # Normalize option
-    normalize = st.sidebar.checkbox("Normalize charts (0-1)")
+    correlation_type = st.sidebar.radio('Correlation type', ('Highest', 'Lowest'))
 
-    # Calculate correlations
-    correlations = filtered_data.groupby("property").apply(lambda x: x[variable1].corr(x[variable2]))
+    normalize = st.sidebar.checkbox('Normalize charts (0-1)')
 
-    # Sort properties based on the correlation
-    if sort_order == "Highest":
-        sorted_properties = correlations.sort_values(ascending=False)
-    else:
-        sorted_properties = correlations.sort_values(ascending=True)
+    if not selected_properties:
+        selected_properties = unique_properties
 
-    # Display charts
-    st.title("Charts")
+    corr_list = []
 
-    for property in sorted_properties.index[:100]:
-        st.header(f"Property: {property}")
-        st.write(f"Correlation: {sorted_properties[property]}")
-        st.write(f"Difference in number of clicks: {filtered_data.loc[filtered_data['property'] == property, 'clicks'].diff().sum()}")
+    for property_name in selected_properties:
+        property_data = filtered_data[filtered_data['property'] == property_name]
 
-        property_data = filtered_data[filtered_data['property'] == property]
+        if len(property_data) > 1:
+            corr, _ = pearsonr(property_data[variable1], property_data[variable2])
+            corr_list.append((property_name, corr))
+
+    sorted_corr = sorted(corr_list, key=lambda x: x[1], reverse=correlation_type == 'Highest')[:max_results]
+
+    for property_name, corr in sorted_corr:
+        st.write(f"Property: {property_name}, Correlation: {corr}")
+
+        property_data = filtered_data[filtered_data['property'] == property_name]
+
         fig, ax = plt.subplots()
 
         if normalize:
-            ax.plot((property_data[variable1] - property_data[variable1].min()) / (property_data[variable1].max() - property_data[variable1].min()), label=variable1)
-            ax.plot((property_data[variable2] - property_data[variable2].min()) / (property_data[variable2].max() - property_data[variable2].min()), label=variable2)
+            ax.plot(property_data['scrap_date'], (property_data[variable1] - property_data[variable1].min()) / (property_data[variable1].max() - property_data[variable1].min()), label=variable1)
+            ax.plot(property_data['scrap_date'], (property_data[variable2] - property_data[variable2].min()) / (property_data[variable2].max() - property_data[variable2].min()), label=variable2)
         else:
-            ax.plot(property_data[variable1], label=variable1)
-            ax.plot(property_data[variable2], label=variable2)
+            ax.plot(property_data['scrap_date'], property_data[variable1], label=variable1)
+            ax.plot(property_data['scrap_date'], property_data[variable2], label=variable2)
 
         ax.legend()
-        st.pyplot(fig)
-else:
-    st.sidebar.warning("Please upload a CSV file.")
+        ax.set_title(f"{property_name} - {variable1} vs {variable2}")
+
+        if 'number_of_clicks' in property_data.columns:
+            before_clicks = property_data[property_data['scrap_date'] < initial_date]['number_of_clicks'].sum()
+            after_clicks = property_data[property_data['scrap_date'] >= initial_date]['number_of_clicks'].sum()
+            relative_difference = (after_clicks - before_clicks) / before_clicks * 100
