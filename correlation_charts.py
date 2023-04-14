@@ -20,6 +20,9 @@ if uploaded_file is not None:
     st.sidebar.write('Date range:')
     initial_date = st.sidebar.date_input("Initial date", datetime.now() - timedelta(weeks=2))
     final_date = st.sidebar.date_input("Final date", datetime.now())
+    
+    initial_date = pd.to_datetime(initial_date)
+    final_date = pd.to_datetime(final_date)
 
     filtered_data = data[(data['scrap_date'] >= initial_date) & (data['scrap_date'] <= final_date)]
 
