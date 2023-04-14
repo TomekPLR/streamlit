@@ -53,7 +53,11 @@ if uploaded_file is not None:
     for property in sorted_properties.index[:100]:
         st.header(f"Property: {property}")
         st.write(f"Correlation: {sorted_properties[property]}")
-        st.write(f"Difference in number of clicks: {filtered_data.loc[filtered_data['property'] == property, 'clicks'].diff().sum()}")
+
+        click_diff = filtered_data.loc[filtered_data['property'] == property, 'clicks'].diff().sum()
+        total_clicks = filtered_data.loc[filtered_data['property'] == property, 'clicks'].sum()
+        relative_diff = (click_diff / total_clicks) * 100
+        st.write(f"Difference in number of clicks: {click_diff} ({relative_diff:.2f}%)")
 
         property_data = filtered_data[filtered_data['property'] == property]
         fig, ax = plt.subplots()
@@ -64,6 +68,11 @@ if uploaded_file is not None:
         else:
             ax.plot(property_data['scrap_date'], property_data[variable1], label=variable1)
             ax.plot(property_data['scrap_date'], property_data[variable2], label=variable2)
+
+        # Set x-axis date format
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+        # Rotate date labels
+        plt.xticks(rotation=45)
 
         ax.legend()
         st.pyplot(fig)
