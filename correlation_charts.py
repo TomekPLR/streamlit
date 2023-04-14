@@ -58,8 +58,10 @@ for index, row in sorted_data.iterrows():
         corr, _ = pearsonr(x, y)
         correlations.append((index, corr))
 
-sorted_data["correlation"] = pd.Series(correlations, index=sorted_data.index)
-
+correlation_series = pd.Series(correlations)
+correlation_series.index = sorted_data.index
+sorted_data["correlation"] = correlation_series
+        
 for idx, row in sorted_data.iterrows():
     st.write(f"Property: {data.loc[idx, 'property']}")
     st.write(f"Correlation: {row['correlation']}")
