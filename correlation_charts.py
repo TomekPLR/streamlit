@@ -51,21 +51,21 @@ if uploaded_file is not None:
     st.title("Charts")
 
     for property in sorted_properties.index[:100]:
-        st.header(f"Property: {property}")
-        st.write(f"Correlation: {sorted_properties[property]}")
-        st.write(f"Difference in number of clicks: {filtered_data.loc[filtered_data['property'] == property, 'clicks'].diff().sum()}")
+    st.header(f"Property: {property}")
+    st.write(f"Correlation: {sorted_properties[property]}")
+    st.write(f"Difference in number of clicks: {filtered_data.loc[filtered_data['property'] == property, 'clicks'].diff().sum()}")
 
-        property_data = filtered_data[filtered_data['property'] == property]
-        fig, ax = plt.subplots()
+    property_data = filtered_data[filtered_data['property'] == property]
+    fig, ax = plt.subplots()
 
-        if normalize:
-            ax.plot((property_data[variable1] - property_data[variable1].min()) / (property_data[variable1].max() - property_data[variable1].min()), label=variable1)
-            ax.plot((property_data[variable2] - property_data[variable2].min()) / (property_data[variable2].max() - property_data[variable2].min()), label=variable2)
-        else:
-            ax.plot(property_data[variable1], label=variable1)
-            ax.plot(property_data[variable2], label=variable2)
+    if normalize:
+        ax.plot(property_data['scrap_date'], (property_data[variable1] - property_data[variable1].min()) / (property_data[variable1].max() - property_data[variable1].min()), label=variable1)
+        ax.plot(property_data['scrap_date'], (property_data[variable2] - property_data[variable2].min()) / (property_data[variable2].max() - property_data[variable2].min()), label=variable2)
+    else:
+        ax.plot(property_data['scrap_date'], property_data[variable1], label=variable1)
+        ax.plot(property_data['scrap_date'], property_data[variable2], label=variable2)
 
-        ax.legend()
-        st.pyplot(fig)
+    ax.legend()
+    st.pyplot(fig)
 else:
     st.sidebar.warning("Please upload a CSV file.")
