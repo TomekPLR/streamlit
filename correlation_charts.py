@@ -7,7 +7,14 @@ from scipy.stats import pearsonr
 
 st.set_page_config(layout="wide")
 
-data = pd.read_csv("your_file.csv")
+uploaded_file = st.sidebar.file_uploader("Upload your CSV file:", type=["csv"])
+
+if uploaded_file is None:
+    st.warning("Please upload a CSV file.")
+    st.stop()
+
+data = pd.read_csv(uploaded_file)
+
 data['scrap_date'] = pd.to_datetime(data['scrap_date'])
 
 st.sidebar.title("Input Parameters")
