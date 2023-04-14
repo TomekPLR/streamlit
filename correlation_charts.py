@@ -67,5 +67,6 @@ if uploaded_file is not None:
 
         ax.legend()
         st.pyplot(fig)
+
 else:
     st.sidebar.warning("Please upload a CSV file.")
