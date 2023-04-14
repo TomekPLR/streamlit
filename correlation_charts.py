@@ -17,10 +17,9 @@ if uploaded_file is not None:
 
     # Select the initial and final dates
     now = datetime.datetime.now()
-    initial_date = st.date_input('Initial date', now - datetime.timedelta(weeks=2))
-    final_date = st.date_input('Final date', now)
+    initial_date = pd.Timestamp(st.date_input('Initial date', now - datetime.timedelta(weeks=2)))
+    final_date = pd.Timestamp(st.date_input('Final date', now))
 
-    # Filter the data based on the selected dates
     filtered_data = data[(data['scrap_date'] >= initial_date) & (data['scrap_date'] <= final_date)]
 
     # Select variables and filter properties
