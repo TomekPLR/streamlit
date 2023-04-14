@@ -51,8 +51,12 @@ sorted_data = sorted_data.head(top_n)
 correlations = []
 
 for index, row in sorted_data.iterrows():
-    corr, _ = pearsonr(filtered_data.loc[index, variable1], filtered_data.loc[index, variable2])
-    correlations.append(corr)
+    x = filtered_data.loc[index, variable1]
+    y = filtered_data.loc[index, variable2]
+
+    if len(x) > 1 and len(y) > 1:
+        corr, _ = pearsonr(x, y)
+        correlations.append((index, corr))
 
 sorted_data["correlation"] = correlations
 
