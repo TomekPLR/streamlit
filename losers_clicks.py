@@ -27,8 +27,9 @@ if uploaded_file is not None:
         grouped_data['relative_loss'] = (grouped_data['absolute_loss'] / grouped_data['first']) * 100
         grouped_data = grouped_data.reset_index()
 
-        st.write('Biggest loses in terms of clicks between selected dates:')
-        st.write(grouped_data.sort_values(by='absolute_loss', ascending=False).head(10))
+        num_properties = st.slider("Number of properties to display in the losers table:", 1, len(grouped_data), 10)
+        st.write(f'Biggest {num_properties} losers in terms of clicks between selected dates:')
+        st.write(grouped_data.sort_values(by='absolute_loss', ascending=False).head(num_properties))
 
         property_chart = st.selectbox('Select a property to see the chart:', grouped_data['property'].unique())
         selected_property = filtered_data[filtered_data['property'] == property_chart]
