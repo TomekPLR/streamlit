@@ -8,6 +8,14 @@ from datetime import datetime, timedelta
 default_end_date = datetime.today() - timedelta(days=1)
 default_start_date = default_end_date - timedelta(days=14)
 
+# Define a function to extract the catalog from the URL
+def extract_catalog(url):
+    url_parts = url.split("/")
+    for part in url_parts:
+        if part != "":
+            return part
+    return None
+
 # Define the file uploader
 uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
 
@@ -21,45 +29,34 @@ if uploaded_file is not None:
     # Define the date range selector
     start_date = st.sidebar.date_input("Select a start date", default_start_date)
     end_date = st.sidebar.date_input("Select an end date", default_end_date)
-
-    # Convert the date range to datetime format
-    start_date = datetime.combine(start_date, datetime.min.time())
-    end_date = datetime.combine(end_date, datetime.min.time()) + timedelta(days=1)
+    
+    start_date = datetime.strptime(str(start_date), '%Y-%m-%d')
+    end_date = datetime.strptime(str(end_date), '%Y-%m-%d')
 
     # Filter the pages data by date range
     pages_filtered = pages_df[(pages_df["Date"] >= start_date) & (pages_df["Date"] <= end_date)]
 
-    # Select the top 5 countries by clicks
-    countries_by_clicks = pages_filtered.groupby("Country")["Url Clicks"].sum().reset_index().sort_values(by="Url Clicks", ascending=False)
-    top_countries = list(countries_by_clicks["Country"][:5])
-
-    # Allow the user to select additional countries
-    other_countries = list(set(countries_by_clicks["Country"]) - set(top_countries))
-    selected_countries = st.sidebar.multiselect("Select countries:", top_countries + ["Other"], default=top_countries)
-
-    if "Other" in selected_countries:
-        selected_countries.remove("Other")
-        selected_countries += st.sidebar.multiselect("Select additional countries:", other_countries)
-
-    # Create a line chart of clicks by country and date for selected countries
-    clicks_by_country = pages_filtered[pages_filtered["Country"].isin(selected_countries)].groupby(["Country", "Date"])["Url Clicks"].sum().reset_index()
+    # Create a line chart of clicks by country and date
+    top_countries = pages_filtered.groupby("Country")["Url Clicks"].sum().sort_values(ascending=False).head(5)
+    countries_selected = st.sidebar.multiselect("Select countries:", top_countries.index, default=top_countries.index[:5])
+    clicks_by_country = pages_filtered[pages_filtered["Country"].isin(countries_selected)].groupby(["Country", "Date"])["Url Clicks"].sum().reset_index()
     fig1, ax1 = plt.subplots()
     sns.lineplot(x="Date", y="Url Clicks", hue="Country", data=clicks_by_country, ax=ax1)
     ax1.set_title("Clicks by Country")
     st.pyplot(fig1)
 
     # Define the catalog selector
-    catalogs = pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).unique()
+    catalogs = pages_filtered["Landing Page"].apply(lambda x: extract_catalog(x)).unique()
     catalogs_selected = st.sidebar.multiselect("Select catalogs:", catalogs, default=catalogs)
 
     # Define the metric selector
     metric = st.sidebar.selectbox("Select a metric:", ["Url Clicks", "Impressions", "URL CTR"])
 
     # Filter the pages data by selected catalogs
-    pages_catalogs = pages_filtered[pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).isin(catalogs_selected)]
+    pages_catalogs = pages_filtered[pages_filtered["Landing Page"].apply(lambda x: extract_catalog(x)).isin(catalogs_selected)]
 
     # Pivot the pages data to create a chart of clicks by catalog and date
-    pivot = pd.pivot_table(pages_catalogs, values=metric, index="Date", columns=pages_catalogs["Landing Page"].apply(lambda x: x.split("/")[1]), aggfunc=sum)
+    pivot = pd.pivot_table(pages_catalogs, values=metric, index="Date", columns=pages_catalogs["Landing Page"].apply(lambda x: extract_catalog(x)), aggfunc=sum)
     fig2, ax2 = plt.subplots()
     pivot.plot(ax=ax2)
     ax2.set_title("Clicks by Catalog")
