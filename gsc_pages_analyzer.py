@@ -46,20 +46,30 @@ if uploaded_file is not None:
         st.warning("No data found for selected date range.")
 
     # Define the country selector
-    countries = pages_filtered["Country"].unique()
-    countries_selected = st.sidebar.multiselect("Select countries:", sorted(countries), default=sorted(top_countries))
     
-    # Define the catalog selector
-    catalogs = pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).unique()
-    top_catalogs = pages_filtered.groupby("Landing Page")["Url Clicks"].sum().sort_values(ascending=False).head(5).index
-    catalogs_selected = st.sidebar.multiselect("Select catalogs:", sorted(catalogs), default=sorted(top_catalogs))
     
-    # Define the metric selector
-    metric = st.sidebar.selectbox("Select a metric:", ["Url Clicks", "Impressions", "URL CTR"])
+    countries = sorted(pages_filtered["Country"].unique())
+    top_countries = sorted(pages_filtered.groupby("Country")["Url Clicks"].sum().sort_values(ascending=False).head(5).index)
+    
+    if "countries_selected" not in st.session_state:
+        st.session_state.countries_selected = top_countries
 
-    # Filter the pages data by selected countries and catalogs
-    pages_countries_catalogs = pages_filtered[pages_filtered["Country"].isin(countries_selected) &
-                                             pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).isin(catalogs_selected)]
+    countries_selected = st.sidebar.multiselect("Select countries:", countries, st.session_state.countries_selected)
+    st.session_state.countries_selected = countries_selected
+
+    # Define the catalog selector
+    catalogs = sorted(pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).unique())
+    top_catalogs = sorted(pages_filtered.groupby("Landing Page")["Url Clicks"].sum().sort_values(ascending=False).head(5).index)
+    
+    if "catalogs_selected" not in st.session_state:
+        st.session_state.catalogs_selected = top_catalogs
+
+    catalogs_selected = st.sidebar.multiselect("Select catalogs:", catalogs, st.session_state.catalogs_selected)
+    st.session_state.catalogs_selected = catalogs_selected
+    
+    
+    
+   
 
     # Pivot the pages data to create a chart of clicks by catalog and date
     pivot = pd.pivot_table(pages_countries_catalogs, values=metric, index="Date ", columns=pages_countries_catalogs["Landing Page"].apply(lambda x: x.split("/")[1]), aggfunc=sum)
