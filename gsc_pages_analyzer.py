@@ -22,20 +22,27 @@ if uploaded_file is not None:
     start_date = st.sidebar.date_input("Select a start date", default_start_date)
     end_date = st.sidebar.date_input("Select an end date", default_end_date)
 
+    # Convert the date range to datetime format
+    start_date = datetime.combine(start_date, datetime.min.time())
+    end_date = datetime.combine(end_date, datetime.min.time()) + timedelta(days=1)
+
     # Filter the pages data by date range
     pages_filtered = pages_df[(pages_df["Date"] >= start_date) & (pages_df["Date"] <= end_date)]
 
-    # Get the top 5 countries with the most clicks
-    top_countries = pages_filtered.groupby("Country")["Url Clicks"].sum().nlargest(5).index.tolist()
-    other_countries = list(set(pages_filtered["Country"].unique()) - set(top_countries))
-    country_selected = st.sidebar.multiselect("Select countries:", top_countries, default=top_countries)
+    # Select the top 5 countries by clicks
+    countries_by_clicks = pages_filtered.groupby("Country")["Url Clicks"].sum().reset_index().sort_values(by="Url Clicks", ascending=False)
+    top_countries = list(countries_by_clicks["Country"][:5])
 
-    if len(other_countries) > 0:
-        st.sidebar.write(f"{len(other_countries)} other countries found:")
-        st.sidebar.write(", ".join(other_countries))
+    # Allow the user to select additional countries
+    other_countries = list(set(countries_by_clicks["Country"]) - set(top_countries))
+    selected_countries = st.sidebar.multiselect("Select countries:", top_countries + ["Other"], default=top_countries)
 
-    # Create a line chart of clicks by country and date
-    clicks_by_country = pages_filtered[pages_filtered["Country"].isin(country_selected)].groupby(["Country", "Date"])["Url Clicks"].sum().reset_index()
+    if "Other" in selected_countries:
+        selected_countries.remove("Other")
+        selected_countries += st.sidebar.multiselect("Select additional countries:", other_countries)
+
+    # Create a line chart of clicks by country and date for selected countries
+    clicks_by_country = pages_filtered[pages_filtered["Country"].isin(selected_countries)].groupby(["Country", "Date"])["Url Clicks"].sum().reset_index()
     fig1, ax1 = plt.subplots()
     sns.lineplot(x="Date", y="Url Clicks", hue="Country", data=clicks_by_country, ax=ax1)
     ax1.set_title("Clicks by Country")
