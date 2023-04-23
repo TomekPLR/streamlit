@@ -51,7 +51,7 @@ if uploaded_file is not None:
                     ax.axvline(pd.Timestamp(event_date), color='red', linestyle='--', alpha=0.5)
                     ax.text(pd.Timestamp(event_date), ax.get_ylim()[1] * 1.05, event_description, rotation=45, ha='left', va='bottom', fontsize=8)
 
-                ax.legend(loc='upper left', fontsize=8)
+                ax.legend(loc='upper left', bbox_to_anchor=(0, 1.15), fontsize=8)
                 ax.xaxis.set_major_formatter(DateFormatter("%Y-%m-%d"))
                 plt.xticks(rotation=45)
                 plt.tight_layout()
