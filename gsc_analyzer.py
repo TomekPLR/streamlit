@@ -25,9 +25,9 @@ final_date = st.sidebar.date_input('Final Date')
 
 if uploaded_file1 is not None and uploaded_file2 is not None:
     df1 = pd.read_csv(uploaded_file1, parse_dates=['Date'])
-    df1['Date'] = pd.to_datetime(df1['Date'].dt.date)
+    df1['Date'] = df1['Date'].dt.date
     df2 = pd.read_csv(uploaded_file2, parse_dates=['Date'])
-    df2['Date'] = pd.to_datetime(df2['Date'].dt.date)
+    df2['Date'] = df2['Date'].dt.date
 
     if initial_date > final_date:
         st.error("Initial date should be before final date.")
@@ -35,8 +35,7 @@ if uploaded_file1 is not None and uploaded_file2 is not None:
         df1_filtered = df1[(df1['Date'] >= initial_date) & (df1['Date'] <= final_date)]
         df2_filtered = df2[(df2['Date'] >= initial_date) & (df2['Date'] <= final_date)]
 
-        # Rest of the code for analysis as previously provide
-
+        # Rest of the code for analysis as previously provided
         # Perform analysis on the first CSV file
         st.header("Analysis of the First CSV file")
 
@@ -101,3 +100,4 @@ if uploaded_file1 is not None and uploaded_file2 is not None:
         core_updates['After'] = core_updates['Date'].apply(lambda x: df2_filtered[(df2_filtered['Date'] > x) & (df2_filtered['Date'] <= x + pd.Timedelta(days=14))]['Clicks'].sum())
         core_updates['Percentage Change'] = (core_updates['After'] - core_updates['Before']) / core_updates['Before'] * 100
         st.write(core_updates)
+
