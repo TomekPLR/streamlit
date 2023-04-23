@@ -47,11 +47,15 @@ if uploaded_file is not None:
                 ax.set_ylabel('Clicks')
                 ax.set_title(f'{property_name} Clicks over Time', pad=20)
 
+                ax2 = ax.twinx()  # Create a second y-axis
+                ax2.set_ylim(ax.get_ylim())  # Set the second y-axis limits to match the first y-axis
+                ax2.axis('off')  # Remove the second y-axis
+
                 for event_date, event_description in important_dates.items():
                     ax.axvline(pd.Timestamp(event_date), color='red', linestyle='--', alpha=0.5)
-                    ax.text(pd.Timestamp(event_date), ax.get_ylim()[1] * 1.05, event_description, rotation=45, ha='left', va='bottom', fontsize=8)
+                    ax2.text(pd.Timestamp(event_date), ax.get_ylim()[1] * 1.05, event_description, rotation=45, ha='left', va='bottom', fontsize=8)
 
-                ax.legend(loc='upper left', bbox_to_anchor=(0, 1.15), fontsize=8)
+                ax.legend(loc='upper left', fontsize=8)
                 ax.xaxis.set_major_formatter(DateFormatter("%Y-%m-%d"))
                 plt.xticks(rotation=45)
                 plt.tight_layout()
