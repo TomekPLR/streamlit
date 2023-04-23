@@ -30,30 +30,39 @@ if uploaded_file is not None:
     # Filter the pages data by date range
     pages_filtered = pages_df[(pages_df["Date"] >= start_date) & (pages_df["Date"] <= end_date)]
 
+    # Get the top 5 countries with the most clicks
+    top_countries = pages_filtered.groupby("Country")["Url Clicks"].sum().sort_values(ascending=False).head(5).index
+
     # Create a chart of clicks by country and date
     clicks_by_country = pages_filtered.groupby(["Country", "Date"])["Url Clicks"].sum().reset_index()
-    if not clicks_by_country.empty:
+    top_clicks_by_country = clicks_by_country[clicks_by_country["Country"].isin(top_countries)]
+
+    if not top_clicks_by_country.empty:
         fig1, ax1 = plt.subplots()
-        sns.lineplot(x="Date", y="Url Clicks", hue="Country", data=clicks_by_country, ax=ax1)
+        sns.lineplot(x="Date", y="Url Clicks", hue="Country", data=top_clicks_by_country, ax=ax1)
         ax1.set_title("Clicks by Country")
         st.pyplot(fig1)
     else:
         st.warning("No data found for selected date range.")
 
+    # Define the country selector
+    countries = pages_filtered["Country"].unique()
+    countries_selected = st.sidebar.multiselect("Select countries:", sorted(countries), default=sorted(top_countries))
+    
     # Define the catalog selector
     catalogs = pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).unique()
-    default_num_catalogs = 5
-    top_catalogs = pages_filtered.groupby("Landing Page")["Url Clicks"].sum().sort_values(ascending=False).head(default_num_catalogs)
-    catalogs_selected = st.sidebar.multiselect("Select catalogs:", top_catalogs.index, default=top_catalogs.index)
+    top_catalogs = pages_filtered.groupby("Landing Page")["Url Clicks"].sum().sort_values(ascending=False).head(5).index
+    catalogs_selected = st.sidebar.multiselect("Select catalogs:", sorted(catalogs), default=sorted(top_catalogs))
     
     # Define the metric selector
     metric = st.sidebar.selectbox("Select a metric:", ["Url Clicks", "Impressions", "URL CTR"])
 
-    # Filter the pages data by selected catalogs
-    pages_catalogs = pages_filtered[pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).isin(catalogs_selected)]
+    # Filter the pages data by selected countries and catalogs
+    pages_countries_catalogs = pages_filtered[pages_filtered["Country"].isin(countries_selected) &
+                                             pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).isin(catalogs_selected)]
 
     # Pivot the pages data to create a chart of clicks by catalog and date
-    pivot = pd.pivot_table(pages_catalogs, values=metric, index="Date", columns=pages_catalogs["Landing Page"].apply(lambda x: x.split("/")[1]), aggfunc=sum)
+    pivot = pd.pivot_table(pages_countries_catalogs, values=metric, index="Date ", columns=pages_countries_catalogs["Landing Page"].apply(lambda x: x.split("/")[1]), aggfunc=sum)
     if not pivot.empty:
         fig2, ax2 = plt.subplots()
         pivot.plot(ax=ax2)
@@ -61,3 +70,4 @@ if uploaded_file is not None:
         st.pyplot(fig2)
     else:
         st.warning("No data found for selected catalogs and date range.")
+
