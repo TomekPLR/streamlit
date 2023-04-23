@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 default_end_date = datetime.today() - timedelta(days=1)
 default_start_date = default_end_date - timedelta(days=14)
 
+
+
 # Define the file uploader
 uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
 
@@ -21,6 +23,10 @@ if uploaded_file is not None:
     # Define the date range selector
     start_date = st.sidebar.date_input("Select a start date", default_start_date)
     end_date = st.sidebar.date_input("Select an end date", default_end_date)
+    
+    start_date = datetime.strptime(str(start_date), '%Y-%m-%d')
+    end_date = datetime.strptime(str(end_date), '%Y-%m-%d')
+
 
     # Filter the pages data by date range
     pages_filtered = pages_df[(pages_df["Date"] >= start_date) & (pages_df["Date"] <= end_date)]
