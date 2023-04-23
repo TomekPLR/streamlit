@@ -23,7 +23,8 @@ if uploaded_file is not None:
             filtered_data = filtered_data[filtered_data['property'].str.contains(property_filter)]
 
         # Compute the click losses based on the initial and final dates
-        grouped_data = filtered_data.pivot_table(index='property', columns='date', values='clicks', aggfunc='sum').reset_index()
+        grouped_data = filtered_data.pivot_table(index='property', columns='date', values='clicks', aggfunc='first').reset_index()
+        grouped_data.fillna(0, inplace=True)  # Replace NaNs with zeros
         grouped_data['absolute_loss'] = grouped_data[initial_date] - grouped_data[final_date]
         grouped_data['relative_loss'] = (grouped_data['absolute_loss'] / grouped_data[initial_date]) * 100
 
