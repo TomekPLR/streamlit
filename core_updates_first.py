@@ -46,3 +46,4 @@ if uploaded_file is not None:
             plt.xticks(rotation=45)
             plt.tight_layout()
             st.pyplot(fig)
+            plt.close(fig)
