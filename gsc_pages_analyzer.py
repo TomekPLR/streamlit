@@ -49,7 +49,7 @@ if uploaded_file is not None:
     
     
      # Define the country selector
-     countries = sorted(pages_filtered["Country"].unique(), key=str)
+    countries = sorted(pages_filtered["Country"].unique(), key=str)
     top_countries = sorted(pages_filtered.groupby("Country")["Url Clicks"].sum().sort_values(ascending=False).head(5).index, key=str)
 
     if "countries_selected" not in st.session_state:
