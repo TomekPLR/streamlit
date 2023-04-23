@@ -17,7 +17,7 @@ if uploaded_file is not None:
     date_range = st.sidebar.date_input("Select a date range:", [pages_df["Date"].min(), pages_df["Date"].max()])
 
     # Filter the pages data by date range
-    pages_filtered = pages_df[(pages_df["Date"] >= date_range[0]) & (pages_df["Date"] <= date_range[1])]
+    pages_filtered = pages_df[(pages_df["Date"] >= pd.to_datetime(date_range[0].strftime('%Y-%m-%d'))) & (pages_df["Date"] <= pd.to_datetime(date_range[1].strftime('%Y-%m-%d')))]
 
     # Define the country selector
     countries = st.sidebar.multiselect("Select countries:", pages_filtered["Country"].unique())
