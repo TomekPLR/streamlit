@@ -48,8 +48,11 @@ if uploaded_file is not None:
     # Define the country selector
     
     
-    countries = sorted(pages_filtered["Country"].unique())
-    top_countries = sorted(pages_filtered.groupby("Country")["Url Clicks"].sum().sort_values(ascending=False).head(5).index)
+    countries = pages_filtered["Country"].unique()
+    top_countries = pages_filtered.groupby("Country")["Url Clicks"].sum().sort_values(ascending=False).head(5).index
+    
+    countries = sorted(countries, key=str)
+    top_countries = sorted(top_countries, key=str)
     
     if "countries_selected" not in st.session_state:
         st.session_state.countries_selected = top_countries
@@ -58,15 +61,17 @@ if uploaded_file is not None:
     st.session_state.countries_selected = countries_selected
 
     # Define the catalog selector
-    catalogs = sorted(pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).unique())
-    top_catalogs = sorted(pages_filtered.groupby("Landing Page")["Url Clicks"].sum().sort_values(ascending=False).head(5).index)
+    catalogs = pages_filtered["Landing Page"].apply(lambda x: x.split("/")[1]).unique()
+    top_catalogs = pages_filtered.groupby("Landing Page")["Url Clicks"].sum().sort_values(ascending=False).head(5).index
+    
+    catalogs = sorted(catalogs, key=str)
+    top_catalogs = sorted(top_catalogs, key=str)
     
     if "catalogs_selected" not in st.session_state:
         st.session_state.catalogs_selected = top_catalogs
 
     catalogs_selected = st.sidebar.multiselect("Select catalogs:", catalogs, st.session_state.catalogs_selected)
     st.session_state.catalogs_selected = catalogs_selected
-    
     
     
    
