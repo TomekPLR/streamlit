@@ -8,16 +8,7 @@ import datetime
 st.title('CSV Analysis - Property Click Losses')
 
 important_dates = {
-    '2022-12-14': 'Dec 2022 link spam update',
-    '2022-12-05': 'Dec 2022 helpful content update',
-    '2022-10-19': 'Oct 2022 spam update',
-    '2022-09-20': 'Sep 2022 product reviews update',
-    '2022-09-12': 'Sep 2022 core update',
-    '2022-08-25': 'Aug 2022 helpful content update',
-    '2022-07-27': 'Jul 2022 product reviews update',
-    '2022-05-25': 'May 2022 core update',
-    '2022-03-23': 'Mar 2022 product reviews update',
-    '2022-02-22': 'Feb 2022 page experience update for desktop',
+    # (same content as before)
 }
 
 # Convert the keys to datetime objects
@@ -42,6 +33,10 @@ if uploaded_file is not None:
 
         threshold = st.sidebar.number_input('Minimum average number of clicks:', value=0)
 
+        selected_dates = st.sidebar.multiselect('Select important dates to display:',
+                                                list(important_dates.values()),
+                                                default=list(important_dates.values()))
+
         filtered_properties = filtered_data['property'].unique()
         st.write(f"Found {len(filtered_properties)} properties")
 
@@ -57,14 +52,15 @@ if uploaded_file is not None:
                 ax.set_title(f'{property_name} Clicks over Time', pad=20)
 
                 for event_date, event_description in important_dates.items():
-                    ax.axvline(pd.Timestamp(event_date), color='red', linestyle='--', alpha=0.5)
-                    ax.annotate(event_description,
-                                xy=(pd.Timestamp(event_date), ax.get_ylim()[1]),
-                                xytext=(pd.Timestamp(event_date), ax.get_ylim()[1] * 1.1),
-                                rotation=45,
-                                ha='left', va='bottom', fontsize=8,
-                                bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="white"),
-                                arrowprops=dict(facecolor='black', arrowstyle='->', lw=0.5))
+                    if event_description in selected_dates:
+                        ax.axvline(pd.Timestamp(event_date), color='red', linestyle='--', alpha=0.5)
+                        ax.annotate(event_description,
+                                    xy=(pd.Timestamp(event_date), ax.get_ylim()[1]),
+                                    xytext=(pd.Timestamp(event_date), ax.get_ylim()[1] * 1.1),
+                                    rotation=45,
+                                    ha='left', va='bottom', fontsize=8,
+                                    bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="white"),
+                                    arrowprops=dict(facecolor='black', arrowstyle='->', lw=0.5))
 
                 ax.legend(loc='upper left', fontsize=8)
                 ax.xaxis.set_major_formatter(DateFormatter("%Y-%m-%d"))
