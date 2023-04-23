@@ -26,6 +26,11 @@ if uploaded_file is not None:
     else:
         filtered_data = data[(data['date'] >= initial_date) & (data['date'] <= final_date)]
 
+        # Add a multiselect widget to filter properties
+        property_filter = st.sidebar.multiselect('Select properties:', filtered_data['property'].unique(), default=filtered_data['property'].unique())
+
+        filtered_data = filtered_data[filtered_data['property'].isin(property_filter)]
+
         # Create a list of dates and labels for the updates
         updates = [
             ('2022-12-14', 'Dec 2022 Link Spam Update'),
@@ -40,21 +45,21 @@ if uploaded_file is not None:
             ('2022-02-22', 'Feb 2022 Page Experience Update'),
         ]
 
-        fig, ax = plt.subplots()
         for property_name, group in filtered_data.groupby('property'):
+            fig, ax = plt.subplots()
             ax.plot(group['scrap_date'], group['clicks'], label=property_name)
 
-        for date, label in updates:
-            update_date = pd.to_datetime(date)
-            if initial_date <= update_date.date() <= final_date:
-                ax.axvline(update_date, linestyle='--', color='gray')
-                ax.annotate(label, xy=(update_date, ax.get_ylim()[1]), xycoords='data', xytext=(0, 5), textcoords='offset points', rotation=90, va='bottom', ha='center', fontsize=8)
+            for date, label in updates:
+                update_date = pd.to_datetime(date)
+                if initial_date <= update_date.date() <= final_date:
+                    ax.axvline(update_date, linestyle='--', color='gray')
+                    ax.annotate(label, xy=(update_date, ax.get_ylim()[1]), xycoords='data', xytext=(0, 5), textcoords='offset points', rotation=90, va='bottom', ha='center', fontsize=8)
 
-        ax.set_xlabel('Scrap Date')
-        ax.set_ylabel('Clicks')
-        ax.set_title('Clicks Over Time for All Properties')
-        ax.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=8)
-        ax.xaxis.set_major_formatter(DateFormatter("%Y-%m-%d"))
-        plt.xticks(rotation=45)
-        plt.tight_layout()
-        st.pyplot(fig)
+            ax.set_xlabel('Scrap Date')
+            ax.set_ylabel('Clicks')
+            ax.set_title(f'{property_name} Clicks Over Time')
+            ax.legend(loc='upper left', fontsize=8)
+            ax.xaxis.set_major_formatter(DateFormatter("%Y-%m-%d"))
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig)
