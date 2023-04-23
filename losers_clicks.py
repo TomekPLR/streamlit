@@ -22,10 +22,15 @@ if uploaded_file is not None:
         if property_filter:
             filtered_data = filtered_data[filtered_data['property'].str.contains(property_filter)]
 
-        grouped_data = filtered_data.groupby('property')['clicks'].agg(['first', 'last', 'count'])
-        grouped_data['absolute_loss'] = grouped_data['first'] - grouped_data['last']
-        grouped_data['relative_loss'] = (grouped_data['absolute_loss'] / grouped_data['first']) * 100
-        grouped_data = grouped_data.reset_index()
+        # Compute the click losses based on the initial and final dates
+        grouped_data = filtered_data.pivot_table(index='property', columns='date', values='clicks', aggfunc='sum').reset_index()
+        grouped_data['absolute_loss'] = grouped_data[initial_date] - grouped_data[final_date]
+        grouped_data['relative_loss'] = (grouped_data['absolute_loss'] / grouped_data[initial_date]) * 100
+
+        # Clean up the DataFrame
+        grouped_data = grouped_data[['property', initial_date, final_date, 'absolute_loss', 'relative_loss']]
+        grouped_data.columns.name = None
+        grouped_data.rename(columns={initial_date: 'initial_clicks', final_date: 'final_clicks'}, inplace=True)
 
         num_properties = st.slider("Number of properties to display in the losers table:", 1, len(grouped_data), 10)
         st.write(f'Biggest {num_properties} losers in terms of clicks between selected dates:')
