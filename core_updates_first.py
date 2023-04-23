@@ -7,6 +7,22 @@ import datetime
 
 st.title('CSV Analysis - Property Click Losses')
 
+important_dates = {
+    '2022-12-14': 'Dec 2022 link spam update',
+    '2022-12-05': 'Dec 2022 helpful content update',
+    '2022-10-19': 'Oct 2022 spam update',
+    '2022-09-20': 'Sep 2022 product reviews update',
+    '2022-09-12': 'Sep 2022 core update',
+    '2022-08-25': 'Aug 2022 helpful content update',
+    '2022-07-27': 'Jul 2022 product reviews update',
+    '2022-05-25': 'May 2022 core update',
+    '2022-03-23': 'Mar 2022 product reviews update',
+    '2022-02-22': 'Feb 2022 page experience update for desktop',
+}
+
+# Convert the keys to datetime objects
+important_dates = {pd.to_datetime(k): v for k, v in important_dates.items()}
+
 uploaded_file = st.sidebar.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file, parse_dates=['scrap_date'])
