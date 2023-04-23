@@ -9,6 +9,9 @@ uploaded_file = st.sidebar.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file, parse_dates=['scrap_date'])
     data['date'] = data['scrap_date'].dt.date
+    
+    # Update scrap_date based on last_update column
+    data['scrap_date'] = data['scrap_date'] - pd.to_timedelta(data['last_update'], unit='h')
 
     initial_date = st.sidebar.date_input('Initial Date', data['date'].min())
     final_date = st.sidebar.date_input('Final Date', data['date'].max())
