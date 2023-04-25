@@ -97,5 +97,5 @@ def main():
         if col1 and col2 and col1 != col2:
             st.header(f'Comparison of {col1} and {col2}')
             plot_compare_columns(property_df, col1, col2, normalize)
-if name == 'main':
+if __name__ == '__main__':
     main()
