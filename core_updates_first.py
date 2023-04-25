@@ -18,7 +18,7 @@ mportant_dates = {
     '2022-07-27': 'Jul 2022 product reviews update',
     '2022-05-25': 'May 2022 core update',
     '2022-03-23': 'Mar 2022 product reviews update',
-    '2022-02-22': 'Feb 2022 page experience update for desktop',
+    '2022-02-22': 'Feb 2022 page experience update for desktop'
 }
 
 # Convert the keys to datetime objects
