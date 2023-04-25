@@ -72,7 +72,7 @@ def main():
         # Dynamically
         numerical_columns = [col for col in property_df.columns if np.issubdtype(property_df[col].dtype, np.number) and col != 'scrap_date']
         correlation_columns = st.sidebar.multiselect('Select columns for correlation analysis', numerical_columns, default=numerical_columns)
-            tab = st.sidebar.radio("Select tab", ["Correlation Matrix", "All Charts", "Compare Two Variables"])
+        tab = st.sidebar.radio("Select tab", ["Correlation Matrix", "All Charts", "Compare Two Variables"])
 
     if tab == "Correlation Matrix":
         st.header(f'Correlation matrix for {selected_property}')
