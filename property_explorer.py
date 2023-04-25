@@ -58,45 +58,47 @@ def plot_compare_columns(df, col1, col2, normalize):
     plt.xticks(rotation=45)
     st.pyplot(fig)
 def main():
-        st.title('GSC property explorer')
+    st.title('GSC property explorer')
 
-        uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
-        if uploaded_file is not None:
-            df = read_csv(uploaded_file)
+    uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
+    if uploaded_file is not None:
+        df = read_csv(uploaded_file)
 
-            # Determine the columns to be used for correlation analysis
-            numerical_columns = [col for col in df.columns if np.issubdtype(df[col].dtype, np.number) and col != 'scrap_date']
-            correlation_columns = st.sidebar.multiselect('Select columns for correlation analysis', numerical_columns, default=numerical_columns)
+        # Determine the columns to be used for correlation analysis
+        numerical_columns = [col for col in df.columns if np.issubdtype(df[col].dtype, np.number) and col != 'scrap_date']
+        correlation_columns = st.sidebar.multiselect('Select columns for correlation analysis', numerical_columns, default=[])
 
-            st.sidebar.header('Select property')
-            selected_property = st.sidebar.selectbox('Choose a property', df['property'].unique())
-            property_df = filter_by_property(df, selected_property)
+        st.sidebar.header('Select property')
+        selected_property = st.sidebar.selectbox('Choose a property', df['property'].unique())
+        property_df = filter_by_property(df, selected_property)
 
-            tab = st.sidebar.radio("Select tab", ["Correlation Matrix", "All Charts", "Compare Two Variables"])
+        tab = st.sidebar.radio("Select tab", ["Correlation Matrix", "All Charts", "Compare Two Variables"])
 
-            if tab == "Correlation Matrix":
+        if tab == "Correlation Matrix":
+            if correlation_columns:
                 st.header(f'Correlation matrix for {selected_property}')
                 display_correlation_matrix(property_df[correlation_columns])
-            elif tab == "All Charts":
-                st.header(f'Trends for {selected_property}')
-                chart_selection = st.sidebar.selectbox('Select a chart', [''] + numerical_columns)
+            else:
+                st.warning("Please select at least one column for correlation analysis.")
+        elif tab == "All Charts":
+            st.header(f'Trends for {selected_property}')
+            chart_selection = st.sidebar.selectbox('Select a chart', [''] + numerical_columns)
 
-                if chart_selection:
-                    plot_column(property_df, chart_selection)
-                else:
-                    for col in numerical_columns:
-                        plot_column(property_df, col)
+            if chart_selection:
+                plot_column(property_df, chart_selection)
+            else:
+                for col in numerical_columns:
+                    plot_column(property_df, col)
 
-            elif tab == "Compare Two Variables":
-                st.sidebar.header('Compare two variables')
-                col1 = st.sidebar.selectbox('Select first variable', [''] + numerical_columns)
-                col2 = st.sidebar.selectbox('Select second variable', [''] + numerical_columns)
-                normalize = st.sidebar.checkbox("Normalize charts (0-1)")
+        elif tab == "Compare Two Variables":
+            st.sidebar.header('Compare two variables')
+            col1 = st.sidebar.selectbox('Select first variable', [''] + numerical_columns)
+            col2 = st.sidebar.selectbox('Select second variable', [''] + numerical_columns)
+            normalize = st.sidebar.checkbox("Normalize charts (0-1)")
 
-                if col1 and col2 and col1 != col2:
-                    st.header(f'Comparison of {col1} and {col2}')
-                    plot_compare_columns(property_df, col1, col2, normalize)
-    
+            if col1 and col2 and col1 != col2:
+                st.header(f'Comparison of {col1} and {col2}')
+                plot_compare_columns(property_df, col1, col2, normalize)
 
 if __name__ == '__main__':
     main()
