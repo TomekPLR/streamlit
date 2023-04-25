@@ -7,7 +7,7 @@ import datetime
 
 st.title('CSV Analysis - Property Click Losses')
 
-mportant_dates = {
+important_dates = {
     # (same content as before)
     '2022-12-14': 'Dec 2022 link spam update',
     '2022-12-05': 'Dec 2022 helpful content update',
