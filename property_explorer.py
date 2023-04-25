@@ -57,10 +57,7 @@ def plot_compare_columns(df, col1, col2, normalize):
     plt.title(f'Comparison of {col1} and {col2} over time', fontsize=16, fontweight='bold')
     plt.xticks(rotation=45)
     st.pyplot(fig)
-
 def main():
-    
-    def main():
         st.title('GSC property explorer')
 
         uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
@@ -99,5 +96,7 @@ def main():
                 if col1 and col2 and col1 != col2:
                     st.header(f'Comparison of {col1} and {col2}')
                     plot_compare_columns(property_df, col1, col2, normalize)
+    
+
 if __name__ == '__main__':
     main()
