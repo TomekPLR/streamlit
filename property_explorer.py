@@ -34,18 +34,21 @@ def plot_column(df, column):
 def plot_compare_columns(df, col1, col2, normalize):
     sns.set(style="darkgrid")
     fig, ax1 = plt.subplots(figsize=(12, 6))
-
+    
     if normalize:
-        df[col1] = (df[col1] - df[col1].min()) / (df[col1].max() - df[col1].min())
-        df[col2] = (df[col2] - df[col2].min()) / (df[col2].max() - df[col2].min())
+        col1_data = (df[col1] - df[col1].min()) / (df[col1].max() - df[col1].min())
+        col2_data = (df[col2] - df[col2].min()) / (df[col2].max() - df[col2].min())
+    else:
+        col1_data = df[col1]
+        col2_data = df[col2]
 
-    ax1.plot(df['scrap_date'], df[col1], label=col1, color='blue')
+    ax1.plot(df['scrap_date'], col1_data, label=col1, color='blue')
     ax1.set_ylabel(col1, color='blue', fontsize=14)
     ax1.tick_params(axis='y', labelcolor='blue')
     ax1.legend(loc='upper left')
 
     ax2 = ax1.twinx()
-    ax2.plot(df['scrap_date'], df[col2], label=col2, color='red')
+    ax2.plot(df['scrap_date'], col2_data, label=col2, color='red')
     ax2.set_ylabel(col2, color='red', fontsize=14)
     ax2.tick_params(axis='y', labelcolor='red')
     ax2.legend(loc='upper right')
@@ -61,42 +64,38 @@ def main():
     uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
     if uploaded_file is not None:
         df = read_csv(uploaded_file)
-
+        
         st.sidebar.header('Select property')
         selected_property = st.sidebar.selectbox('Choose a property', df['property'].unique())
         property_df = filter_by_property(df, selected_property)
 
-        # Specify variables to be used in correlation analysis
-        correlation_columns = ['variable1', 'variable2', 'variable3']
+        # Dynamically
+        numerical_columns = [col for col in property_df.columns if np.issubdtype(property_df[col].dtype, np.number) and col != 'scrap_date']
+        correlation_columns = st.sidebar.multiselect('Select columns for correlation analysis', numerical_columns, default=numerical_columns)
+            tab = st.sidebar.radio("Select tab", ["Correlation Matrix", "All Charts", "Compare Two Variables"])
 
-        st.sidebar.header('Tabs')
-        tab = st.sidebar.radio('Select a tab', ('Correlation Matrix', 'All Charts', 'Compare Two Variables'))
+    if tab == "Correlation Matrix":
+        st.header(f'Correlation matrix for {selected_property}')
+        display_correlation_matrix(property_df[correlation_columns])
 
-        if tab == 'Correlation Matrix':
-            st.header(f'Correlation matrix for {selected_property}')
-            display_correlation_matrix(property_df[correlation_columns])
+    elif tab == "All Charts":
+        st.header(f'Trends for {selected_property}')
+        chart_selection = st.sidebar.selectbox('Select a chart', [''] + numerical_columns)
 
-        elif tab == 'All Charts':
-            st.header(f'Trends for {selected_property}')
-            numerical_columns = [col for col in property_df.columns if np.issubdtype(property_df[col].dtype, np.number) and col != 'scrap_date']
-            chart_selection = st.sidebar.selectbox('Select a chart', [''] + numerical_columns)
+        if chart_selection:
+            plot_column(property_df, chart_selection)
+        else:
+            for col in numerical_columns:
+                plot_column(property_df, col)
 
-            if chart_selection:
-                plot_column(property_df, chart_selection)
-            else:
-                for col in numerical_columns:
-                    plot_column(property_df, col)
+    elif tab == "Compare Two Variables":
+        st.sidebar.header('Compare two variables')
+        col1 = st.sidebar.selectbox('Select first variable', [''] + numerical_columns)
+        col2 = st.sidebar.selectbox('Select second variable', [''] + numerical_columns)
+        normalize = st.sidebar.checkbox("Normalize charts (0-1)")
 
-        elif tab == 'Compare Two Variables':
-            st.sidebar.header('Compare two variables')
-            col1 = st.sidebar.selectbox('Select first variable', [''] + correlation_columns)
-            col2 = st.sidebar.selectbox('Select second variable', [''] + correlation_columns)
-            normalize = st.sidebar.checkbox("Normalize charts (0-1)")
-
-            if col1 and col2 and col1 != col2:
-                st.header(f'Comparison of {col1} and {col2}')
-                plot_compare_columns(property_df, col1, col2, normalize)
-
-if __name__ == '__main__':
+        if col1 and col2 and col1 != col2:
+            st.header(f'Comparison of {col1} and {col2}')
+            plot_compare_columns(property_df, col1, col2, normalize)
+if name == 'main':
     main()
-
