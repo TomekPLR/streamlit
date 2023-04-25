@@ -33,8 +33,14 @@ if uploaded_file is not None:
         filtered_data = filtered_data[filtered_data['property'].isin(property_filter)]
 
     # Select columns
-    variables1 = st.sidebar.multiselect("Select variables 1", filtered_data.columns)
-    variables2 = st.sidebar.multiselect("Select variables 2", filtered_data.columns)
+    variable1 = st.sidebar.selectbox("Select variable 1", filtered_data.columns)
+    variable2 = st.sidebar.selectbox("Select variable 2", filtered_data.columns)
+
+    # Exclude variables
+    exclude_variables = st.sidebar.multiselect("Exclude variables", filtered_data.columns)
+
+    # Remove excluded variables
+    filtered_data = filtered_data.drop(columns=exclude_variables)
 
     # Select sorting order
     sort_order = st.sidebar.selectbox("Sort by correlation", ["Highest", "Lowest"])
@@ -43,53 +49,45 @@ if uploaded_file is not None:
     normalize = st.sidebar.checkbox("Normalize charts (0-1)")
 
     # Calculate correlations
-    correlations = {}
-    for var1 in variables1:
-        for var2 in variables2:
-            if var1 != var2:
-                property_correlations = filtered_data.groupby("property").apply(lambda x: x[var1].corr(x[var2]))
-                correlations[(var1, var2)] = property_correlations
+    correlations = filtered_data.groupby("property").apply(lambda x: x[variable1].corr(x[variable2]))
+
+    # Sort properties based on the correlation
+    if sort_order == "Highest":
+        sorted_properties = correlations.sort_values(ascending=False)
+    else:
+        sorted_properties = correlations.sort_values(ascending=True)
 
     # Display charts
     st.title("Charts")
 
-    for var1, var2 in correlations.keys():
-        # Sort properties based on the correlation
-        property_correlations = correlations[(var1, var2)]
-        if sort_order == "Highest":
-            sorted_properties = property_correlations.sort_values(ascending=False)
-        else:
-            sorted_properties = property_correlations.sort_values(ascending=True)
+    for property in sorted_properties.index[:100]:
+        click_diff = filtered_data.loc[filtered_data['property'] == property, 'clicks'].diff().sum()
+        total_clicks = filtered_data.loc[filtered_data['property'] == property, 'clicks'].sum()
+        relative_diff = (click_diff / total_clicks) * 100
 
-        for property in sorted_properties.index[:100]:
-            click_diff = filtered_data.loc[filtered_data['property'] == property, 'clicks'].diff().sum()
-            total_clicks = filtered_data.loc[filtered_data['property'] == property, 'clicks'].sum()
-            relative_diff = (click_diff / total_clicks) * 100
+        # Filter by relative click difference
+        if min_relative_diff <= relative_diff <= max_relative_diff:
+            st.header(f"Property: {property}")
+            st.write(f"Correlation: {sorted_properties[property]}")
+            st.write(f"Difference in number of clicks: {click_diff} ({relative_diff:.2f}%)")
 
-            # Filter by relative click difference
-            if min_relative_diff <= relative_diff <= max_relative_diff:
-                st.header(f"Property: {property}")
-                st.write(f"Correlation ({var1}, {var2}): {sorted_properties[property]}")
-                st.write(f"Difference in number of clicks: {click_diff} ({relative_diff:.2f}%)")
+            property_data = filtered_data[filtered_data['property'] == property]
+            fig, ax = plt.subplots()
 
-                property_data = filtered_data[filtered_data['property'] == property]
-                fig, ax = plt.subplots()
+            if normalize:
+                ax.plot(property_data['scrap_date'], (property_data[variable1] - property_data[variable1].min()) / (property_data[variable1].max() - property_data[variable1].min()), label=variable1)
+                ax.plot(property_data['scrap_date'], (property_data[variable2] - property_data[variable2].min()) / (property_data[variable2].max() - property_data[variable2].min()), label=variable2)
+            else:
+                ax.plot(property_data['scrap_date'], property_data[variable1], label=variable1)
+                ax.plot(property_data['scrap_date'], property_data[variable2], label=variable2)
 
-                if normalize:
-                    ax.plot(property_data['scrap_date'], (property_data[var1] - property_data[var1].min()) / (property_data[var1].max() - property_data[var1].min()), label=var1)
-                    ax.plot(property_data['scrap_date'], (property_data[var2] - property_data[var2].min()) / (property_data[var2].max() - property_data[var2].min()), label=var2)
-                else:
-                    ax.plot(property_data['scrap_date'], property_data[var1], label=var1)
-                    ax.plot(property_data['scrap_date'], property_data[var2], label=var2)
+            # Set x-axis date format
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+            # Rotate date labels
+            plt.xticks(rotation=45)
 
-                # Set x-axis date format
-                ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-                # Rotate date labels
-                plt.xticks(rotation=45)
-
-                ax.legend()
-                st.pyplot(fig)
+            ax.legend()
+            st.pyplot(fig)
 
 else:
-    st.sidebar.warning("Please upload a CSV file.")  
-                                                                                                              
+    st.sidebar.warning("Please upload a CSV file.")
