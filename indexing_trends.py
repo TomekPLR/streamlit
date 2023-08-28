@@ -1,64 +1,50 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-def plot_trends(df, columns, filter_dates):
-    for col in columns:
-        st.write(f"### Trendline for {col}")  # Headline for the chart
-        fig, ax = plt.subplots(figsize=(12, 6))
-        
-        filter_start = pd.Timestamp(filter_dates[0])
-        filter_end = pd.Timestamp(filter_dates[1])
-        
-        df_filtered = df[(df['scrap_date'] >= filter_start) & (df['scrap_date'] <= filter_end)]
-        
-        ax.scatter(df_filtered['scrap_date'], df_filtered[col], label='Data Points')
-        
-        z = np.polyfit(df_filtered.index, df_filtered[col], 1)
-        p = np.poly1d(z)
-        ax.plot(df_filtered['scrap_date'], p(df_filtered.index), 'r--', label='Trendline')
-        
-        ax.set_xlabel("Scrap Date")
-        ax.set_ylabel(f"{col} (%)")
-        ax.legend()
-        ax.grid(True)
-        
-        st.pyplot(fig)
+# Function to plot trend
+def plot_trend(df, title):
+    plt.figure(figsize=(12, 6))
+    plt.title(title)
+    plt.plot(df['scrap_date'], df['value'])
+    plt.xticks(rotation=45)
+    plt.xlabel('Date')
+    plt.ylabel('Median Value')
+    st.pyplot()
 
 # Main App
 st.title("CSV Trendline Analysis")
 
+# Upload CSV file
 uploaded_file = st.file_uploader("Upload a CSV file:", type=["csv"])
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
-    
-    if 'property' not in df.columns or 'scrap_date' not in df.columns:
-        st.error("The CSV file must contain 'property' and 'scrap_date' columns.")
+    st.write(df.dtypes)  # Debug line to write the data types
+
+    # Check if the required columns are present
+    if 'property' not in df.columns or 'scrap_date' not in df.columns or 'value' not in df.columns:
+        st.error('CSV file must have columns named "property", "scrap_date", and "value".')
+
     else:
+        # Sidebar for date range selection
+        min_date = df['scrap_date'].min()
+        max_date = df['scrap_date'].max()
+        selected_date_range = st.sidebar.date_input('Select Date Range:', [min_date, max_date])
         df['scrap_date'] = pd.to_datetime(df['scrap_date'])
-        df = df.fillna(0)  # fill missing values with zero
+        df_filtered_date = df[(df['scrap_date'] >= pd.Timestamp(selected_date_range[0])) & 
+                               (df['scrap_date'] <= pd.Timestamp(selected_date_range[1]))]
         
         # Sidebar for property selection
-        property_input = st.sidebar.text_input("Enter properties (comma-separated):", value="all")
+        all_properties = df['property'].unique().tolist()
+        selected_properties = st.sidebar.multiselect("Choose Properties:", all_properties, default=all_properties)
         
-        if property_input.lower() != "all":
-            properties_to_show = property_input.split(',')
-            df_filtered = df[df['property'].isin(properties_to_show)]
-        else:
-            df_filtered = df
+        # Filter the DataFrame based on selected properties
+        df_filtered = df_filtered_date[df_filtered_date['property'].isin(selected_properties)]
         
-        # Group by scrap_date and average across selected properties
-        numeric_cols = df_filtered.select_dtypes(include=[np.number]).columns.tolist()
-        df_grouped = df_filtered.groupby('scrap_date')[numeric_cols].mean().reset_index()
-        
-        # Sidebar for date selection
-        min_date = df_grouped['scrap_date'].min()
-        max_date = df_grouped['scrap_date'].max()
-        
-        filter_dates = st.sidebar.date_input("Filter dates:", [min_date, max_date])
-        
-        trend_columns = [col for col in df_grouped.columns if 'pct_affected' in col]
-        
-        plot_trends(df_grouped, trend_columns, filter_dates)
+        # Group and find median value
+        df_grouped = df_filtered.groupby('scrap_date').median().reset_index()
+
+        # Plotting
+        plot_trend(df_grouped, 'Trendline for Selected Properties and Date Range')
