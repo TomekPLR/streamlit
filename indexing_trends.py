@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 def plot_trends(df, columns, filter_dates):
     for col in columns:
         st.write(f"### Trendline for {col}")  # Headline for the chart
-        
         fig, ax = plt.subplots(figsize=(12, 6))
         
         # Convert filter_dates to Pandas Timestamp for compatible filtering
@@ -44,25 +43,22 @@ if uploaded_file:
         df['scrap_date'] = pd.to_datetime(df['scrap_date'])
         
         # Sidebar for property selection
-        properties_to_show = st.sidebar.multiselect('Select properties', df['property'].unique())
+        properties_to_show = st.sidebar.multiselect('Select properties', df['property'].unique(), default=df['property'].unique())
         
         if properties_to_show:
-            df = df[df['property'].isin(properties_to_show)]
+            df_filtered = df[df['property'].isin(properties_to_show)]
+        
+        # Group by scrap_date and average across selected properties
+        df_grouped = df_filtered.groupby('scrap_date').mean().reset_index()
         
         # Sidebar for date selection
-        min_date = df['scrap_date'].min()
-        max_date = df['scrap_date'].max()
+        min_date = df_grouped['scrap_date'].min()
+        max_date = df_grouped['scrap_date'].max()
         
         filter_dates = st.sidebar.date_input("Filter dates:", [min_date, max_date])
         
         # Columns to consider for trendlines
-        trend_columns = [col for col in df.columns if 'pct_affected' in col]
-        
-        # Sorting dataframe by scrap_date for plotting
-        df.sort_values('scrap_date', inplace=True)
-        
-        # Grouping by scrap_date and selected properties
-        df_grouped = df.groupby(['scrap_date', 'property'])[trend_columns].mean().reset_index()
+        trend_columns = [col for col in df_grouped.columns if 'pct_affected' in col]
         
         # Plotting
         plot_trends(df_grouped, trend_columns, filter_dates)
