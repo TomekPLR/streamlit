@@ -6,27 +6,29 @@ import matplotlib.pyplot as plt
 def plot_trends(df, columns, filter_dates):
     for col in columns:
         plt.figure(figsize=(12, 6))
-        
+
+        # Convert filter_dates to Pandas Timestamp for compatible filtering
+        filter_start = pd.Timestamp(filter_dates[0])
+        filter_end = pd.Timestamp(filter_dates[1])
+
         # Filter based on selected date range
-        if filter_dates:
-            df_filtered = df[(df['scrap_date'] >= filter_dates[0]) & (df['scrap_date'] <= filter_dates[1])]
-        else:
-            df_filtered = df
-        
+        df_filtered = df[(df['scrap_date'] >= filter_start) & (df['scrap_date'] <= filter_end)]
+
         plt.scatter(df_filtered['scrap_date'], df_filtered[col], label='Data Points')
-        
+
         # Adding Trendline
         z = np.polyfit(df_filtered.index, df_filtered[col], 1)
         p = np.poly1d(z)
         plt.plot(df_filtered['scrap_date'], p(df_filtered.index), 'r--', label='Trendline')
-        
+
         plt.title(f"Trendline for {col}")
         plt.xlabel("Scrap Date")
         plt.ylabel(f"{col} (%)")
         plt.legend()
         plt.grid(True)
-        
+
         st.pyplot()
+
 
 # Main App
 st.title("CSV Trendline Analysis")
