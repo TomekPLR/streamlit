@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 # Upload CSV file
 uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
@@ -37,14 +38,19 @@ if uploaded_file is not None:
             
             df_filtered = df_filtered[(df_filtered['scrap_date'].dt.date >= selected_date_range[0]) & (df_filtered['scrap_date'].dt.date <= selected_date_range[1])]
             
-            # Select only numeric columns
-            numeric_cols = df_filtered.select_dtypes(include=[float, int]).columns
+            # Select only numeric columns (columns starting with "pct")
+            pct_cols = [col for col in df_filtered.columns if col.startswith('pct')]
             
-            # Group and calculate the median only for numeric columns
-            df_grouped = df_filtered.groupby('scrap_date')[numeric_cols].median().reset_index()
-
+            # Group and calculate the median only for pct columns
+            df_grouped = df_filtered.groupby('scrap_date')[pct_cols].median().reset_index()
+            
             # Display data
             st.write(df_grouped)
+            
+            # Create trend charts
+            for col in pct_cols:
+                st.write(f"Trend for {col}")
+                st.line_chart(df_grouped[['scrap_date', col]].set_index('scrap_date'))
         else:
             st.write("Data does not contain valid min and max dates.")
     else:
