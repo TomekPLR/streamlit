@@ -37,8 +37,11 @@ if uploaded_file is not None:
             
             df_filtered = df_filtered[(df_filtered['scrap_date'].dt.date >= selected_date_range[0]) & (df_filtered['scrap_date'].dt.date <= selected_date_range[1])]
             
-            # Group and calculate the median
-            df_grouped = df_filtered.groupby('scrap_date').median().reset_index()
+            # Select only numeric columns
+            numeric_cols = df_filtered.select_dtypes(include=[float, int]).columns
+            
+            # Group and calculate the median only for numeric columns
+            df_grouped = df_filtered.groupby('scrap_date')[numeric_cols].median().reset_index()
 
             # Display data
             st.write(df_grouped)
@@ -46,6 +49,5 @@ if uploaded_file is not None:
             st.write("Data does not contain valid min and max dates.")
     else:
         st.write("CSV file must have columns named 'property' and 'scrap_date'.")
-
 else:
     st.write("Please upload a CSV file.")
