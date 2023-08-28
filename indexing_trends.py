@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 def plot_trends(df, columns, filter_dates):
     for col in columns:
         st.write(f"### Trendline for {col}")  # Headline for the chart
+        
         fig, ax = plt.subplots(figsize=(12, 6))
         
         # Convert filter_dates to Pandas Timestamp for compatible filtering
@@ -42,7 +43,7 @@ if uploaded_file:
     else:
         df['scrap_date'] = pd.to_datetime(df['scrap_date'])
         
-        # Property selection
+        # Sidebar for property selection
         properties_to_show = st.sidebar.multiselect('Select properties', df['property'].unique())
         
         if properties_to_show:
