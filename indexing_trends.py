@@ -41,7 +41,7 @@ if uploaded_file is not None:
             # Select only numeric columns (columns starting with "pct")
             pct_cols = [col for col in df_filtered.columns if col.startswith('pct')]
             
-            # Group and calculate the median only for pct columns
+            # Group and calculate the median for only pct columns
             df_grouped = df_filtered.groupby('scrap_date')[pct_cols].median().reset_index()
             
             # Display data
