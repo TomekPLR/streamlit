@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 # Upload CSV file
 uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
 
+# Significant Change Threshold
+significant_change = st.sidebar.slider('Significant Change Threshold (%)', 0, 100, 10)
+
 # Read CSV
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
@@ -41,15 +44,18 @@ if uploaded_file is not None:
             for col in pct_cols:
                 col_1 = f"{col}_{selected_dates[0]}"
                 col_2 = f"{col}_{selected_dates[1]}"
-                
-                # Calculate the increase or decrease for each property for this pct column
-                df_pivot[f"{col}_change"] = df_pivot[col_2] - df_pivot[col_1]
+
+                # Calculate the percentage change for each property for this pct column
+                df_pivot[f"{col}_change"] = ((df_pivot[col_2] - df_pivot[col_1]) / df_pivot[col_1]) * 100
+
+                # Filter by significant changes
+                df_significant = df_pivot[df_pivot[f"{col}_change"].abs() >= significant_change]
                 
                 # Calculate percentages of increased and decreased properties
-                increased = (df_pivot[f"{col}_change"] > 0).sum()
-                decreased = (df_pivot[f"{col}_change"] < 0).sum()
-                total = len(df_pivot[f"{col}_change"].dropna())
-                
+                increased = (df_significant[f"{col}_change"] > 0).sum()
+                decreased = (df_significant[f"{col}_change"] < 0).sum()
+                total = len(df_significant[f"{col}_change"].dropna())
+
                 if total > 0:
                     increased_pct = (increased / total) * 100
                     decreased_pct = (decreased / total) * 100
@@ -64,7 +70,6 @@ if uploaded_file is not None:
             summary_df = pd.DataFrame(summary_data)
             summary_df = summary_df.sort_values('Decreased (%)', ascending=False)
             st.table(summary_df)
-
         else:
             st.write("Please select exactly two dates for comparison.")
     else:
