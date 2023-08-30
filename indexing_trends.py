@@ -3,11 +3,13 @@ import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-# Upload CSV file
-uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
+
 
 # Significant Change Threshold
 significant_change = st.sidebar.slider('Significant Change Threshold (%)', 0, 100, 10)
+
+# Upload CSV file
+uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
 
 # Read CSV
 if uploaded_file is not None:
