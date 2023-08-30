@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 # Upload CSV file
 uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
 
+# Significant Change Threshold
+significant_change = st.sidebar.slider('Significant Change Threshold (%)', 0, 100, 10)
+
 # Read CSV
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
@@ -21,9 +24,6 @@ if uploaded_file is not None:
 
         # Date range selector for analysis
         selected_dates = st.sidebar.multiselect('Select Two Dates for Comparison:', sorted(df['scrap_date'].dt.date.unique()), default=[])
-        
-        # Significant Change Threshold
-        significant_change = st.sidebar.slider('Significant Change Threshold (%)', 0, 100, 10)
 
         if len(selected_dates) == 2:
             # Filter data based on selected dates
@@ -53,26 +53,4 @@ if uploaded_file is not None:
                 
                 # Calculate percentages of increased and decreased properties
                 increased = (df_significant[f"{col}_change"] > 0).sum()
-                decreased = (df_significant[f"{col}_change"] < 0).sum()
-                total = len(df_significant[f"{col}_change"].dropna())
-
-                if total > 0:
-                    increased_pct = (increased / total) * 100
-                    decreased_pct = (decreased / total) * 100
-                    summary_data.append({
-                        'Column': col,
-                        'Increased (%)': increased_pct,
-                        'Decreased (%)': decreased_pct,
-                        'Total Properties': total
-                    })
-
-            # Create summary DataFrame and sort by 'Decreased (%)'
-            summary_df = pd.DataFrame(summary_data)
-            summary_df = summary_df.sort_values('Decreased (%)', ascending=False)
-            st.table(summary_df)
-        else:
-            st.write("Please select exactly two dates for comparison.")
-    else:
-        st.write("CSV file must have columns named 'property' and 'scrap_date'.")
-else:
-    st.write("Please upload a CSV file.")
+                decreased = (df_significant[f"{
