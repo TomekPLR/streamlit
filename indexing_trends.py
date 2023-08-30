@@ -9,50 +9,69 @@ uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
 # Read CSV
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
-    
+
     # Ensure the necessary columns exist
     if all(col in df.columns for col in ["property", "scrap_date"]):
         # Convert 'scrap_date' to datetime and drop invalid rows
         df['scrap_date'] = pd.to_datetime(df['scrap_date'], errors='coerce')
         df.dropna(subset=['scrap_date'], inplace=True)
-        
-        min_date = df['scrap_date'].min().date()
-        max_date = df['scrap_date'].max().date()
 
-        if min_date and max_date:
-            # Sidebar
-            st.sidebar.title("Filters")
-            
-            # Date range selector
-            selected_date_range = st.sidebar.date_input('Select Date Range:', [min_date, max_date])
-            
-            # Property selector
-            property_list = df['property'].unique().tolist()
-            selected_properties = st.sidebar.multiselect('Select Properties:', ["All"] + property_list, default=["All"])
-            
-            # Filter data
-            if "All" not in selected_properties:
-                df_filtered = df[df['property'].isin(selected_properties)]
-            else:
-                df_filtered = df
-            
-            df_filtered = df_filtered[(df_filtered['scrap_date'].dt.date >= selected_date_range[0]) & (df_filtered['scrap_date'].dt.date <= selected_date_range[1])]
-            
+        # Sidebar
+        st.sidebar.title("Filters")
+
+        # Date range selector for analysis
+        selected_dates = st.sidebar.multiselect('Select Two Dates for Comparison:', sorted(df['scrap_date'].dt.date.unique()), default=[])
+        
+        # Significant Change Threshold
+        significant_change = st.sidebar.slider('Significant Change Threshold (%)', 0, 100, 10)
+
+        if len(selected_dates) == 2:
+            # Filter data based on selected dates
+            df_filtered = df[df['scrap_date'].dt.date.isin(selected_dates)]
+
             # Select only numeric columns (columns starting with "pct")
             pct_cols = [col for col in df_filtered.columns if col.startswith('pct')]
-            
-            # Group and calculate the median for only pct columns
-            df_grouped = df_filtered.groupby('scrap_date')[pct_cols].median().reset_index()
-            
-            # Display data
-            st.write(df_grouped)
-            
-            # Create trend charts
+
+            # Group by property and calculate the median for only pct columns
+            df_grouped = df_filtered.groupby(['property', 'scrap_date'])[pct_cols].median().reset_index()
+
+            # Pivot table for easy comparison
+            df_pivot = df_grouped.pivot(index='property', columns='scrap_date', values=pct_cols)
+            df_pivot.columns = [f"{col[0]}_{col[1].date()}" for col in df_pivot.columns]
+
+            summary_data = []
+
             for col in pct_cols:
-                st.write(f"Trend for {col}")
-                st.line_chart(df_grouped[['scrap_date', col]].set_index('scrap_date'))
+                col_1 = f"{col}_{selected_dates[0]}"
+                col_2 = f"{col}_{selected_dates[1]}"
+
+                # Calculate the percentage change for each property for this pct column
+                df_pivot[f"{col}_change"] = ((df_pivot[col_2] - df_pivot[col_1]) / df_pivot[col_1]) * 100
+
+                # Filter by significant changes
+                df_significant = df_pivot[df_pivot[f"{col}_change"].abs() >= significant_change]
+                
+                # Calculate percentages of increased and decreased properties
+                increased = (df_significant[f"{col}_change"] > 0).sum()
+                decreased = (df_significant[f"{col}_change"] < 0).sum()
+                total = len(df_significant[f"{col}_change"].dropna())
+
+                if total > 0:
+                    increased_pct = (increased / total) * 100
+                    decreased_pct = (decreased / total) * 100
+                    summary_data.append({
+                        'Column': col,
+                        'Increased (%)': increased_pct,
+                        'Decreased (%)': decreased_pct,
+                        'Total Properties': total
+                    })
+
+            # Create summary DataFrame and sort by 'Decreased (%)'
+            summary_df = pd.DataFrame(summary_data)
+            summary_df = summary_df.sort_values('Decreased (%)', ascending=False)
+            st.table(summary_df)
         else:
-            st.write("Data does not contain valid min and max dates.")
+            st.write("Please select exactly two dates for comparison.")
     else:
         st.write("CSV file must have columns named 'property' and 'scrap_date'.")
 else:
