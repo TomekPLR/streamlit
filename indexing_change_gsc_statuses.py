@@ -35,9 +35,8 @@ if uploaded_file is not None:
             # Pivot table for easy comparison
             df_pivot = df_grouped.pivot(index='property', columns='scrap_date', values=pct_cols)
             df_pivot.columns = [f"{col[0]}_{col[1].date()}" for col in df_pivot.columns]
-            
-            st.write("Comparison Data:")
-            st.write(df_pivot)
+
+            summary_data = []
 
             for col in pct_cols:
                 col_1 = f"{col}_{selected_dates[0]}"
@@ -54,10 +53,17 @@ if uploaded_file is not None:
                 if total > 0:
                     increased_pct = (increased / total) * 100
                     decreased_pct = (decreased / total) * 100
+                    summary_data.append({
+                        'Column': col,
+                        'Increased (%)': increased_pct,
+                        'Decreased (%)': decreased_pct,
+                        'Total Properties': total
+                    })
 
-                    st.write(f"Statistics for {col}")
-                    st.write(f"Properties with increase: {increased} ({increased_pct:.2f}%)")
-                    st.write(f"Properties with decrease: {decreased} ({decreased_pct:.2f}%)")
+            # Create summary DataFrame and sort by 'Decreased (%)'
+            summary_df = pd.DataFrame(summary_data)
+            summary_df = summary_df.sort_values('Decreased (%)', ascending=False)
+            st.table(summary_df)
 
         else:
             st.write("Please select exactly two dates for comparison.")
