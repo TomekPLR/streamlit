@@ -32,8 +32,8 @@ if uploaded_file is not None:
             # Select only numeric columns (columns starting with "pct")
             pct_cols = [col for col in df_filtered.columns if col.startswith('pct')]
 
-            # Dropdown to select specific pct metric
-            selected_metric = st.sidebar.selectbox('Select a Specific Metric:', pct_cols)
+            # Dropdown to select specific pct metric for detailed view
+            selected_metric = st.sidebar.selectbox('Select a Specific Metric for Detailed View:', pct_cols)
 
             # Group by property and calculate the median for only pct columns
             df_grouped = df_filtered.groupby(['property', 'scrap_date'])[pct_cols].median().reset_index()
@@ -42,16 +42,43 @@ if uploaded_file is not None:
             df_pivot = df_grouped.pivot(index='property', columns='scrap_date', values=pct_cols)
             df_pivot.columns = [f"{col[0]}_{col[1].date()}" for col in df_pivot.columns]
 
+            summary_data = []
+            for col in pct_cols:
+                col_1 = f"{col}_{selected_dates[0]}"
+                col_2 = f"{col}_{selected_dates[1]}"
+
+                # Calculate percentage change for each property
+                df_pivot[f"{col}_change"] = ((df_pivot[col_2] - df_pivot[col_1]) / df_pivot[col_1]) * 100
+
+                # Filter by significant changes
+                df_significant = df_pivot[df_pivot[f"{col}_change"].abs() >= significant_change]
+
+                # Calculate percentages of increased and decreased properties
+                increased = (df_significant[f"{col}_change"] > 0).sum()
+                decreased = (df_significant[f"{col}_change"] < 0).sum()
+                total = len(df_significant[f"{col}_change"].dropna())
+
+                if total > 0:
+                    increased_pct = (increased / total) * 100
+                    decreased_pct = (decreased / total) * 100
+                    summary_data.append({
+                        'Column': col,
+                        'Increased (%)': increased_pct,
+                        'Decreased (%)': decreased_pct,
+                        'Total Properties': total
+                    })
+
+            # Create summary DataFrame and sort by 'Decreased (%)'
+            summary_df = pd.DataFrame(summary_data)
+            summary_df = summary_df.sort_values('Decreased (%)', ascending=False)
+            st.table(summary_df)
+
+            # For detailed view
             col_1 = f"{selected_metric}_{selected_dates[0]}"
             col_2 = f"{selected_metric}_{selected_dates[1]}"
-
-            # Calculate percentage change for each property
             df_pivot[f"{selected_metric}_change"] = ((df_pivot[col_2] - df_pivot[col_1]) / df_pivot[col_1]) * 100
-
-            # Filter by significant changes
             df_significant = df_pivot[df_pivot[f"{selected_metric}_change"].abs() >= significant_change]
-
-            # Create a neat table
+            
             neat_table = df_significant[[col_1, col_2, f"{selected_metric}_change"]].reset_index()
             neat_table.columns = ['Property', f'Value at {selected_dates[0]}', f'Value at {selected_dates[1]}', 'Percentage Change']
             neat_table = neat_table.sort_values('Percentage Change', ascending=False)
