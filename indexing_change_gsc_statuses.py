@@ -32,9 +32,6 @@ if uploaded_file is not None:
             # Select only numeric columns (columns starting with "pct")
             pct_cols = [col for col in df_filtered.columns if col.startswith('pct')]
 
-            # Dropdown to select specific pct metric for detailed view
-            selected_metric = st.sidebar.selectbox('Select a Specific Metric for Detailed View:', pct_cols)
-
             # Group by property and calculate the median for only pct columns
             df_grouped = df_filtered.groupby(['property', 'scrap_date'])[pct_cols].median().reset_index()
 
@@ -43,11 +40,12 @@ if uploaded_file is not None:
             df_pivot.columns = [f"{col[0]}_{col[1].date()}" for col in df_pivot.columns]
 
             summary_data = []
+
             for col in pct_cols:
                 col_1 = f"{col}_{selected_dates[0]}"
                 col_2 = f"{col}_{selected_dates[1]}"
 
-                # Calculate percentage change for each property
+                # Calculate the percentage change for each property for this pct column
                 df_pivot[f"{col}_change"] = ((df_pivot[col_2] - df_pivot[col_1]) / df_pivot[col_1]) * 100
 
                 # Filter by significant changes
@@ -73,18 +71,18 @@ if uploaded_file is not None:
             summary_df = summary_df.sort_values('Decreased (%)', ascending=False)
             st.table(summary_df)
 
-            # For detailed view
+            # Display detailed table for specific metric
+            selected_metric = st.selectbox('Select a Metric for Detailed Analysis:', pct_cols)
             col_1 = f"{selected_metric}_{selected_dates[0]}"
             col_2 = f"{selected_metric}_{selected_dates[1]}"
-            df_pivot[f"{selected_metric}_change"] = ((df_pivot[col_2] - df_pivot[col_1]) / df_pivot[col_1]) * 100
+
             df_significant = df_pivot[df_pivot[f"{selected_metric}_change"].abs() >= significant_change]
-            
+
             neat_table = df_significant[[col_1, col_2, f"{selected_metric}_change"]].reset_index()
-            neat_table.columns = ['Property', f'Value at {selected_dates[0]}', f'Value at {selected_dates[1]}', 'Percentage Change']
+            neat_table.columns = ['Property', f'Value (Date 1: {selected_dates[0]})', f'Value (Date 2: {selected_dates[1]})', 'Percentage Change']
             neat_table = neat_table.sort_values('Percentage Change', ascending=False)
 
             st.table(neat_table)
-
         else:
             st.write("Please select exactly two dates for comparison.")
     else:
