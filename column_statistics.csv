@@ -1,0 +1,53 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from datetime import datetime
+
+# Function to load data
+@st.cache
+def load_data():
+    data = pd.read_csv('yourfile.csv', parse_dates=['scrap_date'])
+    return data
+
+data = load_data()
+
+
+st.sidebar.header('Filters')
+
+# Text input for filtering by property
+property_filter = st.sidebar.text_input("Property contains")
+
+# Using a multiselect (you could also use a date input for specific date selection)
+selected_date = st.sidebar.date_input("Select date", datetime.now())
+
+# Filter data based on selections
+filtered_data = data[data['property'].str.contains(property_filter)]
+filtered_data = filtered_data[filtered_data['scrap_date'] == pd.to_datetime(selected_date)]
+
+
+# Iterating through each column in the dataframe
+for column in filtered_data.columns:
+    if filtered_data[column].dtype in [np.float, np.int]:  # check if the column is numeric
+        st.header(f"Analyzing column: {column}")
+
+        # Calculate statistics
+        daily_average = filtered_data[column].mean()
+        daily_median = filtered_data[column].median()
+        daily_90_percentile = np.percentile(filtered_data[column], 90)
+        daily_10_percentile = np.percentile(filtered_data[column], 10)
+
+        # Display statistics
+        st.subheader('Statistics')
+        st.text(f"Average: {daily_average}")
+        st.text(f"Median: {daily_median}")
+        st.text(f"90th Percentile: {daily_90_percentile}")
+        st.text(f"10th Percentile: {daily_10_percentile}")
+
+        # Generate a trend chart
+        st.subheader('Trend chart over time')
+        filtered_data.set_index('scrap_date')[column].plot()  # This creates a simple line plot
+        st.pyplot(plt)  # Display the plot
+
+        st.write("---")  # Adding a separating line for clarity
+
