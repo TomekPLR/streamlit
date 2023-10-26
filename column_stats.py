@@ -40,7 +40,6 @@ if uploaded_file is not None:
             st.header(f"Analyzing column: {column}")
 
             # Calculate statistics for the specific selected date
-            daily_average = filtered_data_on_date[column].mean()
             daily_median = filtered_data_on_date[column].median()
             daily_90_percentile = np.percentile(filtered_data_on_date[column].dropna(), 90)
             daily_10_percentile = np.percentile(filtered_data_on_date[column].dropna(), 10)
@@ -48,19 +47,18 @@ if uploaded_file is not None:
             # Display statistics
             st.subheader('Statistics for selected day')
             st.markdown(f"""
-            - **Average**: {daily_average}
             - **Median**: {daily_median}
             - **90th Percentile**: {daily_90_percentile}
             - **10th Percentile**: {daily_10_percentile}
             """)
 
-            # Generate a trend chart of daily averages over time
-            st.subheader('Trend chart over time (Daily Average)')
-            daily_data = filtered_data.groupby('scrap_date')[column].mean().reset_index()
+            # Generate a trend chart of daily medians over time
+            st.subheader('Trend chart over time (Daily Median)')
+            daily_data = filtered_data.groupby('scrap_date')[column].median().reset_index()  # using median now
             fig, ax = plt.subplots()
-            ax.plot(daily_data['scrap_date'], daily_data[column], label=f'Daily Average {column}')  # Plotting the trend
+            ax.plot(daily_data['scrap_date'], daily_data[column], label=f'Daily Median {column}')  # Plotting the trend
             ax.set_xlabel('Date')
-            ax.set_ylabel(f'Average {column}')
+            ax.set_ylabel(f'Median {column}')
             ax.legend()
             st.pyplot(fig)
 
