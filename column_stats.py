@@ -16,16 +16,20 @@ if uploaded_file is not None:
 
     # Sidebar user inputs for filtering
     st.sidebar.header('Filters')
-    property_filter = st.sidebar.text_input("Property contains")
+    filter_type = st.sidebar.selectbox("Filter type", ["contains", "doesn't contain"])
+    property_filter = st.sidebar.text_input("Property")
     selected_date = st.sidebar.date_input("Select date")
 
     # Filter data based on selections
     if property_filter:
-        filtered_data = data[data['property'].str.contains(property_filter)]
+        if filter_type == "contains":
+            filtered_data = data[data['property'].str.contains(property_filter)]
+        else:
+            filtered_data = data[~data['property'].str.contains(property_filter)]
     else:
         filtered_data = data
 
-    filtered_data = filtered_data[filtered_data['scrap_date'] == pd.to_datetime(selected_date)]
+    filtered_data_on_date = filtered_data[filtered_data['scrap_date'] == pd.to_datetime(selected_date)]
 
     # Main window of the app to display data and stats
     st.write("Data Overview:", data)  # Show the entire data loaded for user reference
@@ -35,11 +39,11 @@ if uploaded_file is not None:
         if filtered_data[column].dtype in [np.float64, np.int64]:  # checking if the column is numeric
             st.header(f"Analyzing column: {column}")
 
-            # Calculate statistics
-            daily_average = filtered_data[column].mean()
-            daily_median = filtered_data[column].median()
-            daily_90_percentile = np.percentile(filtered_data[column].dropna(), 90)
-            daily_10_percentile = np.percentile(filtered_data[column].dropna(), 10)
+            # Calculate statistics for the specific selected date
+            daily_average = filtered_data_on_date[column].mean()
+            daily_median = filtered_data_on_date[column].median()
+            daily_90_percentile = np.percentile(filtered_data_on_date[column].dropna(), 90)
+            daily_10_percentile = np.percentile(filtered_data_on_date[column].dropna(), 10)
 
             # Display statistics
             st.subheader('Statistics for selected day')
@@ -50,12 +54,13 @@ if uploaded_file is not None:
             - **10th Percentile**: {daily_10_percentile}
             """)
 
-            # Generate a trend chart
-            st.subheader('Trend chart over time')
+            # Generate a trend chart of daily averages over time
+            st.subheader('Trend chart over time (Daily Average)')
+            daily_data = filtered_data.groupby('scrap_date')[column].mean().reset_index()
             fig, ax = plt.subplots()
-            ax.plot(data['scrap_date'], data[column], label=column)  # Plotting the trend
+            ax.plot(daily_data['scrap_date'], daily_data[column], label=f'Daily Average {column}')  # Plotting the trend
             ax.set_xlabel('Date')
-            ax.set_ylabel(column)
+            ax.set_ylabel(f'Average {column}')
             ax.legend()
             st.pyplot(fig)
 
