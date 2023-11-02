@@ -25,8 +25,15 @@ if uploaded_file is not None:
     # Read CSV
     df = pd.read_csv(uploaded_file)
 
+    # Select columns to exclude from analysis
+    st.header("Columns to Exclude")
+    exclude_columns = st.multiselect("Select columns to exclude from analysis:", df.columns.tolist())
+
+    # Filter out the excluded columns
+    filtered_df = df.drop(columns=exclude_columns)
+
     # Select only numeric columns
-    numeric_df = df.select_dtypes(include=[np.number])
+    numeric_df = filtered_df.select_dtypes(include=[np.number])
 
     # Calculate correlation matrix
     corr_matrix = numeric_df.corr()
