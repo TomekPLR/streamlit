@@ -4,14 +4,9 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def get_most_correlated_pairs(corr_matrix):
-    pairs_to_drop = set()
-    cols = corr_matrix.columns
-    for i in range(0, corr_matrix.shape[1]):
-        for j in range(0, i+1):
-            pairs_to_drop.add((cols[i], cols[j]))
-
-    corrs = corr_matrix.unstack().drop(labels=pairs_to_drop).sort_values(ascending=False, key=lambda x: abs(x))
+def get_most_correlated_pairs(corr_matrix, selected_column):
+    # Get the correlation pairs related to the selected column
+    corrs = corr_matrix[selected_column].sort_values(ascending=False, key=lambda x: abs(x))
     return corrs
 
 st.title("CSV Correlation Explorer")
@@ -43,13 +38,17 @@ if uploaded_file is not None:
     corr_matrix = numeric_df.corr()
 
     st.header("Correlation Matrix")
-    # Adjust figure size and annotation font size
     fig, ax = plt.subplots(figsize=(max(10, len(numeric_df.columns)), max(8, len(numeric_df.columns) // 2)))
     sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', ax=ax, annot_kws={'size': 8})
     plt.xticks(rotation=45)
     plt.yticks(rotation=45)
     st.pyplot(fig)
 
-    st.header("Most Correlated Pairs")
-    most_correlated_pairs = get_most_correlated_pairs(corr_matrix)
-    st.write(most_correlated_pairs)
+    # Let user select a column
+    st.header("Correlation Analysis")
+    selected_column = st.selectbox("Select a column to see most correlated columns:", numeric_df.columns.tolist())
+
+    # Display most correlated pairs for the selected column
+    st.header(f"Most Correlated Columns with {selected_column}")
+    most_correlated_pairs = get_most_correlated_pairs(corr_matrix, selected_column)
+    st.write(most_correlated_pairs.drop(selected_column, errors='ignore'))  # Exclude self-correlation
