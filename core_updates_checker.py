@@ -76,4 +76,8 @@ if uploaded_file is not None:
                                 showarrow=True, text=update['name'], textangle=-45))
         # Adding vertical lines
         fig.add_shape(dict(type="line", x0=update['date_start'], x1=update['date_start'], 
-                           y0=0, y1=click
+                           y0=0, y1=clicks_df['clicks'].max(), line=dict(color="Red", width=2)))
+
+    fig.update_layout(annotations=annotations)
+    
+    st.plotly_chart(fig)
