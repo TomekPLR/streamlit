@@ -56,7 +56,7 @@ if uploaded_file is not None:
 
     # Plot the data
     st.write("### Clicks Timeline")
-    fig = px.line(clicks_df, x='date', y='clicks', title='Clicks Over Time')
+    fig = px.scatter(clicks_df, x='date', y='clicks', title='Clicks Over Time')
     
     # Adding annotations for core updates
     annotations = [dict(x=update['date_start'], y=0, showarrow=False, text=update['name'], textangle=-45, xref='x', yref='y') for update in CORE_UPDATES]
