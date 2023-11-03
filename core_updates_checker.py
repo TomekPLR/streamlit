@@ -51,10 +51,11 @@ if uploaded_file is not None:
 
     # Group by week option
     group_by_week = st.checkbox("Group by week")
+    plot_df = clicks_df.copy()
     if group_by_week:
-        clicks_df['week_start'] = clicks_df['date'].dt.to_period('W').apply(lambda r: r.start_time)
-        clicks_df['week_end'] = clicks_df['date'].dt.to_period('W').apply(lambda r: r.end_time)
-        clicks_df = clicks_df.groupby(['week_start', 'week_end']).agg({'clicks': 'sum'}).reset_index()
+        plot_df['week_start'] = plot_df['date'].dt.to_period('W').apply(lambda r: r.start_time)
+        plot_df['week_end'] = plot_df['date'].dt.to_period('W').apply(lambda r: r.end_time)
+        plot_df = plot_df.groupby(['week_start', 'week_end']).agg({'clicks': 'sum'}).reset_index()
 
     # Perform analysis
     results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
@@ -70,17 +71,17 @@ if uploaded_file is not None:
     # Plot the data
     st.write("### Clicks Timeline")
     x_axis = 'week_start' if group_by_week else 'date'
-    fig = px.line(clicks_df, x=x_axis, y='clicks', title='Clicks Over Time')
+    fig = px.line(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
     
     # Adding annotations for selected core updates with alternating positions
     annotations = []
     for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
-        y_pos = 0 if i % 2 == 0 else clicks_df['clicks'].max()
+        y_pos = 0 if i % 2 == 0 else plot_df['clicks'].max()
         annotations.append(dict(x=update['date_start'], y=y_pos, xref='x', yref='y', 
                                 showarrow=True, text=update['name'], textangle=-45))
         # Adding vertical lines
         fig.add_shape(dict(type="line", x0=update['date_start'], x1=update['date_start'], 
-                           y0=0, y1=clicks_df['clicks'].max(), line=dict(color="Red", width=2)))
+                           y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)))
 
     fig.update_layout(annotations=annotations)
     
