@@ -6,25 +6,8 @@ from datetime import datetime, timedelta
 # Sample core updates data
 CORE_UPDATES = [
     {"name": "October 2023 core update", "date_start": "2023-10-05", "duration": 14},
-    {"name": "Ranking ongoing issue", "date_start": "2023-10-05", "duration": 26},
-    {"name": "October 2023 spam update", "date_start": "2023-10-04", "duration": 16},
-    {"name": "September 2023 helpful content update", "date_start": "2023-09-14", "duration": 13},
-    {"name": "August 2023 core update", "date_start": "2023-08-22", "duration": 17},
-    {"name": "April 2023 reviews update", "date_start": "2023-04-12", "duration": 13},
-    {"name": "March 2023 core update", "date_start": "2023-03-15", "duration": 13},
-    {"name": "February 2023 product reviews update", "date_start": "2023-02-21", "duration": 14},
-    {"name": "December 2022 link spam update", "date_start": "2022-12-14", "duration": 29},
-    {"name": "December 2022 helpful content update", "date_start": "2022-12-05", "duration": 38},
-    {"name": "October 2022 spam update", "date_start": "2022-10-19", "duration": 2},
-    {"name": "September 2022 product reviews update", "date_start": "2022-09-20", "duration": 6},
-    {"name": "September 2022 core update", "date_start": "2022-09-12", "duration": 14},
-    {"name": "August 2022 helpful content update", "date_start": "2022-08-25", "duration": 15},
-    {"name": "July 2022 product reviews update", "date_start": "2022-07-27", "duration": 6},
-    {"name": "May 2022 core update", "date_start": "2022-05-25", "duration": 15},
-    {"name": "March 2022 product reviews update", "date_start": "2022-03-23", "duration": 14},
-    {"name": "Page experience update for desktop", "date_start": "2022-02-22", "duration": 9},
+    # ... Add other updates
 ]
-
 
 def analyze_clicks(clicks_df, core_updates, significant_change):
     results = []
@@ -60,7 +43,9 @@ significant_change = st.slider("Select the significant change percentage", 0, 10
 if uploaded_file is not None:
     # Read and display the clicks data
     clicks_df = pd.read_csv(uploaded_file)
-    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%d %b %Y')
+    
+    # Adjusting date format to match "Sep 27, 2023"
+    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%b %d, %Y')
     
     # Sort data by date
     clicks_df = clicks_df.sort_values('date')
@@ -91,8 +76,4 @@ if uploaded_file is not None:
                                 showarrow=True, text=update['name'], textangle=-45))
         # Adding vertical lines
         fig.add_shape(dict(type="line", x0=update['date_start'], x1=update['date_start'], 
-                           y0=0, y1=clicks_df['clicks'].max(), line=dict(color="Red", width=2)))
-
-    fig.update_layout(annotations=annotations)
-    
-    st.plotly_chart(fig)
+                           y0=0, y1=click
