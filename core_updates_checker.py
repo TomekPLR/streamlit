@@ -19,11 +19,9 @@ CORE_UPDATES = [
     {"name": "September 2022 product reviews update", "date_start": "2022-09-20", "duration": 6},
     {"name": "September 2022 core update", "date_start": "2022-09-12", "duration": 14},
     {"name": "August 2022 helpful content update", "date_start": "2022-08-25", "duration": 15},
-    {"name": "July 2022 product reviews update", "date_start": "2022-07-27", "duration": 6},
-    {"name": "May 2022 core update", "date_start": "2022-05-25", "duration": 15},
-    {"name": "March 2022 product reviews update", "date_start": "2022-03-23", "duration": 14},
-    {"name": "Page experience update for desktop", "date_start": "2022-02-22", "duration": 9},
+    {"name": "July 2022 product reviews update", "date_start": "2022-07-27", "duration": 6}
 ]
+
 
 
 def analyze_clicks(clicks_df, core_updates, significant_change):
