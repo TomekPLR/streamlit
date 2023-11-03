@@ -59,7 +59,7 @@ significant_change = st.slider("Select the significant change percentage", 0, 10
 if uploaded_file is not None:
     # Read and display the clicks data
     clicks_df = pd.read_csv(uploaded_file)
-    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%d %b %Y')
+    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%d-%b-%Y')
     st.write("### Clicks Data")
     st.write(clicks_df)
 
