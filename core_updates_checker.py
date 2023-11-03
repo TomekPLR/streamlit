@@ -71,8 +71,7 @@ if uploaded_file is not None:
     plot_df = clicks_df.copy()
     if group_by_week:
         plot_df['week_start'] = plot_df['date'].dt.to_period('W').apply(lambda r: r.start_time)
-        plot_df['week_end'] = plot_df['date'].dt.to_period('W').apply(lambda r: r.end_time)
-        plot_df = plot_df.groupby(['week_start', 'week_end']).agg({'clicks': 'sum'}).reset_index()
+        plot_df = plot_df.groupby(['week_start']).agg({'clicks': 'sum'}).reset_index()
 
     # Perform analysis
     results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
@@ -85,11 +84,14 @@ if uploaded_file is not None:
     update_names = [update['name'] for update in CORE_UPDATES]
     selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
 
+    # Let user choose plot type
+    plot_type = st.selectbox("Select plot type", ['Line', 'Dotted'])
+
     # Plot the data
     st.write("### Clicks Timeline")
     x_axis = 'week_start' if group_by_week else 'date'
-    chart_type = 'scatter' if group_by_week else 'line'
-    fig = px.scatter(plot_df, x=x_axis, y='clicks', title='Clicks Over Time') if group_by_week else px.line(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
+    chart_func = px.line if plot_type == 'Line' else px.scatter
+    fig = chart_func(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
     
     # Adding annotations for selected core updates with alternating positions
     annotations = []
