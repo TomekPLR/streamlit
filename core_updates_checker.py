@@ -88,7 +88,8 @@ if uploaded_file is not None:
     # Plot the data
     st.write("### Clicks Timeline")
     x_axis = 'week_start' if group_by_week else 'date'
-    fig = px.line(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
+    chart_type = 'scatter' if group_by_week else 'line'
+    fig = px.scatter(plot_df, x=x_axis, y='clicks', title='Clicks Over Time') if group_by_week else px.line(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
     
     # Adding annotations for selected core updates with alternating positions
     annotations = []
