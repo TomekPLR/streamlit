@@ -44,6 +44,10 @@ if uploaded_file is not None:
     # Read and display the clicks data
     clicks_df = pd.read_csv(uploaded_file)
     clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%d %b %Y')
+    
+    # Sort data by date
+    clicks_df = clicks_df.sort_values('date')
+    
     st.write("### Clicks Data")
     st.write(clicks_df)
 
