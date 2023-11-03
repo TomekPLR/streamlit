@@ -29,7 +29,7 @@ def analyze_clicks(clicks_df, core_updates, significant_change):
     results = []
 
     for update in core_updates:
-        start_date = datetime.strptime(update['date_start'], '%Y-%m-%d')
+        start_date = datetime.strptime(update['date_start'], '%d %b %Y')
         end_date = start_date + timedelta(days=update['duration'])
         before_start = start_date - timedelta(days=14)
 
@@ -58,7 +58,8 @@ significant_change = st.slider("Select the significant change percentage", 0, 10
 
 if uploaded_file is not None:
     # Read and display the clicks data
-    clicks_df = pd.read_csv(uploaded_file, parse_dates=['date'])
+    clicks_df = pd.read_csv(uploaded_file)
+    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%d %b %Y')
     st.write("### Clicks Data")
     st.write(clicks_df)
 
