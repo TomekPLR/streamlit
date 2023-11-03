@@ -75,13 +75,17 @@ if uploaded_file is not None:
     st.write("### Analysis Results")
     st.write(results_df)
 
+    # Let user select core updates to annotate
+    update_names = [update['name'] for update in CORE_UPDATES]
+    selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
+
     # Plot the data
     st.write("### Clicks Timeline")
     fig = px.line(clicks_df, x='date', y='clicks', title='Clicks Over Time')
     
-    # Adding annotations for core updates with alternating positions
+    # Adding annotations for selected core updates with alternating positions
     annotations = []
-    for i, update in enumerate(CORE_UPDATES):
+    for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
         y_pos = 0 if i % 2 == 0 else clicks_df['clicks'].max()
         annotations.append(dict(x=update['date_start'], y=y_pos, xref='x', yref='y', 
                                 showarrow=True, text=update['name'], textangle=-45))
