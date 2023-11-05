@@ -42,8 +42,6 @@ domain = st.text_input("Type your domain (without www) 🔗")
 
 user_values = {}
 for field in medians.keys():
-    custom_image = Image.open("path_to_your_image.jpg")  # replace with your image path
-    st.image(custom_image, caption=f"{field}", use_column_width=True)
     if '%' in field:
         user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
     else:
