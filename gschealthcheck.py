@@ -1,5 +1,4 @@
 import streamlit as st
-from PIL import Image
 
 # Define median values and custom messages
 medians = {
