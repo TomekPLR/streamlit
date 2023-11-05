@@ -3,7 +3,20 @@ from PIL import Image
 
 # Define median values and custom messages
 medians = {
-    #... (same as above)
+    'Poor URLs for mobile': 100,
+    'URLs need improvement': 200,
+    'Good URLs': 100,
+    'Average response time': 300,
+    'OK (200) + 304': 20,
+    '404': 55,
+    '301': 20,
+    '% of requests with server errors': 24,
+    'purpose_discovery': 10,
+    'page_resource': 25,
+    'Number of indexed pages': 272,
+    'number of unindexed pages': 935,
+    'number of pages classified as Crawled currently not indexed': 100,
+    'number of pages classfied as discovered currently not indexed': 200
 }
 
 custom_messages = {
