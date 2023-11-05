@@ -62,9 +62,9 @@ field_groups = {
 
 # Define custom images for each group
 group_images = {
-    'Core Web Vitals report': 'path_to_core_web_vitals_image.jpg',
-    'Crawl stats report': 'path_to_crawl_stats_image.jpg',
-    'Indexing report': 'path_to_indexing_report_image.jpg'
+    'Core Web Vitals report': 'https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png',
+    'Crawl stats report': 'https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png',
+    'Indexing report': 'https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png'
 }
 
 # Input form
