@@ -60,12 +60,7 @@ field_groups = {
     ]
 }
 
-# Define custom images for each group
-group_images = {
-    'Core Web Vitals report': 'path_to_core_web_vitals_image.jpg',
-    'Crawl stats report': 'path_to_crawl_stats_image.jpg',
-    'Indexing report': 'path_to_indexing_report_image.jpg'
-}
+
 
 # Input form
 st.title("SEO Checker 🕵️‍♀️")
@@ -74,18 +69,12 @@ domain = st.text_input("Type your domain (without www) 🔗")
 user_values = {}
 for group, fields in field_groups.items():
     st.subheader(group)
-    #custom_image_path = group_images[group]
-    #try:
-     #   custom_image = Image.open(custom_image_path)
-      #  st.image(custom_image, caption=f"{group}", use_column_width=True)
-    #except FileNotFoundError:
-     #   st.warning(f"Image for {group} not found. Please check the file path.")
-
-    #for field in fields:
-     #   if '%' in field:
-      #      user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
-       # else:
-        #    user_values[field] = st.number_input(f"{field} 🧮", 0)
+   
+    for field in fields:
+       if '%' in field:
+            user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
+        else:
+           user_values[field] = st.number_input(f"{field} 🧮", 0)
 
 # Compare to median and display result
 if st.button("Compare 🔄"):
