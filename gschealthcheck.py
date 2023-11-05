@@ -70,17 +70,15 @@ domain = st.text_input("Type your domain (without www) 🔗")
 user_values = {}
 for group, fields in field_groups.items():
     with st.expander(group):
-        st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
-        st.image(default_image, width=300, use_column_width=False, output_format='PNG', caption=None)
+        st.text(group_descriptions[group])
+        st.image(default_image, use_column_width=True)
         for field in fields:
-            col1, col2 = st.columns(2)
-            col1.markdown(f"<p style='text-align: center;'>{field}</p>", unsafe_allow_html=True)
-            col2.image(default_image, width=100, use_column_width=False, output_format='PNG', caption=None)
+            st.markdown(f"<p style='text-align: center;'>{field}</p>", unsafe_allow_html=True)
+            st.image(default_image, use_column_width=True)
             if '%' in field:
                 user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
             else:
                 user_values[field] = st.number_input(f"{field} 🧮", 0)
-            st.image(default_image, width=100, use_column_width=False, output_format='PNG', caption=None)
             st.markdown("---")  # Visual divider
 
 # Compare to median and display result
@@ -91,9 +89,8 @@ if st.button("Compare 🔄"):
             st.subheader(group)
             for field in fields:
                 median_value = medians[field]
-                col1, col2 = st.columns(2)
-                col1.markdown(f"<p style='text-align: center;'>{field}</p>", unsafe_allow_html=True)
-                col2.image(default_image, width=100, use_column_width=False, output_format='PNG', caption=None)
+                st.markdown(f"<p style='text-align: center;'>{field}</p>", unsafe_allow_html=True)
+                st.image(default_image, use_column_width=True)
                 if field in lower_is_better:
                     if user_values[field] < median_value:
                         st.write(f"{field}: **Better** than median ({median_value}) 😃\n")
