@@ -62,9 +62,9 @@ field_groups = {
 
 # Define custom images for each group
 group_images = {
-    'Core Web Vitals report': 'https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png',
-    'Crawl stats report': 'https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png',
-    'Indexing report': 'https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png'
+    'Core Web Vitals report': 'path_to_core_web_vitals_image.jpg',
+    'Crawl stats report': 'path_to_crawl_stats_image.jpg',
+    'Indexing report': 'path_to_indexing_report_image.jpg'
 }
 
 # Input form
@@ -75,8 +75,11 @@ user_values = {}
 for group, fields in field_groups.items():
     st.subheader(group)
     custom_image_path = group_images[group]
-    custom_image = Image.open(custom_image_path)
-    st.image(custom_image, caption=f"{group}", use_column_width=True)
+    try:
+        custom_image = Image.open(custom_image_path)
+        st.image(custom_image, caption=f"{group}", use_column_width=True)
+    except FileNotFoundError:
+        st.warning(f"Image for {group} not found. Please check the file path.")
 
     for field in fields:
         if '%' in field:
