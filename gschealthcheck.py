@@ -29,11 +29,7 @@ custom_messages = {
     '% of indexed pages': "Increase your <b>indexed pages</b>.",
 }
 
-custom_images = {
-    '% of Good URLs': "https://example.com/good-urls-image.png",
-    'Average response time': "https://example.com/average-response-time-image.png",
-    # Add more images here
-}
+default_image = "https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png"
 
 lower_is_better = [
     'Average response time', '301', '404', 
@@ -66,10 +62,8 @@ group_descriptions = {
     'Indexing report': 'This report shows indexing status.',
 }
 
-default_item_image = "https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png"
-default_group_image = "https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png"
-
 # Input form
+st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("SEO Checker 🕵️‍♀️")
 domain = st.text_input("Type your domain (without www) 🔗")
 
@@ -77,12 +71,15 @@ user_values = {}
 for group, fields in field_groups.items():
     with st.expander(group):
         st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
-        st.image(default_group_image, width=300, use_column_width=False, output_format='PNG')
+        st.image(default_image, width=300, use_column_width=False, output_format='PNG', caption=None)
         for field in fields:
+            st.markdown(f"<p style='text-align: center;'>{field}</p>", unsafe_allow_html=True)
             if '%' in field:
                 user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
             else:
                 user_values[field] = st.number_input(f"{field} 🧮", 0)
+            st.image(default_image, width=100, use_column_width=False, output_format='PNG', caption=None)
+            st.markdown("---")  # Visual divider
 
 # Compare to median and display result
 if st.button("Compare 🔄"):
@@ -92,9 +89,8 @@ if st.button("Compare 🔄"):
             st.subheader(group)
             for field in fields:
                 median_value = medians[field]
-                
-                st.image(custom_images.get(field, default_item_image), width=100, use_column_width=False, output_format='PNG')
-                
+                st.markdown(f"<p style='text-align: center;'>{field}</p>", unsafe_allow_html=True)
+                st.image(default_image, width=100, use_column_width=False, output_format='PNG', caption=None)
                 if field in lower_is_better:
                     if user_values[field] < median_value:
                         st.write(f"{field}: **Better** than median ({median_value}) 😃\n")
