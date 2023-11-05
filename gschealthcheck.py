@@ -60,7 +60,7 @@ domain = st.text_input("Type your domain (without www) 🔗")
 
 user_values = {}
 for group, fields in field_groups.items():
-    with st.beta_expander(group):
+    with st.expander(group):
         for field in fields:
             if '%' in field:
                 user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
@@ -69,7 +69,7 @@ for group, fields in field_groups.items():
 
 # Compare to median and display result
 if st.button("Compare 🔄"):
-    with st.beta_expander("Results"):
+    with st.expander("Results"):
         st.subheader("Comparison Results:")
         for group, fields in field_groups.items():
             st.subheader(group)
