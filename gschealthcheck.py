@@ -1,4 +1,5 @@
 import streamlit as st
+from PIL import Image
 
 # Define median values and custom messages
 medians = {
@@ -35,25 +36,65 @@ custom_messages = {
     'number of pages classfied as discovered currently not indexed': "Ensure discovered pages are indexed.",
 }
 
+# Define field groups
+field_groups = {
+    'Core Web Vitals report': [
+        'Poor URLs for mobile',
+        'URLs need improvement',
+        'Good URLs'
+    ],
+    'Crawl stats report': [
+        'Average response time',
+        'OK (200) + 304',
+        '404',
+        '301',
+        '% of requests with server errors',
+        'purpose_discovery',
+        'page_resource'
+    ],
+    'Indexing report': [
+        'Number of indexed pages',
+        'number of unindexed pages',
+        'number of pages classified as Crawled currently not indexed',
+        'number of pages classfied as discovered currently not indexed'
+    ]
+}
+
+# Define custom images for each group
+group_images = {
+    'Core Web Vitals report': 'path_to_core_web_vitals_image.jpg',
+    'Crawl stats report': 'path_to_crawl_stats_image.jpg',
+    'Indexing report': 'path_to_indexing_report_image.jpg'
+}
+
 # Input form
 st.title("SEO Checker 🕵️‍♀️")
 domain = st.text_input("Type your domain (without www) 🔗")
 
 user_values = {}
-for field in medians.keys():
-    if '%' in field:
-        user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
-    else:
-        user_values[field] = st.number_input(f"{field} 🧮", 0)
+for group, fields in field_groups.items():
+    st.subheader(group)
+    custom_image_path = group_images[group]
+    custom_image = Image.open(custom_image_path)
+    st.image(custom_image, caption=f"{group}", use_column_width=True)
+
+    for field in fields:
+        if '%' in field:
+            user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
+        else:
+            user_values[field] = st.number_input(f"{field} 🧮", 0)
 
 # Compare to median and display result
 if st.button("Compare 🔄"):
     st.subheader("Comparison Results:")
-    for field, median_value in medians.items():
-        if user_values[field] < median_value:
-            st.write(f"{field}: **Lower** than median ({median_value}) 😟")
-            st.write(f"👉 {custom_messages[field]}")
-        elif user_values[field] > median_value:
-            st.write(f"{field}: **Higher** than median ({median_value}) 😃")
-        else:
-            st.write(f"{field}: **Equal** to median ({median_value}) 😐")
+    for group, fields in field_groups.items():
+        st.subheader(group)
+        for field in fields:
+            median_value = medians[field]
+            if user_values[field] < median_value:
+                st.write(f"{field}: **Lower** than median ({median_value}) 😟")
+                st.write(f"👉 {custom_messages[field]}")
+            elif user_values[field] > median_value:
+                st.write(f"{field}: **Higher** than median ({median_value}) 😃")
+            else:
+                st.write(f"{field}: **Equal** to median ({median_value}) 😐")
