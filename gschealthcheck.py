@@ -71,10 +71,10 @@ for group, fields in field_groups.items():
     st.subheader(group)
    
     for field in fields:
-       if '%' in field:
+        if '%' in field:
             user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
         else:
-           user_values[field] = st.number_input(f"{field} 🧮", 0)
+            user_values[field] = st.number_input(f"{field} 🧮", 0)
 
 # Compare to median and display result
 if st.button("Compare 🔄"):
