@@ -73,7 +73,7 @@ for group, fields in field_groups.items():
         st.text(group_descriptions[group])
         st.image(default_image, use_column_width=True)
         for field in fields:
-            st.markdown(f"<p style='font-size:18px; text-align: center;'>{field}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size:18px; text-align: center;'>Enter {field}</p>", unsafe_allow_html=True)
             st.image(default_image, use_column_width=True)
             if '%' in field:
                 user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
