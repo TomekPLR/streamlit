@@ -112,6 +112,6 @@ if st.button("Compare 🔄"):
             result_message = "✅" if (value > median_value and better) or (value < median_value and not better) else "❌"
             st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
             st.image(custom_images.get(field, default_image), use_column_width='always')
-            st.markdown(f"<h4 style='text-align: center;'>{result_message} {field}: **{value}** {'Higher' if better else 'Lower'} than median ({median_value})</h4>", unsafe_allow_html=True)
+            st.markdown(f"<h4 style='text-align: center;'>{result_message} {field}: **{value}** {'worse' if better else 'Lower'} than median ({median_value})</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='text-align: center;'>{message}</p>", unsafe_allow_html=True)
             st.markdown("---")  # Visual divider
