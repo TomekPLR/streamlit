@@ -32,31 +32,31 @@ better_higher = {
 
 # Custom messages for each field
 success_messages = {
-     'Good URLs': 100,
-    'Average response time': 300,
-    'OK (200) + 304': 20,
-    '404': 55,
-    '301': 20,
-    'Server errors': 24,
-    'Discovery': 10,
-    'Resource requests': 25,
-    'Not indexed': 100,
-    'Discovered not indexed': 200,
-    'Indexed': 272
+    'Good URLs': "Excellent! Your Good URLs percentage is outstanding.",
+    'Average response time': "Fantastic! Your response time is faster than average.",
+    'OK (200) + 304': "Great! You're getting a high number of OK responses.",
+    '404': "Good work! You have fewer 404 errors than the median.",
+    '301': "Nicely done! Your redirects are fewer than the median, which could mean a more straightforward site structure.",
+    'Server errors': "You're doing well! Your server errors are less than the median.",
+    'Discovery': "Superb! Your pages with discovery purpose are well above the median.",
+    'Resource requests': "Well managed! Your requests for page resources are lower than the median.",
+    'Not indexed': "That's good! You have fewer not indexed pages than the median.",
+    'Discovered not indexed': "You're on track! You have fewer discovered but not indexed pages than the median.",
+    'Indexed': "Outstanding! You have more indexed pages than the median, which is great for SEO."
 }
 
 improvement_messages = {
-     'Good URLs': 100,
-    'Average response time': 300,
-    'OK (200) + 304': 20,
-    '404': 55,
-    '301': 20,
-    'Server errors': 24,
-    'Discovery': 10,
-    'Resource requests': 25,
-    'Not indexed': 100,
-    'Discovered not indexed': 200,
-    'Indexed': 272,
+    'Good URLs': "There's room for improvement. Aim to increase your Good URLs percentage.",
+    'Average response time': "Looks like your response time could be faster. It's an important factor for both users and SEO.",
+    'OK (200) + 304': "It's good to aim for more OK responses to improve user experience.",
+    '404': "You might want to check on those 404 errors. They're above the median and can negatively affect the user experience.",
+    '301': "There's potential to streamline your redirects. Too many can impact load times and user navigation.",
+    'Server errors': "Server errors are higher than the median. It's crucial to investigate and resolve these.",
+    'Discovery': "You're below the median in pages with discovery purpose. Enhancing content discoverability is key.",
+    'Resource requests': "Your page resource requests are above the median, which could slow down your site.",
+    'Not indexed': "You have more not indexed pages than the median. It's important to have these pages crawled and indexed.",
+    'Discovered not indexed': "There are more discovered but not indexed pages than the median. Ensure they get indexed for better visibility.",
+    'Indexed': "The number of indexed pages is below the median. You'll want to work on improving this for better search presence."
 }
 
 # Default image for groups and fields
