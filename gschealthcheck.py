@@ -120,7 +120,7 @@ for group, fields in field_groups.items():
         for field in fields:
             st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
             st.image(custom_images.get(field, default_image), use_column_width='always')
-            user_values[field] = st.number_input(f"Enter value for {field}", min_value=0)
+            user_values[field] = st.number_input(f"Enter value for your {field}", min_value=0)
 
 # Compare to median and display result
 if st.button("Do a Health check! 🔄"):
