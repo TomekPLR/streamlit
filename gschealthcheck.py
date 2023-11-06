@@ -65,8 +65,8 @@ default_image = "https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_m
 # Custom images for each field and group (if needed, otherwise use default)
 custom_images = {
     'Core Web Vitals report': "https://gscmastery.com/wp-content/uploads/2023/11/Monosnap-Core-Web-Vitals-🔊-2023-11-06-18-30-30.png",
-    'Crawl stats report': "https://gscmastery.com/wp-content/uploads/2023/11/crawl_stats.png",
-    'Indexing report': "https://gscmastery.com/wp-content/uploads/2023/11/page_indexed.png",
+    'Crawl stats report': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_statuses.png",
+    'Indexing report': "https://gscmastery.com/wp-content/uploads/2023/gsc/page_indexed.png",
     # ... (add custom URLs for groups or fields as necessary)
 }
 
