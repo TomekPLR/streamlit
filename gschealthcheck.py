@@ -1,77 +1,91 @@
 import streamlit as st
 
-# Define median values and custom messages
+# Define median values
 medians = {
     'Good URLs': 80,
-    'Bad URLs': 10,
+    'Bad URLs': 20,
     'URLs need improvement': 10,
-    'Indexed Pages': 95,
-    'Not Indexed Pages': 5,
-    # Add more medians for other fields if necessary
+    'Indexed Pages': 1000,
+    'Not Indexed Pages': 100,
+    # Add more median values for other fields as necessary
 }
 
-custom_messages = {
-    '% of Good URLs': "<b>Good job</b> on having a high percentage of quality URLs!",
-    'Indexed/Not indexed': "You have a healthy number of indexed pages. Keep it up!",
-    # Add more custom messages for other fields if necessary
+# Default images for each field (can be changed individually)
+field_images = {
+    'Good URLs': "default_image_url.png",
+    'Bad URLs': "default_image_url.png",
+    'URLs need improvement': "default_image_url.png",
+    'Indexed Pages': "default_image_url.png",
+    'Not Indexed Pages': "default_image_url.png",
+    # Add more field images as necessary
 }
 
-default_image = "https://your-default-image-url.png"
+# Messages for success or improvement based on comparison with median values
+success_messages = {
+    'Good URLs': "You have a good number of quality URLs. Great job!",
+    'Bad URLs': "Your number of bad URLs is within a normal range.",
+    'URLs need improvement': "The number of URLs that need improvement is acceptable.",
+    'Indexed Pages': "Your number of indexed pages is impressive!",
+    'Not Indexed Pages': "The number of not indexed pages is within expected limits.",
+    # Add more success messages for other fields as necessary
+}
+
+improvement_messages = {
+    'Good URLs': "Consider improving your quality URLs.",
+    'Bad URLs': "You may have too many bad URLs. Consider reviewing them.",
+    'URLs need improvement': "A significant number of URLs need improvement.",
+    'Indexed Pages': "Look into why more of your pages aren't being indexed.",
+    'Not Indexed Pages': "There are more not indexed pages than usual. Investigate!",
+    # Add more improvement messages for other fields as necessary
+}
 
 field_groups = {
     'Core Web Vitals report': ['Good URLs', 'Bad URLs', 'URLs need improvement'],
     'Indexing report': ['Indexed Pages', 'Not Indexed Pages'],
-    # Add more groups and fields if necessary
+    # Add more field groups as necessary
 }
 
 group_descriptions = {
     'Core Web Vitals report': 'This report shows the quality of URLs on your website.',
     'Indexing report': 'This report displays the indexing status of your website\'s pages.',
-    # Add more descriptions for other groups if necessary
+    # Add more group descriptions as necessary
 }
 
-# Input form
+# App layout styling
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("SEO Checker 🕵️‍♀️")
 domain = st.text_input("Type your domain (without www) 🔗")
 
-# Collect user values for each field
+# Collect user input
 user_values = {}
 
 for group, fields in field_groups.items():
     with st.expander(group):
-        st.text(group_descriptions[group])
-        st.image(default_image, use_column_width=True)
+        st.markdown(f"<h2 style='text-align: center;'>{group}</h2>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
+        st.image(field_images.get(fields[0], "default_image_url.png"), use_column_width='always')
         for field in fields:
-            user_values[field] = st.number_input(f"{field} 🧮", 0)
+            st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
+            st.image(field_images[field], use_column_width='always')
+            user_values[field] = st.number_input(f"Enter value for {field}", min_value=0)
 
-# Calculate the percentages based on the user input
-if st.button("Calculate 🔄"):
+# Process and display the results
+if st.button("Compare 🔄"):
     with st.expander("Results"):
         st.subheader("Comparison Results:")
 
-        # Calculations for Core Web Vitals
-        good_urls = user_values.get('Good URLs', 0)
-        bad_urls = user_values.get('Bad URLs', 0)
-        urls_need_improvement = user_values.get('URLs need improvement', 0)
-        total_urls = good_urls + bad_urls + urls_need_improvement
-        percent_good_urls = (good_urls / total_urls * 100) if total_urls else 0
-
-        st.markdown(f"<p style='text-align: center;'>% of Good URLs: {percent_good_urls:.2f}%</p>", unsafe_allow_html=True)
-        st.markdown(custom_messages['% of Good URLs'], unsafe_allow_html=True)
-
-        # Calculations for Indexing report
-        indexed_pages = user_values.get('Indexed Pages', 0)
-        not_indexed_pages = user_values.get('Not Indexed Pages', 0)
-        indexed_ratio = (indexed_pages / (indexed_pages + not_indexed_pages) * 100) if (indexed_pages + not_indexed_pages) else 0
-
-        st.markdown(f"<p style='text-align: center;'>Indexed/Not indexed: {indexed_ratio:.2f}%</p>", unsafe_allow_html=True)
-        st.markdown(custom_messages['Indexed/Not indexed'], unsafe_allow_html=True)
-
-        # Add more calculations for other groups and fields if necessary
-
-# Footer
-st.markdown("---")
-st.markdown("SEO Checker provided by GSC Mastery. Ensure your site is fully optimized!")
-
-# Run the app with: streamlit run your_script.py
+        for field in user_values:
+            value = user_values[field]
+            median_value = medians[field]
+            st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
+            st.image(field_images[field], use_column_width='always')
+            
+            if value >= median_value:
+                message = success_messages[field]
+                st.success(f"✅ {field}: **{value}** - Better than median ({median_value}) 😃")
+            else:
+                message = improvement_messages[field]
+                st.error(f"❌ {field}: **{value}** - Lower than median ({median_value}) 😟")
+            
+            st.markdown(f"<p style='text-align: center;'>{message}</p>", unsafe_allow_html=True)
+            st.markdown("---")  # Visual divider
