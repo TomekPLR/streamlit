@@ -22,9 +22,30 @@ CORE_UPDATES = [
     {"name": "July 2022 product reviews update", "date_start": "2022-07-27", "duration": 6}
 ]
 
-
 def analyze_clicks(clicks_df, core_updates, significant_change):
-    # ... (your existing analyze_clicks function)
+    results = []
+
+    for update in core_updates:
+        start_date = datetime.strptime(update['date_start'], '%Y-%m-%d')
+        after_end = start_date + timedelta(days=update['duration'])
+        before_start = start_date - timedelta(days=14)
+
+        # Filter data and calculate sum of clicks
+        clicks_before = clicks_df[(clicks_df['date'] >= before_start) & (clicks_df['date'] < start_date)]['clicks'].sum()
+        clicks_after = clicks_df[(clicks_df['date'] >= start_date) & (clicks_df['date'] <= after_end)]['clicks'].sum()
+
+        difference = clicks_after - clicks_before
+
+        if abs(difference) / clicks_before * 100 >= significant_change:
+            results.append({
+                'Update Name': update['name'],
+                'Clicks Before': clicks_before,
+                'Clicks After': clicks_after,
+                'Difference': difference,
+                'Percentage Change': (difference / clicks_before * 100) if clicks_before > 0 else 0
+            })
+
+    return pd.DataFrame(results)
 
 st.title("Website Hit Analysis during Core Updates")
 
@@ -93,16 +114,6 @@ if uploaded_file is not None:
             # Annotate the end date if checkbox is checked
             annotations.append(dict(
                 x=str(update_end_date.date()), y=y_pos, xref='x', yref='y',
-                showarrow=True, text=update['name'] + ' end', textangle=-45
-            ))
-            # Add vertical line for end date
-            fig.add_shape(dict(
-                type="line", x0=str(update_end_date.date()), x1=str(update_end_date.date()),
-                y0=0, y1=plot_df['clicks'].max(), line=dict(color="Blue", width=2)
-            ))
-
-    fig.update_layout(annotations=annotations)
-
-    st.plotly_chart(fig)
-
+                showarrow=True, text=f"{update['name']} end", textangle=-45
+           
 
