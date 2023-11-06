@@ -32,15 +32,31 @@ better_higher = {
 
 # Custom messages for each field
 success_messages = {
-    'Good URLs': "Excellent! A high number of good URLs.",
-    'Average response time': "Great! Your response time is fast.",
-    # ... (add success messages for all fields)
+     'Good URLs': 100,
+    'Average response time': 300,
+    'OK (200) + 304': 20,
+    '404': 55,
+    '301': 20,
+    'Server errors': 24,
+    'Discovery': 10,
+    'Resource requests': 25,
+    'Not indexed': 100,
+    'Discovered not indexed': 200,
+    'Indexed': 272
 }
 
 improvement_messages = {
-    'Good URLs': "Consider reviewing your URLs for quality improvement.",
-    'Average response time': "Your average response time can be improved.",
-    # ... (add improvement messages for all fields)
+     'Good URLs': 100,
+    'Average response time': 300,
+    'OK (200) + 304': 20,
+    '404': 55,
+    '301': 20,
+    'Server errors': 24,
+    'Discovery': 10,
+    'Resource requests': 25,
+    'Not indexed': 100,
+    'Discovered not indexed': 200,
+    'Indexed': 272,
 }
 
 # Default image for groups and fields
