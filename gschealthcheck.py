@@ -114,7 +114,7 @@ user_values = {}
 
 for group, fields in field_groups.items():
     with st.expander(group):
-        st.markdown(f"<h2 style='text-align: center;'>{group}</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2 style='text-align: center;'>Enter your {group}</h2>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
         st.image(custom_images.get(group, default_image), use_column_width='always')
         for field in fields:
@@ -123,7 +123,7 @@ for group, fields in field_groups.items():
             user_values[field] = st.number_input(f"Enter value for {field}", min_value=0)
 
 # Compare to median and display result
-if st.button("Compare 🔄"):
+if st.button("Do a Health check! 🔄"):
     with st.expander("Results"):
         for field, value in user_values.items():
             median_value = medians[field]
