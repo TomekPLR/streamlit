@@ -1,91 +1,101 @@
 import streamlit as st
 
-# Define median values
+# Define median values and custom messages
 medians = {
-    'Good URLs': 80,
-    'Bad URLs': 20,
-    'URLs need improvement': 10,
-    'Indexed Pages': 1000,
-    'Not Indexed Pages': 100,
-    # Add more median values for other fields as necessary
+    'Good URLs': 100,
+    'Average response time': 300,
+    'OK (200) + 304': 20,
+    '404': 55,
+    '301': 20,
+    'Server errors': 24,
+    'Discovery': 10,
+    'Resource requests': 25,
+    'Not indexed': 100,
+    'Discovered not indexed': 200,
+    'Indexed': 272,
 }
 
-# Default images for each field (can be changed individually)
-field_images = {
-    'Good URLs': "default_image_url.png",
-    'Bad URLs': "default_image_url.png",
-    'URLs need improvement': "default_image_url.png",
-    'Indexed Pages': "default_image_url.png",
-    'Not Indexed Pages': "default_image_url.png",
-    # Add more field images as necessary
+# Define whether a higher or lower value is better for each field
+better_higher = {
+    'Good URLs': True,
+    'Average response time': False,
+    'OK (200) + 304': True,
+    '404': False,
+    '301': False,
+    'Server errors': False,
+    'Discovery': True,
+    'Resource requests': False,
+    'Not indexed': False,
+    'Discovered not indexed': False,
+    'Indexed': True,
 }
 
-# Messages for success or improvement based on comparison with median values
+# Custom messages for each field
 success_messages = {
-    'Good URLs': "You have a good number of quality URLs. Great job!",
-    'Bad URLs': "Your number of bad URLs is within a normal range.",
-    'URLs need improvement': "The number of URLs that need improvement is acceptable.",
-    'Indexed Pages': "Your number of indexed pages is impressive!",
-    'Not Indexed Pages': "The number of not indexed pages is within expected limits.",
-    # Add more success messages for other fields as necessary
+    'Good URLs': "Excellent! A high number of good URLs.",
+    'Average response time': "Great! Your response time is fast.",
+    # ... (add success messages for all fields)
 }
 
 improvement_messages = {
-    'Good URLs': "Consider improving your quality URLs.",
-    'Bad URLs': "You may have too many bad URLs. Consider reviewing them.",
-    'URLs need improvement': "A significant number of URLs need improvement.",
-    'Indexed Pages': "Look into why more of your pages aren't being indexed.",
-    'Not Indexed Pages': "There are more not indexed pages than usual. Investigate!",
-    # Add more improvement messages for other fields as necessary
+    'Good URLs': "Consider reviewing your URLs for quality improvement.",
+    'Average response time': "Your average response time can be improved.",
+    # ... (add improvement messages for all fields)
 }
 
+# Default image for groups and fields
+default_image = "https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png"
+
+# Custom images for each field and group (if needed, otherwise use default)
+custom_images = {
+    'Core Web Vitals report': default_image,
+    'Crawl stats report': default_image,
+    'Indexing report': default_image,
+    # ... (add custom URLs for groups or fields as necessary)
+}
+
+# Define the groups of fields and descriptions
 field_groups = {
-    'Core Web Vitals report': ['Good URLs', 'Bad URLs', 'URLs need improvement'],
-    'Indexing report': ['Indexed Pages', 'Not Indexed Pages'],
-    # Add more field groups as necessary
+    'Core Web Vitals report': ['Good URLs'],
+    'Crawl stats report': ['Average response time', 'OK (200) + 304', '404', '301', 'Server errors'],
+    'Indexing report': ['Discovery', 'Resource requests', 'Not indexed', 'Discovered not indexed', 'Indexed']
 }
 
 group_descriptions = {
-    'Core Web Vitals report': 'This report shows the quality of URLs on your website.',
-    'Indexing report': 'This report displays the indexing status of your website\'s pages.',
-    # Add more group descriptions as necessary
+    'Core Web Vitals report': 'This report shows the quality of URLs.',
+    'Crawl stats report': 'This report shows crawl statistics.',
+    'Indexing report': 'This report shows indexing status.',
 }
 
 # App layout styling
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("SEO Checker 🕵️‍♀️")
-domain = st.text_input("Type your domain (without www) 🔗")
 
-# Collect user input
+# Input form
+st.text_input("Type your domain (without www) 🔗")
+
 user_values = {}
 
 for group, fields in field_groups.items():
     with st.expander(group):
         st.markdown(f"<h2 style='text-align: center;'>{group}</h2>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
-        st.image(field_images.get(fields[0], "default_image_url.png"), use_column_width='always')
+        st.image(custom_images.get(group, default_image), use_column_width='always')
         for field in fields:
             st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
-            st.image(field_images[field], use_column_width='always')
+            st.image(custom_images.get(field, default_image), use_column_width='always')
             user_values[field] = st.number_input(f"Enter value for {field}", min_value=0)
 
-# Process and display the results
+# Compare to median and display result
 if st.button("Compare 🔄"):
     with st.expander("Results"):
-        st.subheader("Comparison Results:")
-
-        for field in user_values:
-            value = user_values[field]
+        for field, value in user_values.items():
             median_value = medians[field]
+            better = better_higher[field]
+            message = success_messages[field] if (value > median_value and better) or (value < median_value and not better) else improvement_messages[field]
+            result_message = "✅" if (value > median_value and better) or (value < median_value and not better) else "❌"
             st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
-            st.image(field_images[field], use_column_width='always')
-            
-            if value >= median_value:
-                message = success_messages[field]
-                st.success(f"✅ {field}: **{value}** - Better than median ({median_value}) 😃")
-            else:
-                message = improvement_messages[field]
-                st.error(f"❌ {field}: **{value}** - Lower than median ({median_value}) 😟")
-            
+            st.image(custom_images.get(field, default_image), use_column_width='always')
+            st.markdown(f"<h4 style='text-align: center;'>{result_message} {field}: **{value}** {'Higher' if better else 'Lower'} than median ({median_value})</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='text-align: center;'>{message}</p>", unsafe_allow_html=True)
             st.markdown("---")  # Visual divider
