@@ -12,6 +12,7 @@ medians = {
     'Resource requests': 25,
     'Not indexed': 100,
     'Discovered not indexed': 200,
+    'Crawled not indexed': 200,
     'Indexed': 272,
 }
 
@@ -27,6 +28,8 @@ better_higher = {
     'Resource requests': False,
     'Not indexed': False,
     'Discovered not indexed': False,
+        'Crawled not indexed': False,
+
     'Indexed': True,
 }
 
@@ -42,6 +45,8 @@ success_messages = {
     'Resource requests': "Well managed! Your requests for page resources are lower than the median.",
     'Not indexed': "That's good! You have fewer not indexed pages than the median.",
     'Discovered not indexed': "You're on track! You have fewer discovered but not indexed pages than the median.",
+        'Crawled not indexed': "You're on track! You have fewer discovered but not indexed pages than the median.",
+
     'Indexed': "Outstanding! You have more indexed pages than the median, which is great for SEO."
 }
 
@@ -55,7 +60,7 @@ improvement_messages = {
     'Discovery': "You're below the median in pages with discovery purpose. Enhancing content discoverability is key.",
     'Resource requests': "Your page resource requests are above the median, which could slow down your site.",
     'Not indexed': "You have more not indexed pages than the median. It's important to have these pages crawled and indexed.",
-    'Discovered not indexed': "There are more discovered but not indexed pages than the median. Ensure they get indexed for better visibility.",
+    'Crawled not indexed': "There are more discovered but not indexed pages than the median. Ensure they get indexed for better visibility.",
     'Indexed': "The number of indexed pages is below the median. You'll want to work on improving this for better search presence."
 }
 
@@ -69,19 +74,22 @@ custom_images = {
     'Indexing report': "https://gscmastery.com/wp-content/uploads/2023/gsc/page_indexed.png",
     'Average response time': "https://gscmastery.com/wp-content/uploads/2023/gsc/average_resp_time.png",     
 
-    'Good URLs': 100,
-    'Average response time': 300,
+    'Good URLs': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_good.png',
+    'Need improvement URLs': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_need_improvement.png',
+    'Bad URLs': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_bad.png',
+
     'OK (200) + 304': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stat_ok.png',
     '404': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_404.png',
     '301': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_301.png',
     'Server errors': 'https://gscmastery.com/wp-content/uploads/2023/gsc/server_errors.png',
-    'Discovery': 10,
-    'Resource requests': 25,
-    'Not indexed': 100,
-    'Discovered not indexed': 200,
-    'Indexed': 272,
+    'Discovery': 'https://gscmastery.com/wp-content/uploads/2023/gsc/discovery.png',
+    'Resource requests': 'https://gscmastery.com/wp-content/uploads/2023/gsc/page_resource.png',
+    'Indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/indexed.png',
+    'Not indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/not_indexed.png',
+    'Discovered not indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/discovered_not_indexed.png',
+    'Crawled not indexed': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawled_not_indexed.png",
 
-    # ... (add custom URLs for groups or fields as necessary)
+
 }
 
 # Define the groups of fields and descriptions
