@@ -67,7 +67,19 @@ custom_images = {
     'Core Web Vitals report': "https://gscmastery.com/wp-content/uploads/2023/11/Monosnap-Core-Web-Vitals-🔊-2023-11-06-18-30-30.png",
     'Crawl stats report': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_statuses.png",
     'Indexing report': "https://gscmastery.com/wp-content/uploads/2023/gsc/page_indexed.png",
-    'Average response time': "https://gscmastery.com/wp-content/uploads/2023/gsc/average_resp_time.png",
+    'Average response time': "https://gscmastery.com/wp-content/uploads/2023/gsc/average_resp_time.png",     
+
+    'Good URLs': 100,
+    'Average response time': 300,
+    'OK (200) + 304': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stat_ok.png',
+    '404': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_404.png',
+    '301': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_301.png',
+    'Server errors': 'https://gscmastery.com/wp-content/uploads/2023/gsc/server_errors.png',
+    'Discovery': 10,
+    'Resource requests': 25,
+    'Not indexed': 100,
+    'Discovered not indexed': 200,
+    'Indexed': 272,
 
     # ... (add custom URLs for groups or fields as necessary)
 }
