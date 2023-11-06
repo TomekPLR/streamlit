@@ -78,7 +78,7 @@ if st.button("Compare 🔄"):
         
         # Check and display for Indexed Pages
         st.markdown(f"### % of Indexed Pages")
-                st.markdown(f"<p style='text-align: center;'>Indexed Pages: {indexed_pages} ✅</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center;'>Indexed Pages: {indexed_pages} ✅</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>Not Indexed Pages: {not_indexed_pages} ❌</p>", unsafe_allow_html=True)
         st.markdown(f"👉 <b>Percentage of Indexed Pages: {indexed_ratio:.2f}%</b>", unsafe_allow_html=True)
         st.markdown("---")  # Visual divider
