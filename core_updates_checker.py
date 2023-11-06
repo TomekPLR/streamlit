@@ -23,31 +23,8 @@ CORE_UPDATES = [
 ]
 
 
-
 def analyze_clicks(clicks_df, core_updates, significant_change):
-    results = []
-
-    for update in core_updates:
-        start_date = datetime.strptime(update['date_start'], '%Y-%m-%d')
-        after_end = start_date + timedelta(days=14)
-        before_start = start_date - timedelta(days=14)
-
-        # Filter data and calculate sum of clicks
-        clicks_before = clicks_df[(clicks_df['date'] >= before_start) & (clicks_df['date'] < start_date)]['clicks'].sum()
-        clicks_after = clicks_df[(clicks_df['date'] > start_date) & (clicks_df['date'] <= after_end)]['clicks'].sum()
-
-        difference = clicks_after - clicks_before
-
-        if abs(difference) / clicks_before * 100 >= significant_change:
-            results.append({
-                'Update Name': update['name'],
-                'Clicks Before': clicks_before,
-                'Clicks After': clicks_after,
-                'Difference': difference,
-                'Percentage Change': difference / clicks_before * 100
-            })
-
-    return pd.DataFrame(results)
+    # ... (your existing analyze_clicks function)
 
 st.title("Website Hit Analysis during Core Updates")
 
@@ -58,7 +35,7 @@ significant_change = st.slider("Select the significant change percentage", 0, 10
 if uploaded_file is not None:
     # Read and display the clicks data
     clicks_df = pd.read_csv(uploaded_file)
-    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%b %d, %Y')
+    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%Y-%m-%d')
     clicks_df = clicks_df.sort_values('date')
 
     st.write("### Clicks Data")
@@ -82,6 +59,9 @@ if uploaded_file is not None:
     update_names = [update['name'] for update in CORE_UPDATES]
     selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
 
+    # Checkbox to select if annotations for core update ends should be shown
+    show_update_ends = st.checkbox("Show annotations for core update ends")
+
     # Let user choose plot type
     plot_type = st.selectbox("Select plot type", ['Line', 'Dotted'])
 
@@ -90,17 +70,39 @@ if uploaded_file is not None:
     x_axis = 'week_start' if group_by_week else 'date'
     chart_func = px.line if plot_type == 'Line' else px.scatter
     fig = chart_func(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
-    
+
     # Adding annotations for selected core updates with alternating positions
     annotations = []
     for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
+        update_start_date = datetime.strptime(update['date_start'], '%Y-%m-%d')
+        update_end_date = update_start_date + timedelta(days=update['duration'])
         y_pos = 0 if i % 2 == 0 else plot_df['clicks'].max()
-        annotations.append(dict(x=update['date_start'], y=y_pos, xref='x', yref='y', 
-                                showarrow=True, text=update['name'], textangle=-45))
-        # Adding vertical lines
-        fig.add_shape(dict(type="line", x0=update['date_start'], x1=update['date_start'], 
-                           y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)))
+
+        # Annotate the start date
+        annotations.append(dict(
+            x=update['date_start'], y=y_pos, xref='x', yref='y',
+            showarrow=True, text=update['name'], textangle=-45
+        ))
+        # Add vertical line for start date
+        fig.add_shape(dict(
+            type="line", x0=update['date_start'], x1=update['date_start'],
+            y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)
+        ))
+
+        if show_update_ends:
+            # Annotate the end date if checkbox is checked
+            annotations.append(dict(
+                x=str(update_end_date.date()), y=y_pos, xref='x', yref='y',
+                showarrow=True, text=update['name'] + ' end', textangle=-45
+            ))
+            # Add vertical line for end date
+            fig.add_shape(dict(
+                type="line", x0=str(update_end_date.date()), x1=str(update_end_date.date()),
+                y0=0, y1=plot_df['clicks'].max(), line=dict(color="Blue", width=2)
+            ))
 
     fig.update_layout(annotations=annotations)
-    
+
     st.plotly_chart(fig)
+
+
