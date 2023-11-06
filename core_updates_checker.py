@@ -22,17 +22,18 @@ CORE_UPDATES = [
     {"name": "July 2022 product reviews update", "date_start": "2022-07-27", "duration": 6}
 ]
 
+
 def analyze_clicks(clicks_df, core_updates, significant_change):
     results = []
 
     for update in core_updates:
         start_date = datetime.strptime(update['date_start'], '%Y-%m-%d')
-        after_end = start_date + timedelta(days=update['duration'])
+        after_end = start_date + timedelta(days=14)
         before_start = start_date - timedelta(days=14)
 
         # Filter data and calculate sum of clicks
         clicks_before = clicks_df[(clicks_df['date'] >= before_start) & (clicks_df['date'] < start_date)]['clicks'].sum()
-        clicks_after = clicks_df[(clicks_df['date'] >= start_date) & (clicks_df['date'] <= after_end)]['clicks'].sum()
+        clicks_after = clicks_df[(clicks_df['date'] > start_date) & (clicks_df['date'] <= after_end)]['clicks'].sum()
 
         difference = clicks_after - clicks_before
 
@@ -42,7 +43,7 @@ def analyze_clicks(clicks_df, core_updates, significant_change):
                 'Clicks Before': clicks_before,
                 'Clicks After': clicks_after,
                 'Difference': difference,
-                'Percentage Change': (difference / clicks_before * 100) if clicks_before > 0 else 0
+                'Percentage Change': difference / clicks_before * 100
             })
 
     return pd.DataFrame(results)
@@ -56,7 +57,7 @@ significant_change = st.slider("Select the significant change percentage", 0, 10
 if uploaded_file is not None:
     # Read and display the clicks data
     clicks_df = pd.read_csv(uploaded_file)
-    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%Y-%m-%d')
+    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%b %d, %Y')
     clicks_df = clicks_df.sort_values('date')
 
     st.write("### Clicks Data")
@@ -80,11 +81,11 @@ if uploaded_file is not None:
     update_names = [update['name'] for update in CORE_UPDATES]
     selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
 
-    # Checkbox to select if annotations for core update ends should be shown
-    show_update_ends = st.checkbox("Show annotations for core update ends")
-
     # Let user choose plot type
     plot_type = st.selectbox("Select plot type", ['Line', 'Dotted'])
+
+    # Let user choose to show end dates
+    show_end_dates = st.checkbox("Show end dates for updates")
 
     # Plot the data
     st.write("### Clicks Timeline")
@@ -95,31 +96,28 @@ if uploaded_file is not None:
     # Adding annotations for selected core updates with alternating positions
     annotations = []
     for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
-        update_start_date = datetime.strptime(update['date_start'], '%Y-%m-%d')
-        update_end_date = update_start_date + timedelta(days=update['duration'])
-        y_pos = plot_df['clicks'].max() * ((i % 2) + 0.5) / 2  # Alternating y position
+        y_pos = 0 if i % 2 == 0 else plot_df['clicks'].max()
+        update_start_date = datetime.strptime(update['date_start'], "%Y-%m-%d")
+        annotations.append(dict(x=update_start_date.strftime('%b %d, %Y'), y=y_pos, xref='x', yref='y', 
+                                showarrow=True, text=update['name'], textangle=-45))
+        # Adding vertical lines for start date
+        fig.add_shape(dict(type="line", x0=update_start_date.strftime('%b %d, %Y'), x1=update_start_date.strftime('%b %d, %Y'), 
+                           y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)))
 
-        # Annotate the start date
-        annotations.append(dict(
-            x=update['date_start'], y=y_pos, xref='x', yref='y',
-            showarrow=True, arrowhead=1, text=update['name'], ax=-40, ay=-30
-        ))
-        # Add vertical line for start date
-        fig.add_vline(x=update['date_start'], line=dict(color="Red", width=2), line_dash="dash")
+        if show_end_dates:
+            update_end_date = update_start_date + timedelta(days=update['duration'])
+            annotations.append(dict(x=update_end_date.strftime('%b %d, %Y'), y=y_pos, xref='x', yref='y', 
+                                    showarrow=True, text=f"{update['name']} end", textangle=-45))
+            # Adding vertical lines for end date
+            fig.add_shape(dict(type="line", x0=update_end_date.strftime('%b %d, %Y'), x1=update_end_date.strftime('%b %d, %Y'), 
+                               y0=0, y1=plot_df['clicks'].max(), line=dict(color="Green", width=2)))
 
-        if show_update_ends:
-            # Annotate the end date if checkbox is checked
-            annotations.append(dict(
-                x=str(update_end_date.date()), y=y_pos, xref='x', yref='y',
-                showarrow=True, arrowhead=1, text=f"{update['name']} end", ax=-40, ay=-30
-            ))
-            # Add vertical line for end date
-            fig.add_vline(x=str(update_end_date.date()), line=dict(color="Green", width=2), line_dash="dash")
-
-    # Apply the annotations to the figure
     fig.update_layout(annotations=annotations)
 
-    # Display the figure
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
+
+
+
+
 
                       
