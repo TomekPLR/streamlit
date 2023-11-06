@@ -97,23 +97,29 @@ if uploaded_file is not None:
     for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
         update_start_date = datetime.strptime(update['date_start'], '%Y-%m-%d')
         update_end_date = update_start_date + timedelta(days=update['duration'])
-        y_pos = 0 if i % 2 == 0 else plot_df['clicks'].max()
+        y_pos = plot_df['clicks'].max() * ((i % 2) + 0.5) / 2  # Alternating y position
 
         # Annotate the start date
         annotations.append(dict(
             x=update['date_start'], y=y_pos, xref='x', yref='y',
-            showarrow=True, text=update['name'], textangle=-45
+            showarrow=True, arrowhead=1, text=update['name'], ax=-40, ay=-30
         ))
         # Add vertical line for start date
-        fig.add_shape(dict(
-            type="line", x0=update['date_start'], x1=update['date_start'],
-            y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)
-        ))
+        fig.add_vline(x=update['date_start'], line=dict(color="Red", width=2), line_dash="dash")
 
         if show_update_ends:
             # Annotate the end date if checkbox is checked
             annotations.append(dict(
                 x=str(update_end_date.date()), y=y_pos, xref='x', yref='y',
-                showarrow=True, text=f"{update['name']} end", textangle=-45
-           
+                showarrow=True, arrowhead=1, text=f"{update['name']} end", ax=-40, ay=-30
+            ))
+            # Add vertical line for end date
+            fig.add_vline(x=str(update_end_date.date()), line=dict(color="Green", width=2), line_dash="dash")
 
+    # Apply the annotations to the figure
+    fig.update_layout(annotations=annotations)
+
+    # Display the figure
+    st.plotly_chart(fig, use_container_width=True)
+
+                      
