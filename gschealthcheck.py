@@ -2,108 +2,111 @@ import streamlit as st
 
 # Define median values and custom messages
 medians = {
-    'Indexed/Not indexed': 1.2,  # Example median for the ratio of Indexed to Not indexed
+    'Indexed': 272,
+    'Not indexed': 100,
+    'Good URLs': 100,
+    'Bad URLs': 55,
+    'URLs Need Improvement': 20,
     'Average response time': 300,
     'OK (200) + 304': 20,
     '404': 55,
     '301': 20,
     '% of requests with server errors': 24,
-    '% of pages with discovery purpose': 10,
     '% of requests for page resources': 25,
-    'Crawled/not indexed': 0.5,  # Example median for the ratio of Crawled to Not indexed
-    'Discovered/not indexed': 1.0,  # Example median for the ratio of Discovered to Not indexed
-    '% of Good URLs': 85,  # Example median for the percentage of Good URLs
+    '% of pages with discovery purpose': 10,
 }
 
 custom_messages = {
-    'Indexed/Not indexed': "Your indexing ratio can be improved.",
-    # ... other custom messages ...
-    '% of Good URLs': "Your website's URL quality can be better.",
-    # ... other custom messages ...
+    'Indexed': "Increase your <b>indexed pages</b>.",
+    'Not indexed': "Ensure <b>discovered pages</b> are indexed.",
+    'Good URLs': "<b>Good job</b> on having a high percentage of quality URLs!",
+    'Bad URLs': "Too many <i>404 errors</i>, check your broken links.",
+    'URLs Need Improvement': "There's room for improvement. Optimize your URLs for better performance.",
+    'Average response time': "Your <i>average response time</i> can be improved.",
+    # ... other messages
 }
-
-# ... your other predefined data ...
 
 group_descriptions = {
-    'Core Web Vitals report': 'This report shows the quality of URLs.',
-    'Crawl stats report': 'This report shows crawl statistics.',
-    'Indexing report': 'This report shows indexing status.',
+    'Core Web Vitals report': 'This report shows the quality of URLs in terms of their status and performance.',
+    'Crawl stats report': 'This report shows crawl statistics for your site and how it can be optimized.',
+    'Indexing report': 'This report details the status of your site\'s URLs whether they have been indexed or not.',
 }
 
-# Input form
+# Default image
+default_image = "https://gscmastery.com/wp-content/uploads/2023/09/cropped-gsc_mastery_logo-1.png"
+
+# Set up layout
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("SEO Checker 🕵️‍♀️")
+
+# Input form
 domain = st.text_input("Type your domain (without www) 🔗")
 
 user_values = {}
-user_values['Good URLs'] = 0
-user_values['Bad URLs'] = 0
-user_values['URLs need improvement'] = 0
-user_values['Indexed'] = 0
-user_values['Not indexed'] = 0
 
-for group, fields in field_groups.items():
-    with st.expander(group):
-        st.text(group_descriptions[group])
-        st.image(default_image, use_column_width=True)
-        for field in fields:
-            st.markdown(f"<p style='font-size:18px; text-align: center;'>Enter {field}</p>", unsafe_allow_html=True)
-            st.image(default_image, use_column_width=True)
-            if field in ['Indexed', 'Not indexed']:
-                user_values[field] = st.number_input(f"{field} 🧮", 0)
-            elif field in ['Good URLs', 'Bad URLs', 'URLs need improvement']:
-                user_values[field] = st.number_input(f"{field} 🧮", 0)
-            else:
-                if '%' in field:
-                    user_values[field] = st.slider(f"{field} (%) 📊", 0, 100)
-                else:
-                    user_values[field] = st.number_input(f"{field} 🧮", 0)
-            st.markdown("---")  # Visual divider
+# Input for Good URLs vs Bad URLs vs URLs Need Improvement
+good_urls = st.number_input("Good URLs 🟢", 0)
+bad_urls = st.number_input("Bad URLs 🔴", 0)
+urls_need_improvement = st.number_input("URLs Need Improvement 🟡", 0)
+
+total_urls = good_urls + bad_urls + urls_need_improvement
+percent_good_urls = (good_urls / total_urls * 100) if total_urls > 0 else 0
+user_values['% of Good URLs'] = percent_good_urls
+
+# Input for Indexed vs Not indexed
+indexed_pages = st.number_input("Indexed Pages 📈", 0)
+not_indexed_pages = st.number_input("Not Indexed Pages 📉", 0)
+
+indexed_ratio = (indexed_pages / (indexed_pages + not_indexed_pages) * 100) if (indexed_pages + not_indexed_pages) > 0 else 0
+user_values['% of indexed pages'] = indexed_ratio
+
+# Here you should add inputs for the other values you want to track, similarly to above.
+# ...
 
 # Compare to median and display result
 if st.button("Compare 🔄"):
     with st.expander("Results"):
         st.subheader("Comparison Results:")
+        
+        # Check and display for Good URLs
+        st.markdown(f"### % of Good URLs")
+        st.markdown(f"<p style='text-align: center;'>Good URLs: {good_urls} 🔵</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center;'>Bad URLs: {bad_urls} 🔴</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center;'>URLs Need Improvement: {urls_need_improvement} 🟡</p>", unsafe_allow_html=True)
+        st.markdown(f"👉 <b>Percentage of Good URLs: {percent_good_urls:.2f}%</b>", unsafe_allow_html=True)
+        st.markdown("---")  # Visual divider
+        
+        # Check and display for Indexed Pages
+        st.markdown(f"### % of Indexed Pages")
+                st.markdown(f"<p style='text-align: center;'>Indexed Pages: {indexed_pages} ✅</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center;'>Not Indexed Pages: {not_indexed_pages} ❌</p>", unsafe_allow_html=True)
+        st.markdown(f"👉 <b>Percentage of Indexed Pages: {indexed_ratio:.2f}%</b>", unsafe_allow_html=True)
+        st.markdown("---")  # Visual divider
 
-        # Calculate the percentage of Good URLs
-        total_urls = user_values['Good URLs'] + user_values['Bad URLs'] + user_values['URLs need improvement']
-        if total_urls > 0:
-            percent_good_urls = (user_values['Good URLs'] / total_urls) * 100
+        # Add more comparisons as needed for other metrics
+        # For example:
+        # for field in medians.keys():
+        #     median_value = medians[field]
+        #     st.markdown(f"<p style='text-align: center;'>{field}</p>", unsafe_allow_html=True)
+        #     user_value = user_values.get(field, 0)
+        #     # Comparison logic here...
+        #     st.markdown("---")  # Visual divider
+
+        # Example of detailed comparison for 'Average response time'
+        median_response_time = medians['Average response time']
+        user_response_time = st.number_input("Average response time (ms) 🕒", 0)
+        if user_response_time > median_response_time:
+            st.markdown("Your response time is **higher** than the median, which may affect user experience negatively. Consider investigating potential causes and optimizing your server's response time.")
+        elif user_response_time < median_response_time:
+            st.markdown("Your response time is **lower** than the median, which is great for user experience!")
         else:
-            percent_good_urls = 0
-        user_values['% of Good URLs'] = percent_good_urls
+            st.markdown("Your response time matches the median. It's an average performance.")
 
-        # Calculate the ratio of Indexed to Not indexed
-        if user_values['Not indexed'] > 0:
-            indexed_not_indexed_ratio = user_values['Indexed'] / user_values['Not indexed']
-        else:
-            indexed_not_indexed_ratio = 0
-        user_values['Indexed/Not indexed'] = indexed_not_indexed_ratio
+        # Continue adding comparisons for the rest of your fields
 
-        for group, fields in field_groups.items():
-            st.subheader(group)
-            for field in fields:
-                if field in user_values:  # Check if we have a calculated value to display
-                    median_value = medians[field]
-                    st.markdown(f"<p style='text-align: center;'>{field}</p>", unsafe_allow_html=True)
-                    st.image(default_image, use_column_width=True)
-                    value_to_compare = user_values[field]
-                    # Custom comparison logic based on the type of value
-                    if field in lower_is_better:
-                        if value_to_compare < median_value:
-                            st.write(f"{field}: **Better** than median ({median_value}) 😃\n")
-                        elif value_to_compare > median_value:
-                            st.write(f"{field}: **Worse** than median ({median_value}) 😟")
-                            st.markdown(f"👉 {custom_messages[field]}", unsafe_allow_html=True)
-                        else:
-                            st.write(f"{field}: **Equal** to median ({median_value}) 😐\n")
-                    else:
-                        if value_to_compare < median_value:
-                            st.write(f"{field}: **Lower** than median ({median_value}) 😟")
-                            st.markdown(f"👉 {custom_messages[field]}", unsafe_allow_html=True)
-                        elif value_to_compare > median_value:
-                            st.write(f"{field}: **Higher** than median ({median_value}) 😃\n")
-                        else:
-                            st.write(f"{field}: **Equal** to median ({median_value}) 😐\n")
+# Footer
+st.markdown("---")
+st.markdown("SEO Checker provided by GSC Mastery. Ensure your site is fully optimized!")
 
-                    st.markdown("---")  # Visual divider
+# Run the app with: streamlit run your_script.py
+
