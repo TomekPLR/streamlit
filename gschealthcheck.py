@@ -73,11 +73,9 @@ custom_images = {
     'Crawl stats report': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_statuses.png",
     'Indexing report': "https://gscmastery.com/wp-content/uploads/2023/gsc/page_indexed.png",
     'Average response time': "https://gscmastery.com/wp-content/uploads/2023/gsc/average_resp_time.png",     
-
     'Good URLs': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_good.png',
     'Need improvement URLs': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_need_improvement.png',
     'Bad URLs': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_bad.png',
-
     'OK (200) + 304': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stat_ok.png',
     '404': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_404.png',
     '301': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_301.png',
@@ -87,7 +85,7 @@ custom_images = {
     'Indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/indexed.png',
     'Not indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/not_indexed.png',
     'Discovered not indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/discovered_not_indexed.png',
-    'Crawled not indexed': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawled_not_indexed.png",
+    'Crawled not indexed': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawled_not_indexed.png"
 
 
 }
