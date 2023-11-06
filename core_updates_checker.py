@@ -23,6 +23,7 @@ CORE_UPDATES = [
 ]
 
 
+
 def analyze_clicks(clicks_df, core_updates, significant_change):
     results = []
 
@@ -84,40 +85,22 @@ if uploaded_file is not None:
     # Let user choose plot type
     plot_type = st.selectbox("Select plot type", ['Line', 'Dotted'])
 
-    # Let user choose to show end dates
-    show_end_dates = st.checkbox("Show end dates for updates")
-
     # Plot the data
     st.write("### Clicks Timeline")
     x_axis = 'week_start' if group_by_week else 'date'
     chart_func = px.line if plot_type == 'Line' else px.scatter
     fig = chart_func(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
-
+    
     # Adding annotations for selected core updates with alternating positions
     annotations = []
     for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
         y_pos = 0 if i % 2 == 0 else plot_df['clicks'].max()
-        update_start_date = datetime.strptime(update['date_start'], "%Y-%m-%d")
-        annotations.append(dict(x=update_start_date.strftime('%b %d, %Y'), y=y_pos, xref='x', yref='y', 
+        annotations.append(dict(x=update['date_start'], y=y_pos, xref='x', yref='y', 
                                 showarrow=True, text=update['name'], textangle=-45))
-        # Adding vertical lines for start date
-        fig.add_shape(dict(type="line", x0=update_start_date.strftime('%b %d, %Y'), x1=update_start_date.strftime('%b %d, %Y'), 
+        # Adding vertical lines
+        fig.add_shape(dict(type="line", x0=update['date_start'], x1=update['date_start'], 
                            y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)))
 
-        if show_end_dates:
-            update_end_date = update_start_date + timedelta(days=update['duration'])
-            annotations.append(dict(x=update_end_date.strftime('%b %d, %Y'), y=y_pos, xref='x', yref='y', 
-                                    showarrow=True, text=f"{update['name']} end", textangle=-45))
-            # Adding vertical lines for end date
-            fig.add_shape(dict(type="line", x0=update_end_date.strftime('%b %d, %Y'), x1=update_end_date.strftime('%b %d, %Y'), 
-                               y0=0, y1=plot_df['clicks'].max(), line=dict(color="Green", width=2)))
-
     fig.update_layout(annotations=annotations)
-
+    
     st.plotly_chart(fig)
-
-
-
-
-
-                      
