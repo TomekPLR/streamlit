@@ -52,13 +52,13 @@ success_messages = {
 
 improvement_messages = {
     'Good URLs': "Your website is slow on mobile devices. It negatively affects users visiting your website, rankings in Google, and crawl budget.<br> Pro Tip: Check out Google PageSpeed Insights. It's an excellent tool that diagnoses your site's issues and offers solutions to enhance its performance.",
-    'Average response time': "Looks like your response time could be faster. It's an important factor for both users and SEO.",
-    'OK (200) + 304': "It's good to aim for more OK responses to improve user experience.",
-    '404': "You might want to check on those 404 errors. They're above the median and can negatively affect the user experience.",
+    'Average response time': "A slow average response time can make Google less likely to discover your entire website. This means not all your important pages might be discovered or indexed.<br><b>Pro Tip:</b> you should talk to your developers about how you can fix average response time. One of the ways to do it is to invest in servers with better performance. ",
+    'OK (200) + 304': "It appears that Google is spending time on pages that aren't meant to be indexed.  This can distract it from focusing on your valuable content. As a result, many of your pages may encounter indexing issues.",
+    '404': "Google spends its budget on pages that don’t exist. <br><b>Pro tip:</b> I recommend using SEO crawlers (such as Screamingfrog) to ensure that there are no internal links pointing to 404 pages. Also, I recommend checking a sample of pages classified as 404 to ensure valid pages aren't erroneously showing 404s.",
     '301': "There's potential to streamline your redirects. Too many can impact load times and user navigation.",
-    'Server errors': "Server errors are higher than the median. It's crucial to investigate and resolve these.",
+    'Server errors': "Server errors send a clear signal to Google that your site can't handle Googlebot visits, which may discourage it from crawling your new pages.<br> <b>Pro tip:</b> you should talk to your developers about the possible causes of server errors. One of the solutions is investing in servers with better performance.  ",
     'Discovery': "You're below the median in pages with discovery purpose. Enhancing content discoverability is key.",
-    'Resource requests': "Your page resource requests are above the median, which could slow down your site.",
+    'Resource requests': "High page resource load is one of the biggest crawl budget killers. If Google is using too much of its crawl budget on rendering, it could neglect to visit and index some of your pages, categorizing them as "Discovered - Currently not indexed." <br><b>Pro Tip: </b>talk to your developers about the issue. Consider upgrading to more powerful servers and implementing caching strategies to improve this metric.",
     'Not indexed': "You have more not indexed pages than the median. It's important to have these pages crawled and indexed.",
     'Crawled not indexed': "There are more discovered but not indexed pages than the median. Ensure they get indexed for better visibility.",
     'Indexed': "The number of indexed pages is below the median. You'll want to work on improving this for better search presence."
