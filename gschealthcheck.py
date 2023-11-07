@@ -105,10 +105,10 @@ group_descriptions = {
 
 # App layout styling
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
-st.title("SEO Checker 🕵️‍♀️")
+st.title("GSC Health checker 🕵️‍♀️")
 
 # Input form
-st.text_input("Type your domain (without www) 🔗")
+st.text_input("Type your domain (without www) - OPTIONAL🔗")
 
 user_values = {}
 
