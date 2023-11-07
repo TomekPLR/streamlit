@@ -51,8 +51,7 @@ success_messages = {
 }
 
 improvement_messages = {
-    'Good URLs': "Your website is slow on mobile devices. It negatively affects users visiting your website, rankings in Google, and crawl budget.<br>  
-Pro Tip: Check out Google PageSpeed Insights. It's an excellent tool that diagnoses your site's issues and offers solutions to enhance its performance.",
+    'Good URLs': "Your website is slow on mobile devices. It negatively affects users visiting your website, rankings in Google, and crawl budget.<br> Pro Tip: Check out Google PageSpeed Insights. It's an excellent tool that diagnoses your site's issues and offers solutions to enhance its performance.",
     'Average response time': "Looks like your response time could be faster. It's an important factor for both users and SEO.",
     'OK (200) + 304': "It's good to aim for more OK responses to improve user experience.",
     '404': "You might want to check on those 404 errors. They're above the median and can negatively affect the user experience.",
