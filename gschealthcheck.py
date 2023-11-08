@@ -1,21 +1,19 @@
 import streamlit as st
 
-
-
 # Define median values and custom messages
 medians = {
-    'Percentage of Good URLs (Mobile)': 29,
-    'Average response time': 350,
-    'Percentage of OK (200) + Not Modified (304) requests': 80,
+    'Percentage of Good URLs (Mobile)': 100,
+    'Average response time': 300,
+    'Percentage of OK (200) + Not Modified (304) requests': 20,
     'Percentage of 404s': 55,
     'Percentage of 301s': 20,
-    'Percentage of server errors': 0.05,
-    'Percentage of requests for Discovery purpose': 17,
-    'Percentage of page resource load': 6.25
-    #'Number of pages not indexed': '10',
-    #'Number of Discovered not indexed pages':'10',
-    #'Number of Crawled not indexed pages': '10',
-    #'Number of Indexed pages': '10',
+    'Percentage of server errors': 24,
+    'Percentage of requests for Discovery purpose': 10,
+    'Percentage of page resource load': 25,
+    'Number of pages not indexed': 100,
+    'Number of Discovered not indexed pages': 200,
+    'Number of Crawled not indexed pages': 200,
+    'Number of Indexed pages': 272,
 }
 
 # Define whether a higher or lower value is better for each field
@@ -106,9 +104,6 @@ group_descriptions = {
 }
 
 # App layout styling
-st.set_page_config(
-        page_title="GSC health checker",
-)
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("GSC Health checker 🕵️‍♀️")
 
