@@ -106,7 +106,12 @@ group_descriptions = {
 # App layout styling
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("GSC Health checker 🕵️‍♀️")
+
+
+st.markdown(f"<h2 style='text-align: center;'>Enter your {group}</h2>", unsafe_allow_html=True)
+
 user_values = {}
+
 
 for group, fields in field_groups.items():
     with st.expander("Enter data from " + group + " report"):
