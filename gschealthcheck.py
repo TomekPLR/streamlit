@@ -98,9 +98,9 @@ field_groups = {
 }
 
 group_descriptions = {
-    'Core Web Vitals report': 'This report shows the quality of URLs.',
-    'Crawl stats report': 'This report shows crawl statistics.',
-    'Indexing report': 'This report shows indexing status.',
+    'Core Web Vitals report': 'To access the report scroll down and click on Core Web Vitals. Alternatively, type this URL: https://search.google.com/search-console/core-web-vitals?resource_id=sc-domain%3A{your_domain}',
+    'Crawl stats report': 'To access this report, you need to scroll down, click on "Settings" then "Crawl Stats". Alternatively, you can type this URL: https://search.google.com/u/0/search-console/settings/crawl-stats?resource_id=sc-domain%3A{your_domain}',
+    'Indexing report': 'To enter data about indexing, go to Indexing -> Pages. Alternatively, click visit this URL: https://search.google.com/search-console/index?resource_id=sc-domain%3A{your_domain}',
 }
 
 # App layout styling
