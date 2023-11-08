@@ -11,7 +11,7 @@ medians = {
     'Percentage of 301s': 20,
     'Percentage of server errors': 0.05,
     'Percentage of requests for Discovery purpose': 17,
-    'Percentage of page resource load': 6 .25,
+    'Percentage of page resource load': 6.25,
     'Number of pages not indexed': '',
     'Number of Discovered not indexed pages':'',
     'Number of Crawled not indexed pages': '',
