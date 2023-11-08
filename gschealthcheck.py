@@ -97,7 +97,7 @@ field_groups = {
     'Indexing report': ['Discovery', 'Resource requests', 'Not indexed', 'Discovered not indexed', 'Indexed']
 }
 
-group_descriptions = { f
+group_descriptions = { 
     'Core Web Vitals report': 'To access the report scroll down and click on Core Web Vitals. Alternatively, type this URL: https://search.google.com/search-console/core-web-vitals?resource_id=sc-domain%3A{your_domain}',
     'Crawl stats report': 'To access this report, you need to scroll down, click on "Settings" then "Crawl Stats". Alternatively, you can type this URL: https://search.google.com/u/0/search-console/settings/crawl-stats?resource_id=sc-domain%3A{your_domain}',
     'Indexing report': 'To enter data about indexing, go to Indexing -> Pages. Alternatively, click visit this URL: https://search.google.com/search-console/index?resource_id=sc-domain%3A{your_domain}',
@@ -118,7 +118,7 @@ for group, fields in field_groups.items():
         st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
         st.image(custom_images.get(group, default_image), use_column_width='always')
         for field in fields:
-            st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
+            st.markdown(f"<h3 style='text-align: center;'>Metric: {field}</h3>", unsafe_allow_html=True)
             st.image(custom_images.get(field, default_image), use_column_width='always')
             user_values[field] = st.number_input(f"Enter value for your {field}", min_value=0)
 
