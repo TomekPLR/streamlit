@@ -1,21 +1,22 @@
 import streamlit as st
 
 
+exclude_from_input = ['Field_To_Exclude_From_Input1', 'Field_To_Exclude_From_Input2']  # Add field names you want to exclude from input
+exclude_from_output = ['Field_To_Exclude_From_Output1', 'Field_To_Exclude_From_Output2']  # Add field names you want to exclude from output
+
 
 # Define median values and custom messages
 medians = {
     'Percentage of Good URLs (Mobile)': 29,
     'Average response time': 350,
-    'Percentage of OK (200) + Not Modified (304) requests': 80,
+    'Percentage of OK (200) + `Not Modified (304) requests': 80,
     'Percentage of 404s': 55,
     'Percentage of 301s': 20,
     'Percentage of server errors': 0.05,
     'Percentage of requests for Discovery purpose': 17,
-    'Percentage of page resource load': 6.25
-    #'Number of pages not indexed': '10',
-    #'Number of Discovered not indexed pages':'10',
-    #'Number of Crawled not indexed pages': '10',
-    #'Number of Indexed pages': '10',
+    'Percentage of page resource load': 6.25,
+    'Percentage of pages not indexed': 30,
+
 }
 
 # Define whether a higher or lower value is better for each field
@@ -123,9 +124,10 @@ for group, fields in field_groups.items():
         st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
         st.image(custom_images.get(group, default_image), use_column_width='always')
         for field in fields:
-            st.markdown(f"<h3 style='text-align: center;'>Metric: {field}</h3>", unsafe_allow_html=True)
-            st.image(custom_images.get(field, default_image), use_column_width='always')
-            user_values[field] = st.number_input(f"Enter value for your {field}", min_value=0)
+            if field not in exclude_from_input:
+                st.markdown(f"<h3 style='text-align: center;'>Metric: {field}</h3>", unsafe_allow_html=True)
+                st.image(custom_images.get(field, default_image), use_column_width='always')
+                user_values[field] = st.number_input(f"Enter value for your {field}", min_value=0)
 
 # Compare to median and display result
 if st.button("Do a Health check! 🔄"):
@@ -153,13 +155,14 @@ if st.button("Do a Health check! 🔄"):
     if passed_checks:
         st.markdown("### ✅ Passed Checks:")
         for check in passed_checks:
-            st.markdown(f"- {check}")
+            if check not in exclude_from_output:  # Exclude fields from output
+                st.markdown(f"- {check}")
     
-    # List failed elements
     if failed_checks:
         st.markdown("### ❌ Checks to Improve:")
         for check in failed_checks:
-            st.markdown(f"- {check}")
+            if check not in exclude_from_output:  # Exclude fields from output
+                st.markdown(f"- {check}")
     
     st.markdown("For detailed insights, see below.")
     st.markdown("---")  # Visual divider
@@ -167,13 +170,14 @@ if st.button("Do a Health check! 🔄"):
     # Detailed results
     with st.expander("Detailed Results"):
         for field, value in user_values.items():
-            median_value = medians[field]
-            better = better_higher[field]
-            message = success_messages[field] if (value > median_value and better) or (value < median_value and not better) else improvement_messages[field]
-            result_message = "✅" if (value > median_value and better) or (value < median_value and not better) else "❌"
-            st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
-            st.image(custom_images.get(field, default_image), use_column_width='always')
-            st.markdown(f"<h4 style='text-align: center;'>{result_message} {field}: **{value}** {'higher' if better else 'lower'} than median ({median_value})</h4>", unsafe_allow_html=True)
-            st.markdown(f"<p style='text-align: center;'>{message}</p>", unsafe_allow_html=True)
-            st.markdown("---")  # Visual divider
+            if field not in exclude_from_output:  # Exclude fields from detailed results
+                median_value = medians[field]
+                better = better_higher[field]
+                message = success_messages[field] if (value > median_value and better) or (value < median_value and not better) else improvement_messages[field]
+                result_message = "✅" if (value > median_value and better) or (value < median_value and not better) else "❌"
+                st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
+                st.image(custom_images.get(field, default_image), use_column_width='always')
+                st.markdown(f"<h4 style='text-align: center;'>{result_message} {field}: **{value}** {'higher' if better else 'lower'} than median ({median_value})</h4>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: center;'>{message}</p>", unsafe_allow_html=True)
+                st.markdown("---")  # Visual divider
 
