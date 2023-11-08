@@ -1,5 +1,7 @@
 import streamlit as st
 
+
+
 # Define median values and custom messages
 medians = {
     'Percentage of Good URLs (Mobile)': 100,
@@ -104,6 +106,9 @@ group_descriptions = {
 }
 
 # App layout styling
+st.set_page_config(
+        page_title="GSC health checker",
+)
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("GSC Health checker 🕵️‍♀️")
 
