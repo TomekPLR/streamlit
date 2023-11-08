@@ -113,7 +113,7 @@ st.text_input("Type your domain (without www) - OPTIONAL🔗")
 user_values = {}
 
 for group, fields in field_groups.items():
-    with st.expander("Enter data from " +  group + " report"):
+    with st.expander("Enter data from <b>" + group + "</b> report"):
         st.markdown(f"<h2 style='text-align: center;'>Enter your {group}</h2>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
         st.image(custom_images.get(group, default_image), use_column_width='always')
