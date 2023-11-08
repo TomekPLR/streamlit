@@ -1,7 +1,7 @@
 import streamlit as st
 
 exclude_from_input = ['Field_To_Exclude_From_Input1', 'Field_To_Exclude_From_Input2']  # Add field names you want to exclude from input
-exclude_from_output = ['Field_To_Exclude_From_Output1', 'Field_To_Exclude_From_Output2']  # Add field names you want to exclude from output
+exclude_from_output = ['Percentage of Good URLs (Mobile)', 'Field_To_Exclude_From_Output2']  # Add field names you want to exclude from output
 
 
 
