@@ -2,66 +2,66 @@ import streamlit as st
 
 # Define median values and custom messages
 medians = {
-    'Good URLs': 100,
+    'Percentage of Good URLs (Mobile)': 100,
     'Average response time': 300,
-    'OK (200) + 304': 20,
-    '404': 55,
-    '301': 20,
-    'Server errors': 24,
-    'Discovery': 10,
-    'Resource requests': 25,
-    'Not indexed': 100,
-    'Discovered not indexed': 200,
-    'Crawled not indexed': 200,
-    'Indexed': 272,
+    'Percentage of OK (200) + Not Modified (304) requests': 20,
+    'Percentage of 404s': 55,
+    'Percentage of 301s': 20,
+    'Percentage of server errors': 24,
+    'Percentage of requests for Discovery purpose': 10,
+    'Percentage of page resource load': 25,
+    'Number of pages not indexed': 100,
+    'Number of Discovered not indexed pages': 200,
+    'Number of Crawled not indexed pages': 200,
+    'Number of Indexed pages': 272,
 }
 
 # Define whether a higher or lower value is better for each field
 better_higher = {
-    'Good URLs': True,
+    'Percentage of Good URLs (Mobile)': True,
     'Average response time': False,
-    'OK (200) + 304': True,
-    '404': False,
-    '301': False,
-    'Server errors': False,
-    'Discovery': True,
-    'Resource requests': False,
-    'Not indexed': False,
-    'Discovered not indexed': False,
-        'Crawled not indexed': False,
+    'Percentage of OK (200) + Not Modified (304) requests': True,
+    'Percentage of 404s': False,
+    'Percentage of 301s': False,
+    'Percentage of server errors': False,
+    'Percentage of requests for Discovery purpose': True,
+    'Percentage of page resource load': False,
+    'Number of pages not indexed': False,
+    'Number of Discovered not indexed pages': False,
+    'Number of Crawled not indexed pages': False,
 
-    'Indexed': True,
+    'Number of Indexed pages': True,
 }
 
 # Custom messages for each field
 success_messages = {
-    'Good URLs': "Excellent! Your Good URLs percentage is outstanding.",
+    'Percentage of Good URLs (Mobile)': "Excellent! Your Percentage of Good URLs (Mobile) percentage is outstanding.",
     'Average response time': "Fantastic! Your response time is faster than average.",
-    'OK (200) + 304': "Great! You're getting a high number of OK responses.",
-    '404': "Good work! You have fewer 404 errors than the median.",
-    '301': "Nicely done! Your redirects are fewer than the median, which could mean a more straightforward site structure.",
-    'Server errors': "You're doing well! Your server errors are less than the median.",
-    'Discovery': "Superb! Your pages with discovery purpose are well above the median.",
-    'Resource requests': "Well managed! Your requests for page resources are lower than the median.",
-    'Not indexed': "That's good! You have fewer not indexed pages than the median.",
-    'Discovered not indexed': "You're on track! You have fewer discovered but not indexed pages than the median.",
-        'Crawled not indexed': "You're on track! You have fewer discovered but not indexed pages than the median.",
+    'Percentage of OK (200) + Not Modified (304) requests': "Great! You're getting a high number of OK responses.",
+    'Percentage of 404s': "Good work! You have fewer 404 errors than the median.",
+    'Percentage of 301s': "Nicely done! Your redirects are fewer than the median, which could mean a more straightforward site structure.",
+    'Percentage of server errors': "You're doing well! Your server errors are less than the median.",
+    'Percentage of requests for Discovery purpose': "Superb! Your pages with discovery purpose are well above the median.",
+    'Percentage of page resource load': "Well managed! Your requests for page resources are lower than the median.",
+    'Number of pages not indexed': "That's good! You have fewer not indexed pages than the median.",
+    'Number of Discovered not indexed pages': "You're on track! You have fewer discovered but not indexed pages than the median.",
+        'Number of Crawled not indexed pages': "You're on track! You have fewer discovered but not indexed pages than the median.",
 
-    'Indexed': "Outstanding! You have more indexed pages than the median, which is great for SEO."
+    'Number of Indexed pages': "Outstanding! You have more indexed pages than the median, which is great for SEO."
 }
 
 improvement_messages = {
-    'Good URLs': "Your website is slow on mobile devices. It negatively affects users visiting your website, rankings in Google, and crawl budget.<br> Pro Tip: Check out Google PageSpeed Insights. It's an excellent tool that diagnoses your site's issues and offers solutions to enhance its performance.",
+    'Percentage of Good URLs (Mobile)': "Your website is slow on mobile devices. It negatively affects users visiting your website, rankings in Google, and crawl budget.<br> Pro Tip: Check out Google PageSpeed Insights. It's an excellent tool that diagnoses your site's issues and offers solutions to enhance its performance.",
     'Average response time': "A slow average response time can make Google less likely to discover your entire website. This means not all your important pages might be discovered or indexed.<br><b>Pro Tip:</b> you should talk to your developers about how you can fix average response time. One of the ways to do it is to invest in servers with better performance. ",
-    'OK (200) + 304': "It appears that Google is spending time on pages that aren't meant to be indexed.  This can distract it from focusing on your valuable content. As a result, many of your pages may encounter indexing issues.",
-    '404': "Google spends its budget on pages that don’t exist. <br><b>Pro tip:</b> I recommend using SEO crawlers (such as Screamingfrog) to ensure that there are no internal links pointing to 404 pages. Also, I recommend checking a sample of pages classified as 404 to ensure valid pages aren't erroneously showing 404s.",
-    '301': "Google spends its budget on pages that are redirected <br><b>Pro tip:</b> If you didn’t do any migration recently and still see a lot of requests coming to redirected pages, something is off. In such a caseI recommend using SEO crawlers (such as Screamingfrog) to ensure that there are no internal links pointing to redirected pages. <br>Also, I recommend checking a sample of pages classified as 301 to ensure valid pages aren't erroneously showing 301s for Googlebot. ",
-    'Server errors': "Server errors send a clear signal to Google that your site can't handle Googlebot visits, which may discourage it from crawling your new pages.<br> <b>Pro tip:</b> you should talk to your developers about the possible causes of server errors. One of the solutions is investing in servers with better performance.  ",
-    'Discovery': "You're below the median in pages with discovery purpose. Enhancing content discoverability is key.",
-    'Resource requests': "High page resource load is one of the biggest crawl budget killers. If Google is using too much of its crawl budget on rendering, it could neglect to visit and index some of your pages, categorizing them as Discovered - Currently not indexed. <br><b>Pro Tip: </b>talk to your developers about the issue. Consider upgrading to more powerful servers and implementing caching strategies to improve this metric.",
-    'Not indexed': "You have more not indexed pages than the median. It's important to have these pages crawled and indexed.",
-    'Crawled not indexed': "Google decided that many of your pages shouldn't be indexed. <br><b>Pro tip:</b> to solve the issue review my video on how to fix Crawled - currently not indexed.",
-    'Indexed': "It seems that too many of your pages aren’t indexed in Google. As a result, they don’t get any traffic from the search engine. <br><b>Pro tip:</b> Visit the lesson: The High Five system to solve indexing issues."
+    'Percentage of OK (200) + Not Modified (304) requests': "It appears that Google is spending time on pages that aren't meant to be indexed.  This can distract it from focusing on your valuable content. As a result, many of your pages may encounter indexing issues.",
+    'Percentage of 404s': "Google spends its budget on pages that don’t exist. <br><b>Pro tip:</b> I recommend using SEO crawlers (such as Screamingfrog) to ensure that there are no internal links pointing to 404 pages. Also, I recommend checking a sample of pages classified as 404 to ensure valid pages aren't erroneously showing 404s.",
+    'Percentage of 301s': "Google spends its budget on pages that are redirected <br><b>Pro tip:</b> If you didn’t do any migration recently and still see a lot of requests coming to redirected pages, something is off. In such a caseI recommend using SEO crawlers (such as Screamingfrog) to ensure that there are no internal links pointing to redirected pages. <br>Also, I recommend checking a sample of pages classified as 301 to ensure valid pages aren't erroneously showing 301s for Googlebot. ",
+    'Percentage of server errors': "Server errors send a clear signal to Google that your site can't handle Googlebot visits, which may discourage it from crawling your new pages.<br> <b>Pro tip:</b> you should talk to your developers about the possible causes of server errors. One of the solutions is investing in servers with better performance.  ",
+    'Percentage of requests for Discovery purpose': "You're below the median in pages with discovery purpose. Enhancing content discoverability is key.",
+    'Percentage of page resource load': "High page resource load is one of the biggest crawl budget killers. If Google is using too much of its crawl budget on rendering, it could neglect to visit and index some of your pages, categorizing them as Discovered - Currently not indexed. <br><b>Pro Tip: </b>talk to your developers about the issue. Consider upgrading to more powerful servers and implementing caching strategies to improve this metric.",
+    'Number of pages not indexed': "You have more not indexed pages than the median. It's important to have these pages crawled and indexed.",
+    'Number of Crawled not indexed pages': "Google decided that many of your pages shouldn't be indexed. <br><b>Pro tip:</b> to solve the issue review my video on how to fix Crawled - currently not indexed.",
+    'Number of Indexed pages': "It seems that too many of your pages aren’t indexed in Google. As a result, they don’t get any traffic from the search engine. <br><b>Pro tip:</b> Visit the lesson: The High Five system to solve indexing issues."
 }
 
 # Default image for groups and fields
@@ -73,28 +73,28 @@ custom_images = {
     'Crawl stats report': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_statuses.png",
     'Indexing report': "https://gscmastery.com/wp-content/uploads/2023/gsc/page_indexed.png",
     'Average response time': "https://gscmastery.com/wp-content/uploads/2023/gsc/average_resp_time.png",     
-    'Good URLs': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_good.png',
+    'Percentage of Good URLs (Mobile)': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_good.png',
     'Need improvement URLs': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_need_improvement.png',
     'Bad URLs': 'https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_bad.png',
-    'OK (200) + 304': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stat_ok.png',
-    '404': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_404.png',
-    '301': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_301.png',
-    'Server errors': 'https://gscmastery.com/wp-content/uploads/2023/gsc/server_errors.png',
-    'Discovery': 'https://gscmastery.com/wp-content/uploads/2023/gsc/discovery.png',
-    'Resource requests': 'https://gscmastery.com/wp-content/uploads/2023/gsc/page_resource.png',
-    'Indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/indexed.png',
-    'Not indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/not_indexed.png',
-    'Discovered not indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/discovered_not_indexed.png',
-    'Crawled not indexed': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawled_not_indexed.png"
+    'Percentage of OK (200) + Not Modified (304) requests': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stat_ok.png',
+    'Percentage of 404s': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_404.png',
+    'Percentage of 301s': 'https://gscmastery.com/wp-content/uploads/2023/gsc/crawl_stats_301.png',
+    'Percentage of server errors': 'https://gscmastery.com/wp-content/uploads/2023/gsc/server_errors.png',
+    'Percentage of requests for Discovery purpose': 'https://gscmastery.com/wp-content/uploads/2023/gsc/discovery.png',
+    'Percentage of page resource load': 'https://gscmastery.com/wp-content/uploads/2023/gsc/page_resource.png',
+    'Number of Indexed pages': 'https://gscmastery.com/wp-content/uploads/2023/gsc/indexed.png',
+    'Number of pages not indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/not_indexed.png',
+    'Number of Discovered not indexed pages': 'https://gscmastery.com/wp-content/uploads/2023/gsc/discovered_not_indexed.png',
+    'Number of Crawled not indexed pages': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawled_not_indexed.png"
 
 
 }
 
 # Define the groups of fields and descriptions
 field_groups = {
-    'Core Web Vitals report': ['Good URLs'],
-    'Crawl stats report': ['Average response time', 'OK (200) + 304', '404', '301', 'Server errors'],
-    'Indexing report': ['Discovery', 'Resource requests', 'Not indexed', 'Discovered not indexed', 'Indexed']
+    'Core Web Vitals report': ['Percentage of Good URLs (Mobile)'],
+    'Crawl stats report': ['Average response time', 'Percentage of OK (200) + Not Modified (304) requests', 'Percentage of 404s', 'Percentage of 301s', 'Percentage of server errors'],
+    'Indexing report': ['Percentage of requests for Discovery purpose', 'Percentage of page resource load', 'Number of pages not indexed', 'Number of Discovered not indexed pages', 'Number of Indexed pages']
 }
 
 group_descriptions = { 
@@ -107,7 +107,7 @@ group_descriptions = {
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("GSC Health checker 🕵️‍♀️")
 
-st.markdown("This is a quick, 3-5 minute check that will let you quickly diagnose your weibste based on some vital metrics from GSC.<br> Your data is compared to median value from 200+ domains collected by Tomek Rudzki.")
+st.markdown("This is a quick, 3-5 minute check that will let you quickly diagnose your weibste based on some vital metrics from GSC. Your data is compared to median value from 200+ domains collected by Tomek Rudzki.")
 
 user_values = {}
 
