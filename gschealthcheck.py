@@ -11,7 +11,7 @@ medians = {
     'Percentage of server errors': 0.05,
     'Percentage of requests for Discovery purpose': 17,
     'Percentage of page resource load': 6.25,
-    'Percentage of pages not indexed': 30,
+    'Percentage of pages not indexed': 30
 
 }
 
@@ -29,7 +29,7 @@ better_higher = {
     'Number of Discovered not indexed pages': False,
     'Number of Crawled not indexed pages': False,
 
-    'Number of Indexed pages': True,
+    'Number of Indexed pages': True
 }
 
 # Custom messages for each field
