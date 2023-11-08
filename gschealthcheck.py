@@ -124,6 +124,54 @@ for group, fields in field_groups.items():
 
 # Compare to median and display result
 if st.button("Do a Health check! 🔄"):
+    # Compare to median and display result
+if st.button("Do a Health check! 🔄"):
+    passed_checks = []
+    failed_checks = []
+    
+    # Determine passed and failed checks
+    for field, value in user_values.items():
+        median_value = medians[field]
+        better = better_higher[field]
+        if (value > median_value and better) or (value < median_value and not better):
+            passed_checks.append(field)
+        else:
+            failed_checks.append(field)
+            
+    total_checks = len(user_values)
+    passed_count = len(passed_checks)
+    
+    # Display summary results
+    st.markdown(f"<h2 style='text-align: center;'>You passed {passed_count}/{total_checks} checks</h2>", unsafe_allow_html=True)
+    st.markdown("---")  # Visual divider
+    
+    # List passed elements
+    if passed_checks:
+        st.markdown("### ✅ Passed Checks:")
+        for check in passed_checks:
+            st.markdown(f"- {check}")
+    
+    # List failed elements
+    if failed_checks:
+        st.markdown("### ❌ Checks to Improve:")
+        for check in failed_checks:
+            st.markdown(f"- {check}")
+    
+    st.markdown("For detailed insights, see below.")
+    st.markdown("---")  # Visual divider
+    
+    # Detailed results
+    with st.expander("Detailed Results"):
+        for field, value in user_values.items():
+            median_value = medians[field]
+            better = better_higher[field]
+            message = success_messages[field] if (value > median_value and better) or (value < median_value and not better) else improvement_messages[field]
+            result_message = "✅" if (value > median_value and better) or (value < median_value and not better) else "❌"
+            st.markdown(f"<h3 style='text-align: center;'>{field}</h3>", unsafe_allow_html=True)
+            st.image(custom_images.get(field, default_image), use_column_width='always')
+            st.markdown(f"<h4 style='text-align: center;'>{result_message} {field}: **{value}** {'higher' if better else 'lower'} than median ({median_value})</h4>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center;'>{message}</p>", unsafe_allow_html=True)
+            st.markdown("---")  # Visual divider
     with st.expander("Results"):
         for field, value in user_values.items():
             median_value = medians[field]
