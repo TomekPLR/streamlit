@@ -154,15 +154,15 @@ if st.button("Do a Health check! 🔄"):
     # List passed elements
     if passed_checks:
         st.markdown("### ✅ Passed Checks:")
-        if check not in exclude_from_output:  # Exclude fields from output
-            for check in passed_checks:
+        for check in passed_checks:
+            if check not in exclude_from_output:  # Exclude fields from output
                 st.markdown(f"- {check}")
     
     # List failed elements
     if failed_checks:
         st.markdown("### ❌ Checks to Improve:")
-        for check in failed_checks:
-            if check not in exclude_from_output: 
+        if check not in exclude_from_output: 
+            for check in failed_checks:
                 st.markdown(f"- {check}")
     
     st.markdown("For detailed insights, see below.")
