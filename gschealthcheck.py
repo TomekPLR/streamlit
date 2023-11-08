@@ -1,9 +1,8 @@
 import streamlit as st
 
 
-exclude_from_input = ['Field_To_Exclude_From_Input1', 'Field_To_Exclude_From_Input2']  # Add field names you want to exclude from input
-exclude_from_output = ['Field_To_Exclude_From_Output1', 'Field_To_Exclude_From_Output2']  # Add field names you want to exclude from output
-
+exclude_from_input = ['Field_To_Exclude_From_Input1', 'Field_To_Exclude_From_Input2']  
+exclude_from_output = ['Field_To_Exclude_From_Output1', 'Field_To_Exclude_From_Output2'] 
 
 # Define median values and custom messages
 medians = {
@@ -15,7 +14,7 @@ medians = {
     'Percentage of server errors': 0.05,
     'Percentage of requests for Discovery purpose': 17,
     'Percentage of page resource load': 6.25,
-    'Percentage of pages not indexed': 30,
+    'Percentage of pages not indexed': 30
 
 }
 
