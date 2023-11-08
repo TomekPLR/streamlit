@@ -107,7 +107,7 @@ group_descriptions = {
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("GSC Health checker 🕵️‍♀️")
 
-st.markdown("<h2 style='text-align: center;'>Enter your {group}</h2>")
+st.markdown(f"<h2 style='text-align: center;'>Enter your {group}</h2>")
 
 user_values = {}
 
