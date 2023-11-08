@@ -125,7 +125,6 @@ for group, fields in field_groups.items():
 # Compare to median and display result
 if st.button("Do a Health check! 🔄"):
     # Compare to median and display result
-if st.button("Do a Health check! 🔄"):
     passed_checks = []
     failed_checks = []
     
