@@ -11,11 +11,11 @@ medians = {
     'Percentage of 301s': 20,
     'Percentage of server errors': 0.05,
     'Percentage of requests for Discovery purpose': 17,
-    'Percentage of page resource load': 6.25,
-    'Number of pages not indexed': '10',
-    'Number of Discovered not indexed pages':'10',
-    'Number of Crawled not indexed pages': '10',
-    'Number of Indexed pages': '10',
+    'Percentage of page resource load': 6.25
+    #'Number of pages not indexed': '10',
+    #'Number of Discovered not indexed pages':'10',
+    #'Number of Crawled not indexed pages': '10',
+    #'Number of Indexed pages': '10',
 }
 
 # Define whether a higher or lower value is better for each field
