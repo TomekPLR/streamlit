@@ -1,18 +1,21 @@
 import streamlit as st
 
 
+
 # Define median values and custom messages
 medians = {
     'Percentage of Good URLs (Mobile)': 29,
     'Average response time': 350,
-    'Percentage of OK (200) + `Not Modified (304) requests': 80,
+    'Percentage of OK (200) + Not Modified (304) requests': 80,
     'Percentage of 404s': 55,
     'Percentage of 301s': 20,
     'Percentage of server errors': 0.05,
     'Percentage of requests for Discovery purpose': 17,
-    'Percentage of page resource load': 6.25,
-    'Percentage of pages not indexed': 30
-
+    'Percentage of page resource load': 6.25
+    #'Number of pages not indexed': '10',
+    #'Number of Discovered not indexed pages':'10',
+    #'Number of Crawled not indexed pages': '10',
+    #'Number of Indexed pages': '10',
 }
 
 # Define whether a higher or lower value is better for each field
@@ -29,7 +32,7 @@ better_higher = {
     'Number of Discovered not indexed pages': False,
     'Number of Crawled not indexed pages': False,
 
-    'Number of Indexed pages': True
+    'Number of Indexed pages': True,
 }
 
 # Custom messages for each field
