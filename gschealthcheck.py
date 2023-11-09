@@ -141,14 +141,15 @@ if st.button("Do a Health check! 🔄"):
     
     # Determine passed and failed checks
     for field, value in user_values.items():
-        median_value = medians[field]
-        better = better_higher[field]
-        if (value > median_value and better) or (value < median_value and not better):
-            passed_checks.append(field)
-        else:
-            failed_checks.append(field)
+        if check not in exclude_from_output:  # Exclude fields from output
+            median_value = medians[field]
+            better = better_higher[field]
+            if (value > median_value and better) or (value < median_value and not better):
+                passed_checks.append(field)
+            else:
+                failed_checks.append(field)
             
-    total_checks = len(user_values)
+    total_checks = len(user_values) - len (excluded_from_output)
     passed_count = len(passed_checks)
     
     # Display summary results
