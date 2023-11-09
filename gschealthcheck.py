@@ -1,6 +1,6 @@
 import streamlit as st
 
-exclude_from_input = ['Number of Discovered not indexed pages', 'Number of Crawled not indexed pages', 'Percentage of indexed pages', 'Percentage of Crawled Currently Not Indexed', 'Percentage of Discovered Currently Not Indexed', 'Percentage of Good URLs (Mobile)']  # Add field names you want to exclude from input
+exclude_from_input = ['Number of Discovered not indexed pages', 'Number of Crawled not indexed pages', 'Percentage of Indexed pages', 'Percentage of Crawled Currently Not Indexed', 'Percentage of Discovered Currently Not Indexed', 'Percentage of Good URLs (Mobile)']  # Add field names you want to exclude from input
 exclude_from_output = [ 'Number of Good URLs (Mobile)','Number of Need Improvement URLs (Mobile)','Number of Poor URLs (Mobile)','Number of pages not indexed',  ]  # Add field names you want to exclude from output
 
 
