@@ -1,14 +1,13 @@
 import streamlit as st
 
-exclude_from_input = ['Percentage of Good URLs (Mobile)', 'Field_To_Exclude_From_Input2']  # Add field names you want to exclude from input
-exclude_from_output = [ 'Field_To_Exclude_From_Output2']  # Add field names you want to exclude from output
-
-
-
+exclude_from_input = ['Number of Discovered not indexed pages', 'Number of Crawled not indexed pages', 'Number of Indexed pages', Percentage of indexed pages', 'Percentage of Crawled Currently Not Indexed', 'Percentage of Discovered Currently Not Indexed', 'Percentage of Good URLs (Mobile)']  # Add field names you want to exclude from input
+exclude_from_output = [ 'Number of Good URLs (Mobile)','Number of Need Improvement URLs (Mobile)','Number of Poor URLs (Mobile)','Number of pages not indexed',  ]  # Add field names you want to exclude from output
 
 # Define median values and custom messages
 medians = {
-    'Percentage of Good URLs (Mobile)': 100,
+    'Number of Good URLs (Mobile)': 100,
+    'Number of Need Improvement URLs (Mobile)': 100,
+    'Number of Poor URLs (Mobile)': 100,
     'Average response time': 300,
     'Percentage of OK (200) + Not Modified (304) requests': 20,
     'Percentage of 404s': 55,
@@ -20,6 +19,11 @@ medians = {
     'Number of Discovered not indexed pages': 200,
     'Number of Crawled not indexed pages': 200,
     'Number of Indexed pages': 272,
+    'Percentage of indexed pages': 272,
+    'Percentage of Crawled Currently Not Indexed': 272,
+    'Percentage of Discovered Currently Not Indexed': 272,
+    'Percentage of Good URLs (Mobile)': 100
+    
 }
 
 # Define whether a higher or lower value is better for each field
