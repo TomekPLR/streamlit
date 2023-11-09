@@ -39,7 +39,7 @@ medians = {
     'Number of Discovered not indexed pages': 200,
     'Number of Crawled not indexed pages': 200,
     'Number of Indexed pages': 272,
-    'Percentage of indexed pages': 272,
+    'Percentage of Indexed pages': 272,
     'Percentage of Crawled Currently Not Indexed': 272,
     'Percentage of Discovered Currently Not Indexed': 272,
     'Percentage of Good URLs (Mobile)': 100
