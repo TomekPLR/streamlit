@@ -80,7 +80,9 @@ success_messages = {
     'Number of Discovered not indexed pages': "You're on track! You have fewer discovered but not indexed pages than the median.",
         'Number of Crawled not indexed pages': "You're on track! You have fewer discovered but not indexed pages than the median.",
 
-    'Number of Indexed pages': "Outstanding! You have more indexed pages than the median, which is great for SEO."
+    'Number of Indexed pages': "Outstanding! You have more indexed pages than the median, which is great for SEO.",
+    'Percentage of Indexed pages': "Outstanding! You have more indexed pages than the median, which is great for SEO."
+
 }
 
 improvement_messages = {
@@ -94,7 +96,9 @@ improvement_messages = {
     'Percentage of page resource load': "High page resource load is one of the biggest crawl budget killers. If Google is using too much of its crawl budget on rendering, it could neglect to visit and index some of your pages, categorizing them as Discovered - Currently not indexed. <br><b>Pro Tip: </b>talk to your developers about the issue. Consider upgrading to more powerful servers and implementing caching strategies to improve this metric.",
     'Number of pages not indexed': "You have more not indexed pages than the median. It's important to have these pages crawled and indexed.",
     'Number of Crawled not indexed pages': "Google decided that many of your pages shouldn't be indexed. <br><b>Pro tip:</b> to solve the issue review my video on how to fix Crawled - currently not indexed.",
-    'Number of Indexed pages': "It seems that too many of your pages aren’t indexed in Google. As a result, they don’t get any traffic from the search engine. <br><b>Pro tip:</b> Visit the lesson: The High Five system to solve indexing issues."
+    'Number of Indexed pages': "It seems that too many of your pages aren’t indexed in Google. As a result, they don’t get any traffic from the search engine. <br><b>Pro tip:</b> Visit the lesson: The High Five system to solve indexing issues.",
+    'Percentage of Indexed pages': "You have less indexed pages than the median, which is not ideal."
+
 }
 
 # Default image for groups and fields
