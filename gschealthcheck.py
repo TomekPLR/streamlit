@@ -59,10 +59,7 @@ better_higher = {
     'Number of pages not indexed': False,
     'Number of Discovered not indexed pages': False,
     'Number of Crawled not indexed pages': False,
-    'Percentage of Indexed Pages': True,
-
-    
-
+    'Percentage of Indexed pages': True,
     'Number of Indexed pages': True,
 }
 
