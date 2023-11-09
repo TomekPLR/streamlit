@@ -3,6 +3,26 @@ import streamlit as st
 exclude_from_input = ['Number of Discovered not indexed pages', 'Number of Crawled not indexed pages', 'Number of Indexed pages', 'Percentage of indexed pages', 'Percentage of Crawled Currently Not Indexed', 'Percentage of Discovered Currently Not Indexed', 'Percentage of Good URLs (Mobile)']  # Add field names you want to exclude from input
 exclude_from_output = [ 'Number of Good URLs (Mobile)','Number of Need Improvement URLs (Mobile)','Number of Poor URLs (Mobile)','Number of pages not indexed',  ]  # Add field names you want to exclude from output
 
+
+def calculate_indexed_percentage(total_pages, indexed_pages):
+    """
+    Calculate the percentage of indexed pages.
+
+    :param total_pages: Total number of pages on the website.
+    :param indexed_pages: Number of pages indexed by search engines.
+    :return: Percentage of pages that are indexed.
+    """
+    if total_pages == 0:
+        return 0  # Avoid division by zero
+
+    percentage_indexed = (indexed_pages / total_pages) * 100
+    return round(percentage_indexed, 2)  # Rounds to 2 decimal places
+
+# Example usage
+total = 1000  # Example: 1000 pages on your website
+indexed = 800  # Example: 800 of those pages are indexed
+print(f"Percentage of Indexed Pages: {calculate_indexed_percentage(total, indexed)}%")
+
 # Define median values and custom messages
 medians = {
     'Number of Good URLs (Mobile)': 100,
@@ -132,6 +152,14 @@ for group, fields in field_groups.items():
                 st.markdown(f"<h3 style='text-align: center;'>Metric: {field}</h3>", unsafe_allow_html=True)
                 st.image(custom_images.get(field, default_image), use_column_width='always')
                 user_values[field] = st.number_input(f"Enter value for your {field}", min_value=0)
+        if 'Number of Indexed pages' in fields and 'Number of pages not indexed' in fields:
+            # Calculate percentage of indexed pages if both required fields are present
+            indexed = user_values.get('Number of Indexed pages', 0)
+            not_indexed = user_values.get('Number of pages not indexed', 0)
+            total = indexed + not_indexed
+            user_values['Percentage of indexed pages'] = calculate_indexed_percentage(total, indexed)
+
+
 
 # Compare to median and display result
 if st.button("Do a Health check! 🔄"):
