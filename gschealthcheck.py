@@ -117,7 +117,7 @@ group_descriptions = {
 st.markdown("<style>body {font-size: 18px;}</style>", unsafe_allow_html=True)
 st.title("GSC Health checker 🕵️‍♀️")
 
-st.markdown("This is a quick, 3-5 minute check that will let you quickly diagnose your weibste based on some vital metrics from GSC. Your data is compared to median value from 200+ domains collected by Tomek Rudzki.")
+st.markdown("This is a quick, 3-5 minute check that will let you quickly diagnose your website based on some vital metrics from GSC. Your data is compared to median value from 200+ domains collected by Tomek Rudzki.")
 
 user_values = {}
 
@@ -149,7 +149,7 @@ if st.button("Do a Health check! 🔄"):
             else:
                 failed_checks.append(field)
             
-    total_checks = len(user_values) 
+    total_checks = len(passed_checks)+len(failed_checks)
     passed_count = len(passed_checks)
     
     # Display summary results
