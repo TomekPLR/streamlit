@@ -149,7 +149,7 @@ if st.button("Do a Health check! 🔄"):
             else:
                 failed_checks.append(field)
             
-    total_checks = len(user_values) - len (exclude_from_output)
+    total_checks = len(user_values) 
     passed_count = len(passed_checks)
     
     # Display summary results
