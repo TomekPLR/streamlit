@@ -6,7 +6,7 @@ exclude_from_output = [ 'Number of Good URLs (Mobile)','Number of Need Improveme
 
 def calculate_indexed_percentage(total_pages, indexed_pages):
     """
-    Calculate the percentage of indexed pages.
+    Calculate the Percentage of Indexed pages.
 
     :param total_pages: Total number of pages on the website.
     :param indexed_pages: Number of pages indexed by search engines.
@@ -21,7 +21,7 @@ def calculate_indexed_percentage(total_pages, indexed_pages):
 # Example usage
 total = 1000  # Example: 1000 pages on your website
 indexed = 800  # Example: 800 of those pages are indexed
-print(f"Percentage of Indexed Pages: {calculate_indexed_percentage(total, indexed)}%")
+print(f"Percentage of Indexed pages: {calculate_indexed_percentage(total, indexed)}%")
 
 # Define median values and custom messages
 medians = {
@@ -156,7 +156,7 @@ for group, fields in field_groups.items():
                 st.image(custom_images.get(field, default_image), use_column_width='always')
                 user_values[field] = st.number_input(f"Enter value for your {field}", min_value=0)
         if 'Number of Indexed pages' in fields and 'Number of pages not indexed' in fields:
-            # Calculate percentage of indexed pages if both required fields are present
+            # Calculate Percentage of Indexed pages if both required fields are present
             indexed = user_values.get('Number of Indexed pages', 0)
             not_indexed = user_values.get('Number of pages not indexed', 0)
             total = indexed + not_indexed
