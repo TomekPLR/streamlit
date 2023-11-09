@@ -160,7 +160,7 @@ for group, fields in field_groups.items():
             indexed = user_values.get('Number of Indexed pages', 0)
             not_indexed = user_values.get('Number of pages not indexed', 0)
             total = indexed + not_indexed
-            user_values['Percentage of indexed pages'] = calculate_indexed_percentage(total, indexed)
+            user_values['Percentage of Indexed pages'] = calculate_indexed_percentage(total, indexed)
 
 
 
