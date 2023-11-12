@@ -8,7 +8,18 @@ CORE_UPDATES = [
     {"name": "October 2023 core update", "date_start": "2023-10-05", "duration": 14},
     {"name": "Ranking ongoing issue", "date_start": "2023-10-05", "duration": 26},
     {"name": "October 2023 spam update", "date_start": "2023-10-04", "duration": 16},
-    # ... (Include all your core update entries here)
+    {"name": "September 2023 helpful content update", "date_start": "2023-09-14", "duration": 13},
+    {"name": "August 2023 core update", "date_start": "2023-08-22", "duration": 17},
+    {"name": "April 2023 reviews update", "date_start": "2023-04-12", "duration": 13},
+    {"name": "March 2023 core update", "date_start": "2023-03-15", "duration": 13},
+    {"name": "February 2023 product reviews update", "date_start": "2023-02-21", "duration": 14},
+    {"name": "December 2022 link spam update", "date_start": "2022-12-14", "duration": 29},
+    {"name": "December 2022 helpful content update", "date_start": "2022-12-05", "duration": 38},
+    {"name": "October 2022 spam update", "date_start": "2022-10-19", "duration": 2},
+    {"name": "September 2022 product reviews update", "date_start": "2022-09-20", "duration": 6},
+    {"name": "September 2022 core update", "date_start": "2022-09-12", "duration": 14},
+    {"name": "August 2022 helpful content update", "date_start": "2022-08-25", "duration": 15},
+    {"name": "July 2022 product reviews update", "date_start": "2022-07-27", "duration": 6}
 ]
 
 def analyze_clicks(clicks_df, core_updates, significant_change):
