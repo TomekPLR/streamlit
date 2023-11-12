@@ -14,18 +14,21 @@ CORE_UPDATES = [
 def analyze_clicks(clicks_df, core_updates, significant_change):
     results = []
 
+    # Initialize DataFrame with expected columns
+    results_df = pd.DataFrame(columns=['Update Name', 'Clicks Before', 'Clicks After', 'Difference', 'Percentage Change'])
+
     for update in core_updates:
         start_date = datetime.strptime(update['date_start'], '%Y-%m-%d')
-        after_end = start_date + timedelta(days=14)
+        after_end = start_date + timedelta(days=update['duration'])
         before_start = start_date - timedelta(days=14)
 
         # Filter data and calculate sum of clicks
         clicks_before = clicks_df[(clicks_df['date'] >= before_start) & (clicks_df['date'] < start_date)]['clicks'].sum()
-        clicks_after = clicks_df[(clicks_df['date'] > start_date) & (clicks_df['date'] <= after_end)]['clicks'].sum()
+        clicks_after = clicks_df[(clicks_df['date'] >= start_date) & (clicks_df['date'] <= after_end)]['clicks'].sum()
 
         difference = clicks_after - clicks_before
 
-        if abs(difference) / clicks_before * 100 >= significant_change:
+        if clicks_before > 0 and abs(difference) / clicks_before * 100 >= significant_change:
             results.append({
                 'Update Name': update['name'],
                 'Clicks Before': clicks_before,
@@ -34,7 +37,11 @@ def analyze_clicks(clicks_df, core_updates, significant_change):
                 'Percentage Change': difference / clicks_before * 100
             })
 
-    return pd.DataFrame(results)
+    if results:
+        results_df = pd.DataFrame(results)
+
+    return results_df
+
 
 st.title("Website Hit Analysis during Core Updates")
 
