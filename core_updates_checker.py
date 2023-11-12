@@ -8,21 +8,8 @@ CORE_UPDATES = [
     {"name": "October 2023 core update", "date_start": "2023-10-05", "duration": 14},
     {"name": "Ranking ongoing issue", "date_start": "2023-10-05", "duration": 26},
     {"name": "October 2023 spam update", "date_start": "2023-10-04", "duration": 16},
-    {"name": "September 2023 helpful content update", "date_start": "2023-09-14", "duration": 13},
-    {"name": "August 2023 core update", "date_start": "2023-08-22", "duration": 17},
-    {"name": "April 2023 reviews update", "date_start": "2023-04-12", "duration": 13},
-    {"name": "March 2023 core update", "date_start": "2023-03-15", "duration": 13},
-    {"name": "February 2023 product reviews update", "date_start": "2023-02-21", "duration": 14},
-    {"name": "December 2022 link spam update", "date_start": "2022-12-14", "duration": 29},
-    {"name": "December 2022 helpful content update", "date_start": "2022-12-05", "duration": 38},
-    {"name": "October 2022 spam update", "date_start": "2022-10-19", "duration": 2},
-    {"name": "September 2022 product reviews update", "date_start": "2022-09-20", "duration": 6},
-    {"name": "September 2022 core update", "date_start": "2022-09-12", "duration": 14},
-    {"name": "August 2022 helpful content update", "date_start": "2022-08-25", "duration": 15},
-    {"name": "July 2022 product reviews update", "date_start": "2022-07-27", "duration": 6}
+    # ... (Include all your core update entries here)
 ]
-
-
 
 def analyze_clicks(clicks_df, core_updates, significant_change):
     results = []
@@ -71,27 +58,28 @@ if uploaded_file is not None:
         plot_df['week_start'] = plot_df['date'].dt.to_period('W').apply(lambda r: r.start_time)
         plot_df = plot_df.groupby(['week_start']).agg({'clicks': 'sum'}).reset_index()
 
-# Perform analysis
-results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
+    # Perform analysis
+    results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
 
-# Display Results
-st.write("### Analysis Results")
-st.write(results_df)
+    # Display Results
+    st.write("### Analysis Results")
+    st.write(results_df)
 
-# Calculate and display additional information
-increased_traffic = len(results_df[results_df['Difference'] > 0])
-decreased_traffic = len(results_df[results_df['Difference'] < 0])
+    # Calculate and display additional information
+    increased_traffic = len(results_df[results_df['Difference'] > 0])
+    decreased_traffic = len(results_df[results_df['Difference'] < 0])
 
-if increased_traffic + decreased_traffic > 0:
-    core_update_score = (increased_traffic / (increased_traffic + decreased_traffic)) * 100
-else:
-    core_update_score = 0
+    if increased_traffic + decreased_traffic > 0:
+        core_update_score = (increased_traffic / (increased_traffic + decreased_traffic)) * 100
+    else:
+        core_update_score = 0
 
-st.write("## Core Update Impact Summary")
-st.write(f"Your core update score: {core_update_score:.2f}%")
-st.write(f"Your website increased traffic during {increased_traffic} core updates.")
-st.write(f"Your website decreased traffic during {decreased_traffic} core updates.")
-# Let user select core updates to annotate
+    st.write("## Core Update Impact Summary")
+    st.write(f"Your core update score: {core_update_score:.2f}%")
+    st.write(f"Your website increased traffic during {increased_traffic} core updates.")
+    st.write(f"Your website decreased traffic during {decreased_traffic} core updates.")
+
+    # Let user select core updates to annotate
     update_names = [update['name'] for update in CORE_UPDATES]
     selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
 
@@ -103,20 +91,8 @@ st.write(f"Your website decreased traffic during {decreased_traffic} core update
     x_axis = 'week_start' if group_by_week else 'date'
     chart_func = px.line if plot_type == 'Line' else px.scatter
     fig = chart_func(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
-    
+
     # Adding annotations for selected core updates with alternating positions
     annotations = []
     for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
         y_pos = 0 if i % 2 == 0 else plot_df['clicks'].max()
-        annotations.append(dict(x=update['date_start'], y=y_pos, xref='x', yref='y', 
-                                showarrow=True, text=update['name'], textangle=-45))
-        # Adding vertical lines
-        fig.add_shape(dict(type="line", x0=update['date_start'], x1=update['date_start'], 
-                           y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)))
-
-    fig.update_layout(annotations=annotations)
-    
-    st.plotly_chart(fig)
-
-
-st.plotly_chart(fig)
