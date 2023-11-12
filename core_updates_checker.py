@@ -71,14 +71,27 @@ if uploaded_file is not None:
         plot_df['week_start'] = plot_df['date'].dt.to_period('W').apply(lambda r: r.start_time)
         plot_df = plot_df.groupby(['week_start']).agg({'clicks': 'sum'}).reset_index()
 
-    # Perform analysis
-    results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
+# Perform analysis
+results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
 
-    # Display Results
-    st.write("### Analysis Results")
-    st.write(results_df)
+# Display Results
+st.write("### Analysis Results")
+st.write(results_df)
 
-    # Let user select core updates to annotate
+# Calculate and display additional information
+increased_traffic = len(results_df[results_df['Difference'] > 0])
+decreased_traffic = len(results_df[results_df['Difference'] < 0])
+
+if increased_traffic + decreased_traffic > 0:
+    core_update_score = (increased_traffic / (increased_traffic + decreased_traffic)) * 100
+else:
+    core_update_score = 0
+
+st.write("## Core Update Impact Summary")
+st.write(f"Your core update score: {core_update_score:.2f}%")
+st.write(f"Your website increased traffic during {increased_traffic} core updates.")
+st.write(f"Your website decreased traffic during {decreased_traffic} core updates.")
+# Let user select core updates to annotate
     update_names = [update['name'] for update in CORE_UPDATES]
     selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
 
@@ -104,3 +117,6 @@ if uploaded_file is not None:
     fig.update_layout(annotations=annotations)
     
     st.plotly_chart(fig)
+
+
+st.plotly_chart(fig)
