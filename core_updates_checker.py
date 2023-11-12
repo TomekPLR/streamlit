@@ -91,6 +91,7 @@ if uploaded_file is not None:
     selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
 
     # Let user choose plot type
+
     plot_type = st.selectbox("Select plot type", ['Line', 'Dotted'])
 
     # Plot the data
@@ -98,8 +99,17 @@ if uploaded_file is not None:
     x_axis = 'week_start' if group_by_week else 'date'
     chart_func = px.line if plot_type == 'Line' else px.scatter
     fig = chart_func(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
-
+    
     # Adding annotations for selected core updates with alternating positions
     annotations = []
     for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
         y_pos = 0 if i % 2 == 0 else plot_df['clicks'].max()
+        annotations.append(dict(x=update['date_start'], y=y_pos, xref='x', yref='y', 
+                                showarrow=True, text=update['name'], textangle=-45))
+        # Adding vertical lines
+        fig.add_shape(dict(type="line", x0=update['date_start'], x1=update['date_start'], 
+                           y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)))
+
+    fig.update_layout(annotations=annotations)
+    
+    st.plotly_chart(fig)
