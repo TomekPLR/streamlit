@@ -58,7 +58,7 @@ st.title("Google Core Update website analyzer by Tomek Rudzki")
 
 # Upload CSV file
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-significant_change = st.slider("Select the significant change percentage", 0, 100, 10)
+significant_change = st.slider("Optional: select the significant change percentage", 0, 100, 10)
 
 if uploaded_file is not None:
     # Read and display the clicks data
@@ -79,9 +79,6 @@ if uploaded_file is not None:
     # Perform analysis
     results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
 
-    # Display Results
-    st.write("### Analysis Results")
-    st.write(results_df)
 
     # Calculate and display additional information
     increased_traffic = len(results_df[results_df['Difference'] > 0])
@@ -124,3 +121,6 @@ if uploaded_file is not None:
     fig.update_layout(annotations=annotations)
     
     st.plotly_chart(fig)
+
+    st.write("### Analysis Results")
+    st.write(results_df)
