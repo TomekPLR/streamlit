@@ -54,7 +54,7 @@ def analyze_clicks(clicks_df, core_updates, significant_change):
     return results_df
 
 
-st.title("Website Hit Analysis during Core Updates")
+st.title("Google Core Update website analyzer by Tomek Rudzki")
 
 # Upload CSV file
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
@@ -66,8 +66,8 @@ if uploaded_file is not None:
     clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%b %d, %Y')
     clicks_df = clicks_df.sort_values('date')
 
-    st.write("### Clicks Data")
-    st.write(clicks_df)
+    #st.write("### Clicks Data")
+    #st.write(clicks_df)
 
     # Group by week option
     group_by_week = st.checkbox("Group by week")
@@ -93,9 +93,9 @@ if uploaded_file is not None:
         core_update_score = 0
 
     st.write("## Core Update Impact Summary")
-    st.write(f"<h2>Your core update score: {core_update_score:.2f}%</h2>", unsafe_allow_html=True)
-    st.write(f"Your website increased traffic during {increased_traffic} core updates.")
-    st.write(f"Your website decreased traffic during {decreased_traffic} core updates.")
+    st.write(f"<h3>Your core update score: {core_update_score:.2f}%</h3>", unsafe_allow_html=True)
+    st.write(f"✅ Your website increased traffic during {increased_traffic} core updates.")
+    st.write(f"❌ Your website decreased traffic during {decreased_traffic} core updates.")
 
     # Let user select core updates to annotate
     update_names = [update['name'] for update in CORE_UPDATES]
