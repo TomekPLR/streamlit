@@ -93,7 +93,7 @@ if uploaded_file is not None:
         core_update_score = 0
 
     st.write("## Core Update Impact Summary")
-    st.write(f"<h2>Your core update score: {core_update_score:.2f}%</h2>")
+    st.write(f"<h2>Your core update score: {core_update_score:.2f}%</h2>", unsafe_allow_html=True)
     st.write(f"Your website increased traffic during {increased_traffic} core updates.")
     st.write(f"Your website decreased traffic during {decreased_traffic} core updates.")
 
