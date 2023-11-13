@@ -4,7 +4,7 @@ import plotly.express as px
 from datetime import datetime, timedelta
 
 st.title("Google Core Update website analyzer by Tomek Rudzki")
-st.set_page_config(page_title="Google Core Update website analyzer by Tomek Rudzki", page_icon=None, layout="centered", initial_sidebar_state="auto", menu_items=None)
+#st.set_page_config(page_title="Google Core Update website analyzer by Tomek Rudzki", page_icon=None, layout="centered", initial_sidebar_state="auto", menu_items=None)
 
 
 # Sample core updates data
