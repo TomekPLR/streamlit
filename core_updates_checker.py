@@ -3,6 +3,10 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
 
+st.title("Google Core Update website analyzer by Tomek Rudzki")
+st.set_page_config(page_title="Google Core Update website analyzer by Tomek Rudzki", page_icon=None, layout="centered", initial_sidebar_state="auto", menu_items=None)
+
+
 # Sample core updates data
 CORE_UPDATES = [
     {"name": "October 2023 core update", "date_start": "2023-10-05", "duration": 14},
@@ -53,7 +57,6 @@ def analyze_clicks(clicks_df, core_updates, significant_change):
 
     return results_df
 
-st.title("Google Core Update website analyzer by Tomek Rudzki")
 
 # Upload CSV file
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
@@ -91,15 +94,17 @@ if uploaded_file is not None:
     st.write(f"✅ Your website increased traffic during {increased_traffic} core updates.")
     st.write(f"❌ Your website decreased traffic during {decreased_traffic} core updates.")
 
+    st.write("### Clicks Timeline")
+     # Let user choose plot type
+    plot_type = st.selectbox("Select plot type", ['Line', 'Dotted'])
+    
     # Let user select core updates to annotate
     update_names = [update['name'] for update in CORE_UPDATES]
     selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
 
-    # Let user choose plot type
-    plot_type = st.selectbox("Select plot type", ['Line', 'Dotted'])
 
     # Plot the data
-    st.write("### Clicks Timeline")
+    
     x_axis = 'week_start' if group_by_week else 'date'
     chart_func = px.line if plot_type == 'Line' else px.scatter
     fig = chart_func(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
