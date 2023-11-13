@@ -53,12 +53,15 @@ def analyze_clicks(clicks_df, core_updates, significant_change):
 
     return results_df
 
-
 st.title("Google Core Update website analyzer by Tomek Rudzki")
 
 # Upload CSV file
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-significant_change = st.slider("Optional: select the significant change percentage", 0, 100, 10)
+
+# Additional options expander
+with st.expander("Additional Options"):
+    significant_change = st.slider("Optional: select the significant change percentage", 0, 100, 10)
+    group_by_week = st.checkbox("Optional: group by week")
 
 if uploaded_file is not None:
     # Read and display the clicks data
@@ -66,11 +69,6 @@ if uploaded_file is not None:
     clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%b %d, %Y')
     clicks_df = clicks_df.sort_values('date')
 
-    #st.write("### Clicks Data")
-    #st.write(clicks_df)
-
-    # Group by week option
-    group_by_week = st.checkbox("Group by week")
     plot_df = clicks_df.copy()
     if group_by_week:
         plot_df['week_start'] = plot_df['date'].dt.to_period('W').apply(lambda r: r.start_time)
@@ -78,7 +76,6 @@ if uploaded_file is not None:
 
     # Perform analysis
     results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
-
 
     # Calculate and display additional information
     increased_traffic = len(results_df[results_df['Difference'] > 0])
@@ -99,7 +96,6 @@ if uploaded_file is not None:
     selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
 
     # Let user choose plot type
-
     plot_type = st.selectbox("Select plot type", ['Line', 'Dotted'])
 
     # Plot the data
@@ -112,15 +108,24 @@ if uploaded_file is not None:
     annotations = []
     for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
         y_pos = 0 if i % 2 == 0 else plot_df['clicks'].max()
-        annotations.append(dict(x=update['date_start'], y=y_pos, xref='x', yref='y', 
-                                showarrow=True, text=update['name'], textangle=-45))
+        annotations.append(dict(
+            x=update['date_start'], y=y_pos, xref='x', yref='y', 
+            showarrow=True, text=update['name'], textangle=-45
+        ))
         # Adding vertical lines
-        fig.add_shape(dict(type="line", x0=update['date_start'], x1=update['date_start'], 
-                           y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)))
+        fig.add_shape(dict(
+            type="line", x0=update['date_start'], x1=update['date_start'], 
+            y0=0, y1=plot_df['clicks'].max(), line=dict(color="Red", width=2)
+        ))
 
     fig.update_layout(annotations=annotations)
     
     st.plotly_chart(fig)
 
+    # Displaying the analysis results
     st.write("### Analysis Results")
     st.write(results_df)
+
+
+
+   
