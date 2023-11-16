@@ -219,7 +219,7 @@ if st.button("Do a Health check! 🔄"):
                 st.markdown(f"<h3 style='text-align: center;'>{result_message} {field}: {value}</h3>", unsafe_allow_html=True)
                 #st.image(custom_images.get(field, default_image), use_column_width='always')
                 #st.markdown(f"<h4 style='text-align: center;'>{value}</h4>", unsafe_allow_html=True)
-                st.markdown(f"<h5 style='text-align: center;'>({'higher' if better else 'lower'} than median = {median_value})</h4>", unsafe_allow_html=True)
+                st.markdown(f"<h5 style='text-align: center;'>{'higher' if better else 'lower'} than median = {median_value}</h4>", unsafe_allow_html=True)
 
 
                 st.markdown(f"<p style='text-align: center;'>{message}</p>", unsafe_allow_html=True)
