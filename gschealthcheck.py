@@ -133,7 +133,11 @@ custom_images = {
     'Number of Indexed pages': 'https://gscmastery.com/wp-content/uploads/2023/gsc/indexed.png',
     'Number of pages not indexed': 'https://gscmastery.com/wp-content/uploads/2023/gsc/not_indexed.png',
     'Number of Discovered not indexed pages': 'https://gscmastery.com/wp-content/uploads/2023/gsc/discovered_not_indexed.png',
-    'Number of Crawled not indexed pages': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawled_not_indexed.png"
+    'Number of Crawled not indexed pages': "https://gscmastery.com/wp-content/uploads/2023/gsc/crawled_not_indexed.png",
+    'Number of Good URLs (Mobile)': "https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_good.png",
+    'Number of Need Improvement URLs (Mobile)': "https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_need_improvement.png",   
+    'Number of Poor URLs (Mobile)': "https://gscmastery.com/wp-content/uploads/2023/gsc/mobile_poor.png"
+
 
 
 }
