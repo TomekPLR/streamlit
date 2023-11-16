@@ -153,11 +153,11 @@ for group, fields in field_groups.items():
     with st.expander("Enter data from " + group + " report"):
         st.markdown(f"<h2 style='text-align: center;'>Enter data from your {group}</h2>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
-        st.image(custom_images.get(group, default_image),width=300)
+        with st.columns(3)[1]: st.image(custom_images.get(group, default_image),width=300)
         for field in fields:
             if field not in exclude_from_input:  # Check if field is not in exclude list
                 st.markdown(f"<h3 style='text-align: center;'>Metric: {field}</h3>", unsafe_allow_html=True)
-                st.image(custom_images.get(field, default_image), width=300)
+                with st.columns(3)[1]: st.image(custom_images.get(field, default_image), width=300)
                 user_values[field] = st.number_input(f"Enter value for your {field}", min_value=0)
         if 'Number of Indexed pages' in fields and 'Number of pages not indexed' in fields:
             # Calculate Percentage of Indexed pages if both required fields are present
