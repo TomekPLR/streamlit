@@ -16,7 +16,7 @@ def calculate_indexed_percentage(total_pages, indexed_pages):
         return 0  # Avoid division by zero
 
     percentage_indexed = (indexed_pages / total_pages) * 100
-    return round(percentage_indexed, 2)  # Rounds to 2 decimal places
+    return round(percentage_indexed, 0)  # Rounds to 2 decimal places
 
 def calculate_good_percentage(good_mobile, need_improvement, poor_urls):
     """
@@ -31,7 +31,7 @@ def calculate_good_percentage(good_mobile, need_improvement, poor_urls):
         return 0  # Avoid division by zero
 
     percentage_good = (good_mobile / total_pages) * 100
-    return round(percentage_good, 2)  # Rounds to 2 decimal places
+    return round(percentage_good, 0)  # Rounds to 2 decimal places
 
 
 # Define median values and custom messages
@@ -108,7 +108,7 @@ improvement_messages = {
     'Number of pages not indexed': "You have more not indexed pages than the median. It's important to have these pages crawled and indexed.",
     'Number of Crawled not indexed pages': "Google decided that many of your pages shouldn't be indexed. <br><b>Pro tip:</b> to solve the issue review my video on how to fix Crawled - currently not indexed.",
     'Number of Indexed pages': "It seems that too many of your pages aren’t indexed in Google. As a result, they don’t get any traffic from the search engine. <br><b>Pro tip:</b> Visit the lesson: The High Five system to solve indexing issues.",
-    'Percentage of Indexed pages': "You have less indexed pages than the median, which is not ideal."
+    'Percentage of Indexed pages': "You have less indexed pages than the median. Check Tomek's materials on fixing indexing issues."
 
 }
 
