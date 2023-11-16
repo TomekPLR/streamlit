@@ -129,7 +129,7 @@ custom_images = {
 
 # Define the groups of fields and descriptions
 field_groups = {
-    'Core Web Vitals report': ['Percentage of Good URLs (Mobile)'],
+    'Core Web Vitals report': ['Number of Good URLs (Mobile)', 'Number of Need Improvement URLs (Mobile)', 'Number of Poor URLs (Mobile)', 'Percentage of Good URLs (Mobile)'],
     'Crawl stats report': ['Average response time', 'Percentage of OK (200) + Not Modified (304) requests', 'Percentage of 404s', 'Percentage of 301s', 'Percentage of server errors'],
     'Indexing report': ['Percentage of requests for Discovery purpose', 'Percentage of page resource load', 'Number of pages not indexed', 'Number of Discovered not indexed pages', 'Number of Indexed pages']
 }
