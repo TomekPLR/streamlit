@@ -18,10 +18,21 @@ def calculate_indexed_percentage(total_pages, indexed_pages):
     percentage_indexed = (indexed_pages / total_pages) * 100
     return round(percentage_indexed, 2)  # Rounds to 2 decimal places
 
-# Example usage
-total = 1000  # Example: 1000 pages on your website
-indexed = 800  # Example: 800 of those pages are indexed
-print(f"Percentage of Indexed pages: {calculate_indexed_percentage(total, indexed)}%")
+def calculate_good_urls(good_mobile, need_improvement, poor_urls):
+    """
+    Calculate the Percentage of Indexed pages.
+
+    :param total_pages: Total number of pages on the website.
+    :param indexed_pages: Number of pages indexed by search engines.
+    :return: Percentage of pages that are indexed.
+    """
+    total_pages = good_mobile+need_improvement+poor_urls
+    if total_pages == 0:
+        return 0  # Avoid division by zero
+
+    percentage_good = (good_mobile / total_pages) * 100
+    return round(percentage_indexed, 2)  # Rounds to 2 decimal places
+
 
 # Define median values and custom messages
 medians = {
@@ -165,6 +176,14 @@ for group, fields in field_groups.items():
             not_indexed = user_values.get('Number of pages not indexed', 0)
             total = indexed + not_indexed
             user_values['Percentage of Indexed pages'] = calculate_indexed_percentage(total, indexed)
+        if 'Number of Need Improvement URLs (Mobile)' in fields and 'Number of Good URLs (Mobile)' in fields and 'Number of Poor URLs (Mobile)' in fields:
+            # Calculate Percentage of Indexed pages if both required fields are present
+            need_improvement = user_values.get('Number of Need Improvement URLs (Mobile)', 0)
+            good_urls = user_values.get('Number of Good URLs (Mobile)', 0)
+            poor_urls = user_values.get('Number of Poor URLs (Mobile)', 0)
+            user_values['Percentage of Good URLs (Mobile)'] = calculate_indexed_percentage(good_urls,need_improvement,poor_urls)
+
+
 
 
 
