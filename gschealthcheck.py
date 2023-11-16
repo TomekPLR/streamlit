@@ -18,7 +18,7 @@ def calculate_indexed_percentage(total_pages, indexed_pages):
     percentage_indexed = (indexed_pages / total_pages) * 100
     return round(percentage_indexed, 2)  # Rounds to 2 decimal places
 
-def calculate_good_urls(good_mobile, need_improvement, poor_urls):
+def calculate_good_percentage(good_mobile, need_improvement, poor_urls):
     """
     Calculate the Percentage of Indexed pages.
 
