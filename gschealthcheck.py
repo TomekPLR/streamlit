@@ -31,7 +31,7 @@ def calculate_good_urls(good_mobile, need_improvement, poor_urls):
         return 0  # Avoid division by zero
 
     percentage_good = (good_mobile / total_pages) * 100
-    return round(percentage_indexed, 2)  # Rounds to 2 decimal places
+    return round(percentage_good, 2)  # Rounds to 2 decimal places
 
 
 # Define median values and custom messages
@@ -177,11 +177,10 @@ for group, fields in field_groups.items():
             total = indexed + not_indexed
             user_values['Percentage of Indexed pages'] = calculate_indexed_percentage(total, indexed)
         if 'Number of Need Improvement URLs (Mobile)' in fields and 'Number of Good URLs (Mobile)' in fields and 'Number of Poor URLs (Mobile)' in fields:
-            # Calculate Percentage of Indexed pages if both required fields are present
             need_improvement = user_values.get('Number of Need Improvement URLs (Mobile)', 0)
             good_urls = user_values.get('Number of Good URLs (Mobile)', 0)
             poor_urls = user_values.get('Number of Poor URLs (Mobile)', 0)
-            user_values['Percentage of Good URLs (Mobile)'] = calculate_indexed_percentage(good_urls,need_improvement,poor_urls)
+            user_values['Percentage of Good URLs (Mobile)'] = calculate_good_percentage(good_urls,need_improvement,poor_urls)
 
 
 
