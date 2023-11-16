@@ -39,13 +39,13 @@ medians = {
     'Number of Good URLs (Mobile)': 100,
     'Number of Need Improvement URLs (Mobile)': 100,
     'Number of Poor URLs (Mobile)': 100,
-    'Average response time': 300,
-    'Percentage of OK (200) + Not Modified (304) requests': 20,
-    'Percentage of 404s': 55,
-    'Percentage of 301s': 20,
-    'Percentage of server errors': 24,
-    'Percentage of requests for Discovery purpose': 10,
-    'Percentage of page resource load': 25,
+    'Average response time': 350,
+    'Percentage of OK (200) + Not Modified (304) requests': 80,
+    'Percentage of 404s': 1,
+    'Percentage of 301s': 13,
+    'Percentage of server errors': 0.05,
+    'Percentage of requests for Discovery purpose': 17,
+    'Percentage of page resource load': 6.2,
     'Number of pages not indexed': 100,
     'Number of Discovered not indexed pages': 200,
     'Number of Crawled not indexed pages': 200,
@@ -53,7 +53,7 @@ medians = {
     'Percentage of Indexed pages': 40,
     'Percentage of Crawled Currently Not Indexed': 272,
     'Percentage of Discovered Currently Not Indexed': 272,
-    'Percentage of Good URLs (Mobile)': 100
+    'Percentage of Good URLs (Mobile)': 28
     
 }
 
@@ -145,8 +145,8 @@ custom_images = {
 # Define the groups of fields and descriptions
 field_groups = {
     'Core Web Vitals report': ['Number of Good URLs (Mobile)', 'Number of Need Improvement URLs (Mobile)', 'Number of Poor URLs (Mobile)', 'Percentage of Good URLs (Mobile)'],
-    'Crawl stats report': ['Average response time', 'Percentage of OK (200) + Not Modified (304) requests', 'Percentage of 404s', 'Percentage of 301s', 'Percentage of server errors'],
-    'Indexing report': ['Percentage of requests for Discovery purpose', 'Percentage of page resource load', 'Number of pages not indexed', 'Number of Discovered not indexed pages', 'Number of Indexed pages']
+    'Crawl stats report': ['Average response time', 'Percentage of OK (200) + Not Modified (304) requests', 'Percentage of 404s', 'Percentage of 301s', 'Percentage of server errors', 'Percentage of page resource load','Percentage of requests for Discovery purpose'],
+    'Indexing report': [ 'Number of pages not indexed', 'Number of Discovered not indexed pages', 'Number of Indexed pages']
 }
 
 group_descriptions = { 
