@@ -153,7 +153,7 @@ for group, fields in field_groups.items():
     with st.expander("Enter data from " + group + " report"):
         st.markdown(f"<h2 style='text-align: center;'>Enter data from your {group}</h2>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>{group_descriptions[group]}</p>", unsafe_allow_html=True)
-        st.image(custom_images.get(group, default_image), use_column_width='always')
+        st.image(custom_images.get(group, default_image), use_column_width='always',width=300)
         for field in fields:
             if field not in exclude_from_input:  # Check if field is not in exclude list
                 st.markdown(f"<h3 style='text-align: center;'>Metric: {field}</h3>", unsafe_allow_html=True)
