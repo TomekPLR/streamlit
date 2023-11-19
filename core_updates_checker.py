@@ -26,7 +26,7 @@ CORE_UPDATES = [
 ]
 
 def try_parse_date(date_string):
-    for fmt in ('%b %d, %Y', '%d %b %Y', '%Y-%m-%d', '%d-%m-%Y'):
+    for fmt in ('%b %d, %Y', '%d %b %Y', '%Y-%m-%d', '%d-%m-%Y', ):
         try:
             return datetime.strptime(date_string, fmt)
         except ValueError:
