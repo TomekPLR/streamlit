@@ -1,48 +1,71 @@
 import streamlit as st
 import pandas as pd
 
-# Function to calculate top 100 winners and losers
-def top_winners_losers(df, group_by_column):
-    # Group by specified column and sum Url Clicks
-    grouped_df = df.groupby(group_by_column)['Url Clicks'].sum().reset_index()
-    
-    # Sort and get top 100 winners
-    top_winners = grouped_df.sort_values(by='Url Clicks', ascending=False).head(100)
-    
-    # Sort and get top 100 losers
-    top_losers = grouped_df.sort_values(by='Url Clicks', ascending=True).head(100)
-    
-    return top_winners, top_losers
+# Function to rename columns based on their preceding column
+def rename_columns(df):
+    new_columns = []
+    for i, col in enumerate(df.columns):
+        if col.strip() == '% Δ':
+            new_col = f'Change in {df.columns[i-1]} (%)'
+            new_columns.append(new_col)
+        else:
+            new_columns.append(col)
+    df.columns = new_columns
+    return df
 
-# Streamlit app
+# Function to analyze top queries
+def analyze_top_queries(df):
+    top_3 = df[df['Average Position'] <= 3]
+    top_5 = df[df['Average Position'] <= 5]
+    top_10 = df[df['Average Position'] <= 10]
+
+    return len(top_3), len(top_5), len(top_10)
+
+# Function to find winners and losers
+def analyze_winners_losers(df, top_n=100):
+    # Sort by 'Change in Clicks (%)' and select top 100
+    winners = df.sort_values(by='Change in Clicks (%)', ascending=False).head(top_n)
+    losers = df.sort_values(by='Change in Clicks (%)').head(top_n)
+
+    return winners, losers
+
+# Function to analyze cannibalization
+def analyze_cannibalization(df):
+    # Group by query and count unique landing pages
+    cannibalization = df.groupby('Query')['Landing Page'].nunique().reset_index()
+    cannibalization.columns = ['Query', 'Number of Unique Landing Pages']
+    return cannibalization
+
+# Streamlit App
 def main():
-    st.title("Top 100 Winners and Losers Analyzer")
+    st.title("SEO Analysis Tool")
 
-    # File uploader
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-    if uploaded_file is not None:
-        # Read CSV
-        data = pd.read_csv(uploaded_file)
+    file = st.file_uploader("Upload your CSV file", type=['csv'])
 
-        # Display original data
-        st.write("### Original Data")
-        st.dataframe(data)
+    if file:
+        df = pd.read_csv(file)
+        df = rename_columns(df)
 
-        # Calculate and Display for Landing Page
-        st.write("### Top 100 Winners and Losers by Landing Page")
-        winners_lp, losers_lp = top_winners_losers(data, 'Landing Page')
-        st.write("#### Top Winners")
-        st.dataframe(winners_lp)
-        st.write("#### Top Losers")
-        st.dataframe(losers_lp)
+        st.write("Data Preview:", df.head())
 
-        # Calculate and Display for Query
-        st.write("### Top 100 Winners and Losers by Query")
-        winners_q, losers_q = top_winners_losers(data, 'Query')
-        st.write("#### Top Winners")
-        st.dataframe(winners_q)
-        st.write("#### Top Losers")
-        st.dataframe(losers_q)
+        # Analysis Section
+        st.subheader("Top Queries Analysis")
+        top_3, top_5, top_10 = analyze_top_queries(df)
+        st.write(f"Number of queries in top 3: {top_3}")
+        st.write(f"Number of queries in top 5: {top_5}")
+        st.write(f"Number of queries in top 10: {top_10}")
+
+        st.subheader("Winners and Losers Analysis")
+        winners, losers = analyze_winners_losers(df)
+        st.write("Winners (Top 100):")
+        st.dataframe(winners)
+        st.write("Losers (Top 100):")
+        st.dataframe(losers)
+
+        st.subheader("Cannibalization Analysis")
+        cannibalization_data = analyze_cannibalization(df)
+        st.write("Cannibalization Data:")
+        st.dataframe(cannibalization_data)
 
 if __name__ == "__main__":
     main()
