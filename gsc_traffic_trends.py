@@ -20,7 +20,7 @@ def analyze_query_positions(df):
     return top_3, top_5, top_10
 
 # Function to find the top winners and losers
-def find_winners_losers(df, metric='Change in clicks (%)', top_n=100):
+def find_winners_losers(df, metric='Change in Clicks (%)', top_n=100):
     df_sorted = df.sort_values(by=metric, ascending=False)
     winners = df_sorted[df_sorted[metric] > 0].head(top_n)
     losers = df_sorted[df_sorted[metric] < 0].head(top_n)
