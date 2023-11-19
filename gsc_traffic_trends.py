@@ -10,6 +10,28 @@ def rename_columns(df, column_patterns):
             column_patterns[col.strip()].pop(0)
             df.rename(columns={col: new_col}, inplace=True)
     return df
+def analyze_top_queries(df):
+    # Add error handling or adjust column names based on your CSV
+    try:
+        top_3 = df[df['Average Position'] <= 3]
+        top_5 = df[df['Average Position'] <= 5]
+        top_10 = df[df['Average Position'] <= 10]
+    except KeyError:
+        st.error("Column names do not match. Please check your CSV file.")
+        return None, None, None
+
+    return len(top_3), len(top_5), len(top_10)
+
+def analyze_winners_losers(df, top_n=100):
+    # Add error handling or adjust column names
+    try:
+        winners = df.sort_values(by='Change in Clicks (%)', ascending=False).head(top_n)
+        losers = df.sort_values(by='Change in Clicks (%)').head(top_n)
+    except KeyError:
+        st.error("Column names do not match. Please check your CSV file.")
+        return None, None
+
+    return winners, losers
 
 def main():
     st.title("SEO Analysis Tool")
