@@ -34,16 +34,23 @@ def main():
     file1 = st.file_uploader("Upload your CSV file for Query Analysis", type=['csv'], key='file1')
     file2 = st.file_uploader("Upload your CSV file for Landing Page Analysis", type=['csv'], key='file2')
 
-    # Check if files are uploaded
-    if file1 and file2:
-        # Read and process files
+    # Variables to hold dataframes
+    df_queries = None
+    df_landing_pages = None
+
+    # Read files
+    if file1:
         df_queries = pd.read_csv(file1)
         df_queries = rename_delta_columns(df_queries)
+        st.write("Columns in Query Analysis file:", df_queries.columns.tolist())
 
+    if file2:
         df_landing_pages = pd.read_csv(file2)
         df_landing_pages = rename_delta_columns(df_landing_pages)
+        st.write("Columns in Landing Page Analysis file:", df_landing_pages.columns.tolist())
 
-        # Display insights
+    # Analysis for the first file (Queries)
+    if df_queries is not None:
         st.header("General Info - Queries")
         top_3, top_5, top_10 = analyze_query_positions(df_queries)
         st.metric("Queries in Top 3", top_3)
@@ -58,6 +65,8 @@ def main():
         losers_queries = find_winners_losers(df_queries)[1]
         st.dataframe(losers_queries)
 
+    # Analysis for the second file (Landing Pages)
+    if df_landing_pages is not None:
         st.header("Winners - Landing Pages with Increased Clicks")
         winners_landing_pages = find_winners_losers(df_landing_pages)[0]
         st.dataframe(winners_landing_pages)
