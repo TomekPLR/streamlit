@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
+import langdetect  # You might need to install this package
 
+# Set the title of the application
 st.title("Google Core Update website analyzer by Tomek Rudzki")
-#st.set_page_config(page_title="Google Core Update website analyzer by Tomek Rudzki", page_icon=None, layout="centered", initial_sidebar_state="auto", menu_items=None)
-
 
 # Sample core updates data
 CORE_UPDATES = [
@@ -26,10 +26,23 @@ CORE_UPDATES = [
     {"name": "July 2022 product reviews update", "date_start": "2022-07-27", "duration": 6}
 ]
 
+def detect_language(date_string):
+    try:
+        return langdetect.detect(date_string)
+    except:
+        return 'unknown'
+
+def parse_date(date_string, lang):
+    formats = {
+        'en': '%b %d, %Y',    # English format
+        'pl': '%d %b %Y',     # Polish format
+        'es': '%d %b %Y',     # Spanish format
+        # Add other languages and formats as needed
+    }
+    return datetime.strptime(date_string, formats.get(lang, '%b %d, %Y'))
+
 def analyze_clicks(clicks_df, core_updates, significant_change):
     results = []
-
-    # Initialize DataFrame with expected columns
     results_df = pd.DataFrame(columns=['Update Name', 'Clicks Before', 'Clicks After', 'Difference', 'Percentage Change'])
 
     for update in core_updates:
@@ -37,12 +50,10 @@ def analyze_clicks(clicks_df, core_updates, significant_change):
         after_end = start_date + timedelta(days=update['duration'])
         before_start = start_date - timedelta(days=14)
 
-        # Filter data and calculate sum of clicks
-        clicks_before = clicks_df[(clicks_df['date'] >= before_start) & (clicks_df['date'] < start_date)]['clicks'].sum()
-        clicks_after = clicks_df[(clicks_df['date'] >= start_date) & (clicks_df['date'] <= after_end)]['clicks'].sum()
+        clicks_before = clicks_df[(clicks_df['parsed_date'] >= before_start) & (clicks_df['parsed_date'] < start_date)]['clicks'].sum()
+        clicks_after = clicks_df[(clicks_df['parsed_date'] >= start_date) & (clicks_df['parsed_date'] <= after_end)]['clicks'].sum()
 
         difference = clicks_after - clicks_before
-
         if clicks_before > 0 and abs(difference) / clicks_before * 100 >= significant_change:
             results.append({
                 'Update Name': update['name'],
@@ -54,9 +65,7 @@ def analyze_clicks(clicks_df, core_updates, significant_change):
 
     if results:
         results_df = pd.DataFrame(results)
-
     return results_df
-
 
 # Upload CSV file
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
@@ -67,20 +76,19 @@ with st.expander("Additional Options"):
     group_by_week = st.checkbox("Optional: group by week")
 
 if uploaded_file is not None:
-    # Read and display the clicks data
     clicks_df = pd.read_csv(uploaded_file)
-    clicks_df['date'] = pd.to_datetime(clicks_df['date'], format='%b %d, %Y')
-    clicks_df = clicks_df.sort_values('date')
+
+    clicks_df['lang'] = clicks_df['date'].apply(detect_language)
+    clicks_df['parsed_date'] = clicks_df.apply(lambda row: parse_date(row['date'], row['lang']), axis=1)
+    clicks_df = clicks_df.sort_values('parsed_date')
 
     plot_df = clicks_df.copy()
     if group_by_week:
-        plot_df['week_start'] = plot_df['date'].dt.to_period('W').apply(lambda r: r.start_time)
+        plot_df['week_start'] = plot_df['parsed_date'].dt.to_period('W').apply(lambda r: r.start_time)
         plot_df = plot_df.groupby(['week_start']).agg({'clicks': 'sum'}).reset_index()
 
-    # Perform analysis
     results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
 
-    # Calculate and display additional information
     increased_traffic = len(results_df[results_df['Difference'] > 0])
     decreased_traffic = len(results_df[results_df['Difference'] < 0])
 
@@ -95,20 +103,14 @@ if uploaded_file is not None:
     st.write(f"❌ Your website decreased traffic during {decreased_traffic} core updates.")
 
     st.write("### Clicks Timeline")
-     # Let user choose plot type
     plot_type = st.selectbox("Select plot type", ['Line', 'Dotted'])
-    
-    # Let user select core updates to annotate
     update_names = [update['name'] for update in CORE_UPDATES]
     selected_updates = st.multiselect("Select core updates to annotate", options=update_names, default=update_names)
 
-
-    # Plot the data
-    
-    x_axis = 'week_start' if group_by_week else 'date'
+    x_axis = 'week_start' if group_by_week else 'parsed_date'
     chart_func = px.line if plot_type == 'Line' else px.scatter
     fig = chart_func(plot_df, x=x_axis, y='clicks', title='Clicks Over Time')
-    
+
     # Adding annotations for selected core updates with alternating positions
     annotations = []
     for i, update in enumerate([upd for upd in CORE_UPDATES if upd['name'] in selected_updates]):
@@ -130,6 +132,9 @@ if uploaded_file is not None:
     # Displaying the analysis results
     st.write("### Analysis Results")
     st.write(results_df)
+
+
+
 
 
 
