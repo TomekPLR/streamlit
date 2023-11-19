@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
-import langdetect  # You might need to install this package
 
 # Set the title of the application
 st.title("Google Core Update website analyzer by Tomek Rudzki")
@@ -26,20 +25,13 @@ CORE_UPDATES = [
     {"name": "July 2022 product reviews update", "date_start": "2022-07-27", "duration": 6}
 ]
 
-def detect_language(date_string):
-    try:
-        return langdetect.detect(date_string)
-    except:
-        return 'unknown'
-
-def parse_date(date_string, lang):
-    formats = {
-        'en': '%b %d, %Y',    # English format
-        'pl': '%d %b %Y',     # Polish format
-        'es': '%d %b %Y',     # Spanish format
-        # Add other languages and formats as needed
-    }
-    return datetime.strptime(date_string, formats.get(lang, '%b %d, %Y'))
+def try_parse_date(date_string):
+    for fmt in ('%b %d, %Y', '%d %b %Y', '%Y-%m-%d', '%d-%m-%Y'):
+        try:
+            return datetime.strptime(date_string, fmt)
+        except ValueError:
+            continue
+    raise ValueError(f"Date format not recognized: {date_string}")
 
 def analyze_clicks(clicks_df, core_updates, significant_change):
     results = []
@@ -78,8 +70,8 @@ with st.expander("Additional Options"):
 if uploaded_file is not None:
     clicks_df = pd.read_csv(uploaded_file)
 
-    clicks_df['lang'] = clicks_df['date'].apply(detect_language)
-    clicks_df['parsed_date'] = clicks_df.apply(lambda row: parse_date(row['date'], row['lang']), axis=1)
+    # Parse dates using try_parse_date
+    clicks_df['parsed_date'] = clicks_df['date'].apply(try_parse_date)
     clicks_df = clicks_df.sort_values('parsed_date')
 
     plot_df = clicks_df.copy()
@@ -88,7 +80,6 @@ if uploaded_file is not None:
         plot_df = plot_df.groupby(['week_start']).agg({'clicks': 'sum'}).reset_index()
 
     results_df = analyze_clicks(clicks_df, CORE_UPDATES, significant_change)
-
     increased_traffic = len(results_df[results_df['Difference'] > 0])
     decreased_traffic = len(results_df[results_df['Difference'] < 0])
 
@@ -132,10 +123,3 @@ if uploaded_file is not None:
     # Displaying the analysis results
     st.write("### Analysis Results")
     st.write(results_df)
-
-
-
-
-
-
-   
