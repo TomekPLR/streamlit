@@ -8,9 +8,10 @@ st.title("Google Core Update website analyzer by Tomek Rudzki")
 
 # Sample core updates data
 CORE_UPDATES = [
-    {"name": "October 2023 core update", "date_start": "2023-10-05", "duration": 14},
-    {"name": "Ranking ongoing issue", "date_start": "2023-10-05", "duration": 26},
-    {"name": "October 2023 spam update", "date_start": "2023-10-04", "duration": 16},
+    {"name": "November 2023 core update", "date_start": "2023-11-02", "duration": 14},
+    {"name": "October 2023 core update & October 2023 Spam Update", "date_start": "2023-10-05", "duration": 16},
+
+    {"name": "October 2023 core update & October 2023 Spam Update", "date_start": "2023-10-05", "duration": 16},
     {"name": "September 2023 helpful content update", "date_start": "2023-09-14", "duration": 13},
     {"name": "August 2023 core update", "date_start": "2023-08-22", "duration": 17},
     {"name": "April 2023 reviews update", "date_start": "2023-04-12", "duration": 13},
