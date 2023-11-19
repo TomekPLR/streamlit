@@ -32,8 +32,8 @@ def main():
         column_patterns_2 = {'% Δ': ['Change in Url Clicks 1 (%)', 'Change in Url Clicks 2 (%)', 'Change in Impressions (%)', 'Change in URL CTR (%)']}
         df2 = rename_columns(df2, column_patterns_2)
         st.write("Second Data Preview:", df2.head())
-
-    st.subheader("Top Queries Analysis (First File)")
+        
+        st.subheader("Top Queries Analysis (First File)")
         top_3, top_5, top_10 = analyze_top_queries(df1)
         if top_3 is not None:
             st.write(f"Number of queries in top 3: {top_3}")
