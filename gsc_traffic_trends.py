@@ -33,8 +33,21 @@ def main():
         df2 = rename_columns(df2, column_patterns_2)
         st.write("Second Data Preview:", df2.head())
 
-    # Further analysis would go here
-    # ...
+    st.subheader("Top Queries Analysis (First File)")
+        top_3, top_5, top_10 = analyze_top_queries(df1)
+        if top_3 is not None:
+            st.write(f"Number of queries in top 3: {top_3}")
+            st.write(f"Number of queries in top 5: {top_5}")
+            st.write(f"Number of queries in top 10: {top_10}")
+
+        # Winners and Losers Analysis for the first file
+        st.subheader("Winners and Losers Analysis (First File)")
+        winners, losers = analyze_winners_losers(df1)
+        if winners is not None and losers is not None:
+            st.write("Winners (Top 100):")
+            st.dataframe(winners)
+            st.write("Losers (Top 100):")
+            st.dataframe(losers)
 
 if __name__ == "__main__":
     main()
