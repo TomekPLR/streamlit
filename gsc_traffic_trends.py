@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
 
-# Function to rename columns based on their preceding column
 def rename_columns(df):
+    # Adjust this function to match your CSV file's column names
     new_columns = []
     for i, col in enumerate(df.columns):
-        if col.strip() == '% Δ':
+        if '% Δ' in col:
             new_col = f'Change in {df.columns[i-1]} (%)'
             new_columns.append(new_col)
         else:
@@ -13,59 +13,65 @@ def rename_columns(df):
     df.columns = new_columns
     return df
 
-# Function to analyze top queries
 def analyze_top_queries(df):
-    top_3 = df[df['Average Position'] <= 3]
-    top_5 = df[df['Average Position'] <= 5]
-    top_10 = df[df['Average Position'] <= 10]
+    # Add error handling or adjust column names based on your CSV
+    try:
+        top_3 = df[df['Average Position'] <= 3]
+        top_5 = df[df['Average Position'] <= 5]
+        top_10 = df[df['Average Position'] <= 10]
+    except KeyError:
+        st.error("Column names do not match. Please check your CSV file.")
+        return None, None, None
 
     return len(top_3), len(top_5), len(top_10)
 
-# Function to find winners and losers
 def analyze_winners_losers(df, top_n=100):
-    # Sort by 'Change in Clicks (%)' and select top 100
-    winners = df.sort_values(by='Change in Clicks (%)', ascending=False).head(top_n)
-    losers = df.sort_values(by='Change in Clicks (%)').head(top_n)
+    # Add error handling or adjust column names
+    try:
+        winners = df.sort_values(by='Change in Clicks (%)', ascending=False).head(top_n)
+        losers = df.sort_values(by='Change in Clicks (%)').head(top_n)
+    except KeyError:
+        st.error("Column names do not match. Please check your CSV file.")
+        return None, None
 
     return winners, losers
 
-# Function to analyze cannibalization
-def analyze_cannibalization(df):
-    # Group by query and count unique landing pages
-    cannibalization = df.groupby('Query')['Landing Page'].nunique().reset_index()
-    cannibalization.columns = ['Query', 'Number of Unique Landing Pages']
-    return cannibalization
-
-# Streamlit App
 def main():
     st.title("SEO Analysis Tool")
 
-    file = st.file_uploader("Upload your CSV file", type=['csv'])
+    # Two file uploaders for different CSV files
+    file1 = st.file_uploader("Upload first CSV file", type=['csv'])
+    file2 = st.file_uploader("Upload second CSV file", type=['csv'])
 
-    if file:
-        df = pd.read_csv(file)
-        df = rename_columns(df)
+    if file1 and file2:
+        df1 = pd.read_csv(file1)
+        df2 = pd.read_csv(file2)
 
-        st.write("Data Preview:", df.head())
+        df1 = rename_columns(df1)
+        df2 = rename_columns(df2)
 
-        # Analysis Section
-        st.subheader("Top Queries Analysis")
-        top_3, top_5, top_10 = analyze_top_queries(df)
-        st.write(f"Number of queries in top 3: {top_3}")
-        st.write(f"Number of queries in top 5: {top_5}")
-        st.write(f"Number of queries in top 10: {top_10}")
+        st.write("First Data Preview:", df1.head())
+        st.write("Second Data Preview:", df2.head())
 
-        st.subheader("Winners and Losers Analysis")
-        winners, losers = analyze_winners_losers(df)
-        st.write("Winners (Top 100):")
-        st.dataframe(winners)
-        st.write("Losers (Top 100):")
-        st.dataframe(losers)
+        # Analysis for the first file
+        st.subheader("Top Queries Analysis (First File)")
+        top_3, top_5, top_10 = analyze_top_queries(df1)
+        if top_3 is not None:
+            st.write(f"Number of queries in top 3: {top_3}")
+            st.write(f"Number of queries in top 5: {top_5}")
+            st.write(f"Number of queries in top 10: {top_10}")
 
-        st.subheader("Cannibalization Analysis")
-        cannibalization_data = analyze_cannibalization(df)
-        st.write("Cannibalization Data:")
-        st.dataframe(cannibalization_data)
+        # Winners and Losers Analysis for the first file
+        st.subheader("Winners and Losers Analysis (First File)")
+        winners, losers = analyze_winners_losers(df1)
+        if winners is not None and losers is not None:
+            st.write("Winners (Top 100):")
+            st.dataframe(winners)
+            st.write("Losers (Top 100):")
+            st.dataframe(losers)
+
+        # Additional analyses for the second file can be added here
+        # ...
 
 if __name__ == "__main__":
     main()
