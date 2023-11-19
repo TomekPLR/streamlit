@@ -2,13 +2,17 @@ import streamlit as st
 import pandas as pd
 
 def rename_columns(df, column_patterns):
-    # Assuming the column patterns are given as a dictionary:
-    # column_patterns = {'% Δ': ['Change in Average Position (%)', 'Change in Clicks (%)', ...]}
-    for i, col in enumerate(df.columns):
-        if col.strip() in column_patterns:
-            new_col = column_patterns[col.strip()][0]
-            column_patterns[col.strip()].pop(0)
-            df.rename(columns={col: new_col}, inplace=True)
+    new_columns = []
+    delta_counter = 1  # Counter for duplicate % Δ columns
+    for col in df.columns:
+        if '% Δ' in col:
+            # If the column name contains '% Δ', rename it with a counter to make it unique
+            new_columns.append(f'Change in {df.columns[new_columns[-1]]} {delta_counter} (%)')
+            delta_counter += 1
+        else:
+            new_columns.append(col)
+            delta_counter = 1  # Reset counter if the column doesn't contain '% Δ'
+    df.columns = new_columns
     return df
 def analyze_top_queries(df):
     # Add error handling or adjust column names based on your CSV
