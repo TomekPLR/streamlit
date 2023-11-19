@@ -40,41 +40,54 @@ def analyze_cannibalization(df):
 # Streamlit App
 def main():
     st.title("SEO Analysis Tool")
-
-    # File uploaders
     st.sidebar.title("Upload CSV Files")
-    file1 = st.sidebar.file_uploader("Upload your first CSV file", type=['csv'], key='file1')
-    file2 = st.sidebar.file_uploader("Upload your second CSV file", type=['csv'], key='file2')
 
-    # If the first file is uploaded, perform the analysis
+    # Tab creation
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Input", "General Info", "Winners", "Losers", "Cannibalization Report"])
+
+    with tab1:
+        st.header("Input")
+        file1 = st.file_uploader("Upload your first CSV file", type=['csv'], key='file1')
+        file2 = st.file_uploader("Upload your second CSV file", type=['csv'], key='file2')
+
+    # Variables to hold dataframes
+    df1 = None
+    df2 = None
+
+    # Read files outside of tab context to avoid reloading on tab switch
     if file1:
         df1 = pd.read_csv(file1)
         df1 = rename_delta_columns(df1)
 
-        top_3, top_5, top_10 = analyze_query_positions(df1)
-
-        winners, losers = find_winners_losers(df1, metric='Change in clicks (%)')
-        
-        st.subheader("Queries in Top Positions")
-        st.write(f"Top 3: {top_3}")
-        st.write(f"Top 5: {top_5}")
-        st.write(f"Top 10: {top_10}")
-
-        st.subheader("Winners - Top 100 Queries")
-        st.dataframe(winners)
-
-        st.subheader("Losers - Top 100 Queries")
-        st.dataframe(losers)
-
-    # If the second file is uploaded, perform the analysis
     if file2:
         df2 = pd.read_csv(file2)
         df2 = rename_delta_columns(df2)
 
-        cannibalization_data = analyze_cannibalization(df2)
+    with tab2:
+        st.header("General Info")
+        if df1 is not None:
+            top_3, top_5, top_10 = analyze_query_positions(df1)
+            st.write(f"Top 3: {top_3}")
+            st.write(f"Top 5: {top_5}")
+            st.write(f"Top 10: {top_10}")
 
-        st.subheader("Cannibalization Analysis")
-        st.dataframe(cannibalization_data)
+    with tab3:
+        st.header("Winners - Top 100 Queries")
+        if df1 is not None:
+            winners = find_winners_losers(df1, metric='Change in clicks (%)')[0]
+            st.dataframe(winners)
+
+    with tab4:
+        st.header("Losers - Top 100 Queries")
+        if df1 is not None:
+            losers = find_winners_losers(df1, metric='Change in clicks (%)')[1]
+            st.dataframe(losers)
+
+    with tab5:
+        st.header("Cannibalization Analysis")
+        if df2 is not None:
+            cannibalization_data = analyze_cannibalization(df2)
+            st.dataframe(cannibalization_data)
 
 # Run the Streamlit app
 if __name__ == "__main__":
