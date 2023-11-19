@@ -68,11 +68,11 @@ def main():
     # Analysis for the second file (Landing Pages)
     if df_landing_pages is not None:
         st.header("Winners - Landing Pages with Increased Clicks")
-        winners_landing_pages = find_winners_losers(df_landing_pages)[0]
+        winners_landing_pages = find_winners_losers(df_landing_pages,metric="Change in URL Clicks (%)")[0]
         st.dataframe(winners_landing_pages)
 
         st.header("Losers - Landing Pages with Decreased Clicks")
-        losers_landing_pages = find_winners_losers(df_landing_pages)[1]
+        losers_landing_pages = find_winners_losers(df_landing_pages, metric="Change in Clicks (%)")[1]
         st.dataframe(losers_landing_pages)
 
 # Run the Streamlit app
