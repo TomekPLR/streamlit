@@ -26,6 +26,7 @@ CORE_UPDATES = [
 ]
 
 def try_parse_date(date_string):
+    date_string = date_string.replace('Sept', 'Sep')
     for fmt in ('%b %d, %Y', '%d %b %Y', '%Y-%m-%d', '%d-%m-%Y', ):
         try:
             return datetime.strptime(date_string, fmt)
