@@ -20,48 +20,48 @@ def analyze_query_positions(df):
     return top_3, top_5, top_10
 
 # Function to find the top winners and losers
-def find_winners_losers(df, metric='Change in Clicks (%)', change_metric='Change in Impressions (%)', top_n=100):
-    df_filtered = df[df[metric] > 0] if 'Winners' in st.current_tab else df[df[metric] < 0]
-    sorted_df = df_filtered.sort_values(by=metric, ascending=False)
-    return sorted_df.head(top_n)
+def find_winners_losers(df, metric='Change in Clicks (%)', top_n=100):
+    df_sorted = df.sort_values(by=metric, ascending=False)
+    winners = df_sorted[df_sorted[metric] > 0].head(top_n)
+    losers = df_sorted[df_sorted[metric] < 0].head(top_n)
+    return winners, losers
 
 # Streamlit App
 def main():
     st.title("SEO Analysis Tool")
 
-    # Tab creation
-    tab1, tab2, tab3 = st.tabs(["General Info", "Winners", "Losers"])
-
-    # File uploader
-    file1 = st.file_uploader("Upload your CSV file", type=['csv'], key='file1')
+    # File uploaders
+    file1 = st.file_uploader("Upload your CSV file for General Info", type=['csv'], key='file1')
+    file2 = st.file_uploader("Upload your CSV file for Winners and Losers", type=['csv'], key='file2')
 
     # Variables to hold dataframes
-    df1 = None
+    df_general_info = None
+    df_winners_losers = None
 
-    # Read file
+    # Read files
     if file1:
-        df1 = pd.read_csv(file1)
-        df1 = rename_delta_columns(df1)
+        df_general_info = pd.read_csv(file1)
+        df_general_info = rename_delta_columns(df_general_info)
 
-    with tab1:
+    if file2:
+        df_winners_losers = pd.read_csv(file2)
+        df_winners_losers = rename_delta_columns(df_winners_losers)
+
+    if df_general_info is not None:
         st.header("General Info")
-        if df1 is not None:
-            top_3, top_5, top_10 = analyze_query_positions(df1)
-            st.metric("Queries in Top 3", top_3)
-            st.metric("Queries in Top 5", top_5)
-            st.metric("Queries in Top 10", top_10)
+        top_3, top_5, top_10 = analyze_query_positions(df_general_info)
+        st.metric("Queries in Top 3", top_3)
+        st.metric("Queries in Top 5", top_5)
+        st.metric("Queries in Top 10", top_10)
 
-    with tab2:
-        st.header("Winners - Top Queries with Increased Clicks")
-        if df1 is not None:
-            winners = find_winners_losers(df1)
-            st.dataframe(winners)
+    if df_winners_losers is not None:
+        st.header("Winners")
+        winners = find_winners_losers(df_winners_losers)[0]
+        st.dataframe(winners)
 
-    with tab3:
-        st.header("Losers - Top Queries with Decreased Clicks")
-        if df1 is not None:
-            losers = find_winners_losers(df1)
-            st.dataframe(losers)
+        st.header("Losers")
+        losers = find_winners_losers(df_winners_losers)[1]
+        st.dataframe(losers)
 
 # Run the Streamlit app
 if __name__ == "__main__":
