@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 
 # Initialize your OpenAI API key
-openai = OpenAI()
+openai = OpenAI(api_key='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')
 
 # Variable to store the query and top 10 results
 stored_query = ""
