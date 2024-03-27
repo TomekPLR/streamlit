@@ -63,7 +63,7 @@ def main_analysis():
 # New analysis on the article for signs of waffle content
         unwaffle_analysis = query_chatgpt(f"I have an article: {st.session_state['user_article']}\n\nLook for signs of waffle content, for instance: Repetition, Generalization, Lack of Depth, Limited Insights, Absence of Examples or Case Studies. Then judge how useful it's for the users typing in Google: '{st.session_state['stored_query']}'. Give me ideas on how to improve the content. First for people looking for general guidance then another advice - how to write for people in need of a comprehensive understanding or to take effective action")
         st.markdown("### 📝 Ideas for unwaffling")
-        st.write(uunwaffle_analysis)
+        st.write(unwaffle_analysis)
 
 
 
