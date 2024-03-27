@@ -4,9 +4,10 @@ from openai import OpenAI
 # Initialize your OpenAI API key
 openai = OpenAI(api_key='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')
 
-# Variable to store the query and top 10 results
+# Variables to store the query, top 10 results, and user-submitted title
 stored_query = ""
 stored_results = ""
+user_title = ""
 
 def query_chatgpt(prompt):
     try:
@@ -22,13 +23,14 @@ def query_chatgpt(prompt):
         return f"An error occurred: {str(e)}"
 
 def main_analysis():
-    global stored_query, stored_results  # Access the global variables
+    global stored_query, stored_results, user_title  # Access the global variables
 
     st.title("Google Search Results Analysis")
 
     with st.form("query_results_form"):
         stored_query = st.text_input("Query")
         stored_results = st.text_area("Top 10 Results", height=400)
+        user_title = st.text_input("Your Title")
         submit_button = st.form_submit_button("Calculate")
 
     if submit_button:
@@ -38,7 +40,6 @@ def main_analysis():
         st.write(differences_summary)
 
         # Calculate differences between top 3 and user-proposed title
-        user_title = st.text_input("Your Title")
         differences_with_user_title_summary = query_chatgpt(f"Here's the Google search results: {stored_results}. Give summary of what's the difference between focus of top 3 results (includes 1,2,3) and the title proposed by the user: '{user_title}'.")
         st.subheader("Differences Summary with User Title")
         st.write(differences_with_user_title_summary)
