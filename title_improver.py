@@ -30,7 +30,7 @@ def query_chatgpt(prompt):
         return f"An error occurred: {str(e)}"
 
 def main_analysis():
-    st.title("🔍 Google Search Results and Article Analysis")
+    st.title("🔍 Tomek's article scorer")
 
     with st.form("query_results_form"):
         st.session_state['stored_query'] = st.text_input("Query", st.session_state['stored_query'])
@@ -47,11 +47,11 @@ def main_analysis():
         st.write(differences_summary)
 
         differences_with_user_title_summary = query_chatgpt(f"Here's the Google search results: {st.session_state['stored_results']}. Give summary of what's the difference between focus of top 3 results (includes 1,2,3) and the title proposed by the user: '{st.session_state['user_title']}'. At the end, provide me with similarity score from 0 to 10. Be harsh. I prefer numeric score")
-        st.subheader("📝 Differences Summary with User Title")
+        st.subheader("📝 Differences - your title vs top 3")
         st.write(differences_with_user_title_summary)
 
         relevancy_score = query_chatgpt(f"How well is the '{st.session_state['user_title']}' proposed by the user relevant to the '{st.session_state['stored_query']}'? Give me score 0 to 10. Be harsh. I prefer numeric value")
-        st.subheader("🎯 Relevancy Score <title, query>")
+        st.subheader("🎯 Relevancy Score <your title, query>")
         st.write(relevancy_score)
 
         # New analysis on the article for signs of waffle content
