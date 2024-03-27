@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 
 # Initialize your OpenAI API key
-openai = OpenAI(api_key='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')
+openai = OpenAI(api_key='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')
 
 
 # Variables to store the query, top 10 results, and user-submitted title
