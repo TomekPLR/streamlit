@@ -4,6 +4,7 @@ from openai import OpenAI
 # Initialize your OpenAI API key
 openai = OpenAI(api_key='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')
 
+
 # Variables to store the query, top 10 results, and user-submitted title
 stored_query = ""
 stored_results = ""
